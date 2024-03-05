@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('time');
             $table->integer('aircraft_id')->unsigned();
-            $table->foreign('aircraft_id')->references('id')->on('aircrafts');
+            $table->foreign('aircraft_id')->references('id')->on('aircraft');
             $table->integer('location_id')->unsigned();
             $table->foreign('location_id')->references('id')->on('locations');
             $table->integer('pilot_id')->unsigned()->nullable();

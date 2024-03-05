@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickettype_aircrafts', function (Blueprint $table) {
+        Schema::create('tickettype_aircraft', function (Blueprint $table) {
             $table->integer('tickettype_id')->unsigned();
             $table->foreign('tickettype_id')->references('id')->on('tickettypes');
             $table->integer('aircraft_id')->unsigned();
-            $table->foreign('aircraft_id')->references('id')->on('aircrafts');
+            $table->foreign('aircraft_id')->references('id')->on('aircraft');
             $table->primary(['tickettype_id', 'aircraft_id']);
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickettype_aircrafts');
+        Schema::dropIfExists('tickettype_aircraft');
     }
 };

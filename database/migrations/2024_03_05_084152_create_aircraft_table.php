@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('aircrafts', function (Blueprint $table) {
+        Schema::create('aircraft', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->integer('type')->comment('feltöltése enum-ból');
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('aircrafts');
+        Schema::dropIfExists('aircraft');
     }
 };
