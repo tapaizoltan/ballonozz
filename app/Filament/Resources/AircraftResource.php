@@ -39,6 +39,7 @@ class AircraftResource extends Resource
                     Section::make() 
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->helperText('Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
                             ->label('Megnevezés')
                             ->required()
@@ -54,10 +55,11 @@ class AircraftResource extends Resource
                         Forms\Components\Fieldset::make('Besorolás')
                         ->schema([
                             Forms\Components\ToggleButtons::make('type')
+                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Válassza ki a légijármű típusát.')*/
                                 ->helperText('Válassza ki a légijármű típusát.')
                                 ->label('Típus')
                                 ->inline()
-                                ->grouped()
+                                /*->grouped()*/
                                 ->required()
                                 ->options([
                                     '0' => 'Hőlégballon',
@@ -73,6 +75,7 @@ class AircraftResource extends Resource
                                 ])
                                 ->default(0),
                             Forms\Components\TextInput::make('registration_number')
+                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 ->helperText('Ide a légijármű lajstromjelét adja meg.')
                                 ->label('Lajstrom-jel')
                                 ->placeholder('HA-1234 vagy HA-ABCD')
@@ -115,7 +118,6 @@ class AircraftResource extends Resource
 
     public static function table(Table $table): Table
     {
-        
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Megnevezés')->searchable(),
@@ -130,7 +132,6 @@ class AircraftResource extends Resource
                     ->formatStateUsing(fn($state)=>$state.' kg'),
 
             ])
-
             ->filters([
                 Tables\Filters\Filter::make('type')
                     ->query(fn (Builder $query) => $query->where('type', true)),
