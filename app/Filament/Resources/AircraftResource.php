@@ -25,7 +25,7 @@ class AircraftResource extends Resource
 {
     protected static ?string $model = Aircraft::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
+    protected static ?string $navigationIcon = 'iconoir-airplane-rotation';
     /*protected static ?string $navigationIcon = 'paper-plane';*/
     protected static ?string $modelLabel = 'légijármű';
     protected static ?string $pluralModelLabel = 'légijárművek';
@@ -42,6 +42,7 @@ class AircraftResource extends Resource
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->helperText('Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
                             ->label('Megnevezés')
+                            ->prefixIcon('tabler-writing-sign')
                             ->required()
                             ->minLength(3)
                             ->maxLength(255),
@@ -66,8 +67,8 @@ class AircraftResource extends Resource
                                     '1' => 'Kisrepülő',
                                 ])
                                 ->icons([
-                                    '0' => 'heroicon-m-globe-alt',
-                                    '1' => 'heroicon-m-paper-airplane',
+                                    '0' => 'iconoir-hot-air-balloon',
+                                    '1' => 'iconoir-airplane',
                                 ])
                                 ->colors([
                                     '0' => 'info',
@@ -78,6 +79,7 @@ class AircraftResource extends Resource
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 ->helperText('Ide a légijármű lajstromjelét adja meg.')
                                 ->label('Lajstrom-jel')
+                                ->prefixIcon('tabler-license')
                                 ->placeholder('HA-1234 vagy HA-ABCD')
                                 ->required()
                                 ->minLength(3)
@@ -92,6 +94,7 @@ class AircraftResource extends Resource
                                 Forms\Components\TextInput::make('number_of_person')
                                 ->helperText('Adja meg a MAXIMÁLISAN szállítható személyek számát.')
                                 ->label('Szállítható személyek száma')
+                                ->prefixIcon('fluentui-people-team-24-o')
                                 ->required()
                                 ->numeric()
                                 ->default(0)
@@ -102,6 +105,7 @@ class AircraftResource extends Resource
                                 Forms\Components\TextInput::make('payload_capacity')
                                 ->helperText('Adja meg a légijármű a pilótával együttes MAXIMÁLIS terhetőségét kg-ban.')
                                 ->label('Terhetőség')
+                                ->prefixIcon('tabler-weight')
                                 ->required()
                                 ->numeric()
                                 ->default(0)
@@ -146,7 +150,7 @@ class AircraftResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),             
+                Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

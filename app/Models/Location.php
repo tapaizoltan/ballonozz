@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Location extends Model
 {
-    use HasFactory;
+    //use HasFactory;
+    
+    public function areatypes()
+    {
+        return $this->belongsTo(AreaType::class);
+    }
+    
 }

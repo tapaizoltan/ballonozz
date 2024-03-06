@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('zip_code')->nullable();
             $table->string('settlement')->nullable();
             $table->string('address')->nullable();
-            $table->integer('address_area_type_id')->nullable()->comment('feltöltése másik táblából');
+            $table->integer('area_type_id')->nullable()->comment('feltöltése area_types táblából');
             $table->string('address_number')->nullable();
             $table->string('parcel_number')->nullable()->comment('helyrajzi szám');
             $table->timestamps();

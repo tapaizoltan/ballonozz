@@ -55,9 +55,9 @@ enum AircraftType: string implements HasColor, HasIcon, HasLabel
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::Ballon => 'heroicon-m-globe-alt',
-            self::Airplane => 'heroicon-m-paper-airplane',
-            self::Rocket => 'heroicon-m-rocket-launch',
+            self::Ballon => 'iconoir-hot-air-balloon',
+            self::Airplane => 'iconoir-airplane',
+            self::Rocket => 'iconoir-rocket',
             /*
             self::New => 'heroicon-m-sparkles',
             self::Processing => 'heroicon-m-arrow-path',
