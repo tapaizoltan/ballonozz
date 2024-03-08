@@ -26,7 +26,6 @@ class AircraftResource extends Resource
     protected static ?string $model = Aircraft::class;
 
     protected static ?string $navigationIcon = 'iconoir-airplane-rotation';
-    /*protected static ?string $navigationIcon = 'paper-plane';*/
     protected static ?string $modelLabel = 'légijármű';
     protected static ?string $pluralModelLabel = 'légijárművek';
 
