@@ -50,7 +50,7 @@ class PilotResource extends Resource
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Pilóta engedély azonosító')
-                                ->prefixIcon('far-address-card')
+                                ->prefixIcon('tabler-id-badge-2')
                                 ->placeholder('PPL-SEP'),
                             ])->columns(3),
 

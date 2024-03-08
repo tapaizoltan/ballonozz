@@ -65,7 +65,7 @@ class LocationResource extends Resource
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Település')
-                                ->prefixIcon('mdi-home-city-outline')
+                                ->prefixIcon('tabler-building-skyscraper')
                                 ->placeholder('Békéscsaba'),
                             ])->columns(2),
 
@@ -80,8 +80,7 @@ class LocationResource extends Resource
                             Forms\Components\Select::make('area_type_id')
                                 ->label('Típus')
                                 ->prefixIcon('tabler-layout-list')
-                                ->options(AreaType::all()->pluck('name', 'id'))
-                                ->searchable(),
+                                ->options(AreaType::all()->pluck('name', 'id')),
                             Forms\Components\TextInput::make('address_number')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
