@@ -28,6 +28,8 @@ class LocationResource extends Resource
     protected static ?string $modelLabel = 'helyszín';
     protected static ?string $pluralModelLabel = 'helyszínek';
 
+    protected static ?string $navigationGroup = 'Alapadatok';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -80,12 +82,15 @@ class LocationResource extends Resource
                             Forms\Components\Select::make('area_type_id')
                                 ->label('Típus')
                                 ->prefixIcon('tabler-layout-list')
-                                ->options(AreaType::all()->pluck('name', 'id')),
+                                ->options(AreaType::all()->pluck('name', 'id'))
+                                ->searchable()
+                                ->native(false),
                             Forms\Components\TextInput::make('address_number')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Házszám')
                                 ->prefixIcon('tabler-number')
+                                ->numeric()
                                 ->placeholder('13'),
                             ])->columns(3),
 

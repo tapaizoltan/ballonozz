@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\AircraftLocationPilotResource\Pages;
+namespace App\Filament\Resources\TickettypeAircraftResource\Pages;
 
-use App\Filament\Resources\AircraftLocationPilotResource;
+use App\Filament\Resources\TickettypeAircraftResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditAircraftLocationPilot extends EditRecord
+class EditTickettypeAircraft extends EditRecord
 {
-    protected static string $resource = AircraftLocationPilotResource::class;
+    protected static string $resource = TickettypeAircraftResource::class;
 
     protected function getHeaderActions(): array
     {

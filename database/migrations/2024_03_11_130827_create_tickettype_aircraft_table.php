@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickettype_aircraft', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('tickettype_id')->unsigned();
             $table->foreign('tickettype_id')->references('id')->on('tickettypes');
             $table->integer('aircraft_id')->unsigned();
             $table->foreign('aircraft_id')->references('id')->on('aircraft');
-            $table->primary(['tickettype_id', 'aircraft_id']);
+            //$table->primary(['tickettype_id', 'aircraft_id']);
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

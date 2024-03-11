@@ -25,6 +25,9 @@ class PilotResource extends Resource
     protected static ?string $modelLabel = 'pilóta';
     protected static ?string $pluralModelLabel = 'pilóták';
 
+    protected static ?string $navigationGroup = 'Alapadatok';
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -40,12 +43,14 @@ class PilotResource extends Resource
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                                 /*->helperText('Adjon egy fantázianevet a helyszínnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott helyszín.')*/
                                 ->label('Vezetéknév')
-                                ->placeholder('Gipsz'),
+                                ->placeholder('Gipsz')
+                                ->required(),
                             Forms\Components\TextInput::make('firstname')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Keresztnév')
-                                ->placeholder('Jakab'),
+                                ->placeholder('Jakab')
+                                ->required(),
                             Forms\Components\TextInput::make('pilot_license_number')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/

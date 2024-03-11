@@ -2,25 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AircraftLocationPilotResource\Pages;
-use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
-use App\Models\AircraftLocationPilot;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-/* saját use-ok */
+use App\Models\Pilot;
 use App\Models\Aircraft;
 use App\Models\Location;
-use App\Models\Pilot;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+
+/* saját use-ok */
+use App\Models\AircraftLocationPilot;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\AircraftLocationPilotResource\Pages;
+use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
 
 class AircraftLocationPilotResource extends Resource
 {
@@ -30,10 +30,8 @@ class AircraftLocationPilotResource extends Resource
     protected static ?string $modelLabel = 'repülési terv';
     protected static ?string $pluralModelLabel = 'repülési tervek';
 
-    public function fullname()
-    {
-        return "{$this->lastname} {$this->firstname}";
-    }
+    protected static ?string $navigationGroup = 'Alapadatok';
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {
@@ -79,21 +77,24 @@ class AircraftLocationPilotResource extends Resource
                                 ->label('Légijármű')
                                 ->prefixIcon('tabler-ufo')
                                 ->options(Aircraft::all()->pluck('name', 'id'))
-                                ->native(false),
+                                ->native(false)
+                                ->searchable(),
 
                             Forms\Components\Select::make('location_id')
                                 ->label('Helyszín')
                                 ->prefixIcon('iconoir-strategy')
                                 ->options(Location::all()->pluck('name', 'id'))
-                                ->native(false),
+                                ->native(false)
+                                ->searchable(),
 
                             Forms\Components\Select::make('pilot_id')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Pilóta')
                                 ->prefixIcon('iconoir-user-square')
-                                ->options(Pilot::all()->pluck('fullname', 'id'))
-                                ->native(false),
+                                ->options(Pilot::all()->pluck('fullname', 'id')) // <-ez egy modell szinten deklarált atribútum
+                                ->native(false)
+                                ->searchable(),
                             ])->columns(3),
 
                         ])->columnSpan(3),
@@ -117,21 +118,19 @@ class AircraftLocationPilotResource extends Resource
                     $location_name = Location::find($aircraft_localtion_pilot->location_id);
                     return $location_name->name;
                 }),
-                Tables\Columns\TextColumn::make('pilot_id')->label('Pilóta')->searchable()
-                ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
-                    $pilot_name = Pilot::find($aircraft_localtion_pilot->pilot_id);
-                    return $pilot_name->lastname.' '.$pilot_name->firstname;
-                }),
+                Tables\Columns\TextColumn::make('pilot.fullname')->label('Pilóta')->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Mind törlése'),
                 ]),
             ]);
     }
@@ -148,6 +147,7 @@ class AircraftLocationPilotResource extends Resource
         return [
             'index' => Pages\ListAircraftLocationPilots::route('/'),
             'create' => Pages\CreateAircraftLocationPilot::route('/create'),
+            /*'view' => Pages\ViewAircraftLocationPilot::route('/{record}'),*/
             'edit' => Pages\EditAircraftLocationPilot::route('/{record}/edit'),
         ];
     }

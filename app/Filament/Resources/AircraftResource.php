@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 /* saját use-ok */
 use Filament\Tables\Columns\TextColumn;
 use Filament\Support\Contracts\HasLabel;
@@ -28,6 +29,9 @@ class AircraftResource extends Resource
     protected static ?string $navigationIcon = 'iconoir-airplane-rotation';
     protected static ?string $modelLabel = 'légijármű';
     protected static ?string $pluralModelLabel = 'légijárművek';
+
+    protected static ?string $navigationGroup = 'Alapadatok';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
