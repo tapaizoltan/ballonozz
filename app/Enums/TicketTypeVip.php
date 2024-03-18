@@ -23,7 +23,7 @@ enum TicketTypeVip: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::VipFalse => 'gray',
-            self::VipTrue => 'gray',
+            self::VipTrue => 'danger',
         };
     }
 

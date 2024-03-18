@@ -77,12 +77,17 @@ class PilotResource extends Resource
                 Tables\Columns\TextColumn::make('pilot_license_number')->label('Pilóta engedély')->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()->native(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
+                */
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
+                Tables\Actions\ForceDeleteAction::make()->label(false)->tooltip('Végleges törlés'),
+                Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyteállítás'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -106,5 +111,21 @@ class PilotResource extends Resource
             /*'view' => Pages\ViewPilot::route('/{record}'),*/
             'edit' => Pages\EditPilot::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi pilóta van már rögzítve
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::all()->count();
     }
 }

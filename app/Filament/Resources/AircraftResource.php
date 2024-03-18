@@ -132,10 +132,10 @@ class AircraftResource extends Resource
                     ->label('Típus')
                     ->badge()
                     ->size('md'),
-                    Tables\Columns\TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable(),
-                    Tables\Columns\TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
+                Tables\Columns\TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable(),
+                Tables\Columns\TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
                     ->formatStateUsing(fn($state)=>$state.' fő'),
-                    Tables\Columns\TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
+                Tables\Columns\TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
                     ->formatStateUsing(fn($state)=>$state.' kg'),
 
             ])
@@ -149,11 +149,17 @@ class AircraftResource extends Resource
                         '1' => 'Kisrepülő',
                     ])
                     ->native(false),
+                Tables\Filters\TrashedFilter::make()->native(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
+                */
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
+                Tables\Actions\ForceDeleteAction::make()->label(false)->tooltip('Végleges törlés'),
+                Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyteállítás'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -177,5 +183,21 @@ class AircraftResource extends Resource
             /*'view' => Pages\ViewAircraft::route('/{record}'),*/
             'edit' => Pages\EditAircraft::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi légijármű van már rögzítve
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::all()->count();
     }
 }

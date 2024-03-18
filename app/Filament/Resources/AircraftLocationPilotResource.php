@@ -18,9 +18,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AircraftLocationPilotResource\Pages;
 use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
+use Filament\Tables\Columns\IconColumn;
 
 class AircraftLocationPilotResource extends Resource
 {
@@ -31,13 +31,13 @@ class AircraftLocationPilotResource extends Resource
     protected static ?string $pluralModelLabel = 'repülési tervek';
 
     protected static ?string $navigationGroup = 'Alapadatok';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Grid::make(4)
+                Grid::make(5)
                 ->schema([
                     Section::make() 
                     ->schema([
@@ -51,6 +51,7 @@ class AircraftLocationPilotResource extends Resource
                                 ->weekStartsOnMonday()
                                 //->placeholder(now())
                                 ->displayFormat('Y-m-d')
+                                ->required()
                                 ->native(false),
 
                             Forms\Components\TimePicker::make('time')
@@ -60,9 +61,44 @@ class AircraftLocationPilotResource extends Resource
                                 ->prefixIcon('tabler-clock')
                                 //->placeholder(now())
                                 ->displayFormat('H:i:s')
+                                ->required()
                                 ->native(false),
                             ])->columns(2),
                         ])->columnSpan(3),
+
+                        Section::make() 
+                        ->schema([
+                            Forms\Components\Fieldset::make('Státusz')
+                            ->schema([
+                                Forms\Components\ToggleButtons::make('status')
+                                    /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Válassza ki a légijármű típusát.')*/
+                                    ->helperText('A repülés terv státuszával megjelölheti az adott repülés állapotát.')
+                                    ->label('Repülési terv státusza')
+                                    ->inline()
+                                    /*->grouped()*/
+                                    ->required()
+                                    ->options([
+                                        '0' => 'Tervezett',
+                                        '1' => 'Publikált',
+                                        '2' => 'Végrehajtott',
+                                        '3' => 'Törölt',
+                                    ])
+                                    ->colors([
+                                        '0' => 'warning',
+                                        '1' => 'success',
+                                        '2' => 'info',
+                                        '3' => 'danger',
+                                    ])
+                                    ->icons([
+                                        '0' => 'tabler-player-pause',
+                                        '1' => 'tabler-player-play',
+                                        '2' => 'tabler-player-stop',
+                                        '3' => 'tabler-playstation-x',
+                                    ])
+                                    ->default(0),
+                                ])->columns(1),
+                            ])->columnSpan(2),
+
                 ]),
 
                 Grid::make(4)
@@ -78,6 +114,7 @@ class AircraftLocationPilotResource extends Resource
                                 ->prefixIcon('tabler-ufo')
                                 ->options(Aircraft::all()->pluck('name', 'id'))
                                 ->native(false)
+                                ->required()
                                 ->searchable(),
 
                             Forms\Components\Select::make('location_id')
@@ -85,6 +122,7 @@ class AircraftLocationPilotResource extends Resource
                                 ->prefixIcon('iconoir-strategy')
                                 ->options(Location::all()->pluck('name', 'id'))
                                 ->native(false)
+                                ->required()
                                 ->searchable(),
 
                             Forms\Components\Select::make('pilot_id')
@@ -119,6 +157,10 @@ class AircraftLocationPilotResource extends Resource
                     return $location_name->name;
                 }),
                 Tables\Columns\TextColumn::make('pilot.fullname')->label('Pilóta')->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Státusz')
+                    ->badge()
+                    ->size('md'),
             ])
             ->filters([
                 //
@@ -126,7 +168,10 @@ class AircraftLocationPilotResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
+                */
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -150,5 +195,13 @@ class AircraftLocationPilotResource extends Resource
             /*'view' => Pages\ViewAircraftLocationPilot::route('/{record}'),*/
             'edit' => Pages\EditAircraftLocationPilot::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string //ez kiírja a menü mellé, hogy mennyi publikált repülési terv van
+    {
+        /** @var class-string<Model> $modelClass */
+        $modelClass = static::$model;
+
+        return (string) $modelClass::where('status', '1')->count();
     }
 }

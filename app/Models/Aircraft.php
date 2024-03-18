@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\AircraftType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Aircraft extends Model
 {
@@ -14,4 +14,6 @@ class Aircraft extends Model
     ];
     
     use HasFactory;
+    
+    use SoftDeletes;
 }

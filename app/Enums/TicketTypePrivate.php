@@ -15,7 +15,7 @@ enum TicketTypePrivate: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::PrivateFalse => false,
-            self::PrivateTrue => 'PRIVATE',
+            self::PrivateTrue => 'PRIVÁT',
         };
     }
 
@@ -23,7 +23,7 @@ enum TicketTypePrivate: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::PrivateFalse => 'gray',
-            self::PrivateTrue => 'gray',
+            self::PrivateTrue => 'info',
         };
     }
 
