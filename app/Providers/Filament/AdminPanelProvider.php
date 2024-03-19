@@ -54,6 +54,12 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full);
+            ->maxContentWidth(\Filament\Support\Enums\MaxWidth::Full)
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+            ])
+            ->passwordReset()
+            ->emailVerification()
+            ->profile();
     }
 }
