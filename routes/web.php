@@ -17,6 +17,3 @@ use App\Http\Controllers\CouponsController;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/coupons', [CouponsController::class, 'search'])->name('coupons.search');
-Route::get('/coupons/search', [CouponsController::class, 'search'])->name('coupons.search');
