@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('coupons', function (Blueprint $table) {
+        Schema::create('passengers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('coupon_code');
-            $table->string('source');
-            $table->integer('adult');
-            $table->integer('children');
-            $table->boolean('vip')->default(false);
-            $table->boolean('private')->default(false);
-            $table->integer('status')->default(0);
+            $table->string('firstname');
+            $table->string('lastname');
+            $table->date('date_of_birth')->comment('születési dátum');
+            $table->string('id_card_number')->comment('igazolvány szám');
+            $table->string('body weight')->comment('testsúly');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('coupons');
+        Schema::dropIfExists('passengers');
     }
 };
