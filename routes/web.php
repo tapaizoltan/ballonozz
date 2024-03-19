@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CouponsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/coupons', [CouponsController::class, 'search'])->name('coupons.search');
+Route::get('/coupons/search', [CouponsController::class, 'search'])->name('coupons.search');
