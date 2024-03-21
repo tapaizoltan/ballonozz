@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -52,6 +53,13 @@ class CouponResource extends Resource
                                     ->required()
                                     ->minLength(3)
                                     ->maxLength(255),
+                                
+                                Actions::make([
+                                    Forms\Components\Actions\Action::make('Ellenőrzés')
+                                        ->action(function (Forms\Get $get, Forms\Set $set) {
+                                            //$set('coupon_code', str($get('content'))->words(45, end: ''));
+                                        })
+                                ]),
 
                                 Fieldset::make('Forrás')
                                     ->hiddenOn('edit')
@@ -61,6 +69,7 @@ class CouponResource extends Resource
                                             ->label('Válasszon')
                                             ->inline()
                                             ->required()
+                                            ->default('Meglepkék')
                                             ->disabledOn('edit')
                                             ->options([
                                                 'Meglepkék' => 'Meglepkék',
@@ -95,9 +104,9 @@ class CouponResource extends Resource
                                             ->minValue(1)
                                             ->minLength(1)
                                             ->maxLength(10)
-                                            ->live()
-                                            ->afterStateUpdated(fn ($state) => dd($state))
-                                            //->reactive()
+                                            //->live()
+                                            //->afterStateUpdated(fn ($state) => dd($state))
+                                            ->reactive()
                                             ->suffix(' fő'),
                                             
                                         TextInput::make('children')
@@ -192,7 +201,6 @@ class CouponResource extends Resource
                                     ->maxLength(10),
                                     TextInput::make('body_weight')
                                     ->label('Testsúly')
-                                    //->helperText('Adja meg a légijármű a pilótával együttes MAXIMÁLIS terhetőségét kg-ban.')
                                     ->prefixIcon('iconoir-weight-alt')
                                     ->required()
                                     ->numeric()
