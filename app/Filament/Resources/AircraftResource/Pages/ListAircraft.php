@@ -22,8 +22,8 @@ class ListAircraft extends ListRecords
     {
         return [
             null => Tab::make('Mind'),
-            'Hőlégballon' => Tab::make()->query(fn ($query) => $query->where('type', '0')),
-            'Kisrepülőgép' => Tab::make()->query(fn ($query) => $query->where('type', '1')),
+            'Hőlégballon' => Tab::make()->query(fn ($query) => $query->where('type', '0'))->icon('iconoir-hot-air-balloon'),
+            'Kisrepülőgép' => Tab::make()->query(fn ($query) => $query->where('type', '1'))->icon('iconoir-airplane'),
         ];
     }
 }

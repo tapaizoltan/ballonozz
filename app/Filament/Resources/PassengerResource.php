@@ -21,6 +21,8 @@ class PassengerResource extends Resource
     protected static ?string $modelLabel = 'utas';
     protected static ?string $pluralModelLabel = 'utasok';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -41,6 +43,9 @@ class PassengerResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('date_of_birth')
                     ->label('Születési dátum')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('body_weight')
+                    ->label('Testsúly')
                     ->searchable(),
             ])
             ->filters([
