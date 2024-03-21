@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use App\Models\User;
+use Filament\Forms\Components\Group;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -46,19 +47,25 @@ class UserResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
+                TextInput::make('phone')->label('Telefonszám')
+                    ->maxLength(255),
             
-                TextInput::make('password')->label('Jelszó')
-                    ->password()
-                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->rule(Password::default())
-                    ->confirmed()
-                    ->reactive(),
-                TextInput::make('password_confirmation')->label('Jelszó megerősítése')
-                    ->password()
-                    ->dehydrated(false)
-                    ->visible(fn(\Filament\Forms\Get $get) => filled($get('password'))),
+                Group::make()->schema([
+                    TextInput::make('password')->label('Jelszó')
+                        ->password()
+                        ->revealable()
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                        ->dehydrated(fn($state) => filled($state))
+                        ->required(fn (string $operation): bool => $operation === 'create')
+                        ->rule(Password::default())
+                        ->confirmed()
+                        ->reactive(),
+                    TextInput::make('password_confirmation')->label('Jelszó megerősítése')
+                        ->password()
+                        ->revealable()
+                        ->dehydrated(false)
+                        ->disabled(fn(\Filament\Forms\Get $get) => !filled($get('password'))),
+                ])->columns(2),
                 Select::make('roles')->label('Jogosultságok')
                     ->relationship('roles', 'name')
                     ->multiple()

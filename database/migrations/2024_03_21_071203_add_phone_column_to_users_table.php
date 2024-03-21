@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('coupons', function (Blueprint $table) {
-            $table->bigInteger('user_id')->after('id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('phone')->nullable()->after('email');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('coupons', function (Blueprint $table) {
-            $table->dropColumn(['user_id']);
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['phone']);
         });
     }
 };

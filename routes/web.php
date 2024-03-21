@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Home;
+use Filament\Http\Controllers\Auth\EmailVerificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CouponsController;
 
@@ -13,7 +15,4 @@ use App\Http\Controllers\CouponsController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', Home::class);
