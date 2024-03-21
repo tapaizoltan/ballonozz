@@ -4,7 +4,13 @@ export default {
     "./resources/**/*.blade.php",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'custom-accent': '#F4AC45',
+        'custom-primary': '#09C2EC',
+        'custom-secondary': '#086788'
+      },
+    },
   },
   plugins: [],
 }

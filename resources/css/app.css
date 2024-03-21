@@ -1,3 +1,75 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body{
+    font-family: 'Quicksand';
+    color: #333333;
+    font-weight: 500;
+}
+h1{
+    @apply font-bold text-5xl leading-[60px]
+}
+h2{
+    @apply font-bold text-3xl
+}
+h3{
+    @apply font-bold text-[26px]
+}
+h4{
+    @apply font-bold text-lg
+}
+
+a{
+    @apply text-[#1e73be] text-sm transition duration-300 font-semibold
+}
+a:hover{
+    @apply text-[#333333]
+}
+.bg-custom-filter{
+    background-color: transparent;
+    background-image: linear-gradient(90deg, #086788 20%, #09C2EC85 80%);
+    opacity: 0.7;
+    transition: background 0.3s, border-radius 0.3s, opacity 0.3s;
+}
+.text-shadow{
+    @apply drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]
+}
+.btn{
+    @apply rounded-full py-1.5 px-4 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] uppercase;
+}
+.accent{
+    @apply bg-custom-accent text-white font-bold 
+}
+.primary{
+    @apply bg-custom-primary text-white font-bold
+}
+.card{
+    @apply p-2 rounded-lg w-fit
+}
+
+.fade{
+    background-color: transparent;
+    background-image: linear-gradient(90deg, #FFFFFFCC 55%, #FFFFFF00 95%);
+}
+.nav-item{
+    @apply border-t-2 border-white transition duration-300
+}
+.nav-item:hover {
+    @apply text-custom-primary border-t-2 border-custom-primary
+}
+.nav-item-selected{
+    @apply text-custom-primary border-t-2 border-custom-accent
+}
+
+.section{
+    @apply max-w-[1200px] px-4 grid justify-self-center gap-5 mb-10 w-full
+}
+label{
+    @apply text-lg font-semibold p-2
+}
+label::after{
+    content: ': ';
+}
+input{
+    @apply text-lg font-semibold p-2 rounded-md
+}
