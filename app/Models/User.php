@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
+use Filament\Facades\Filament;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Notifications\Auth\VerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
@@ -45,6 +47,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $notification = new VerifyEmail();
+            $notification->url = Filament::getVerifyEmailUrl($user);
+
+            $user->notify($notification);
+        });
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
