@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.card{
+    @apply px-6 py-3 rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-zinc-900 dark:ring-white/10 transition
+}
+
+.clickable{
+    @apply cursor-pointer hover:bg-zinc-50 dark:hover:bg-white/10
+}
+
+.selected{
+    @apply bg-amber-600 hover:bg-amber-500 dark:bg-amber-500 dark:hover:bg-amber-400 !text-white transition
+}
+
+.quantity{
+    font-size: 11pt; 
+    font-weight: normal;
+}
+.quantity-description{
+    /* color:gray;  */
+    font-size:9pt;
+}
