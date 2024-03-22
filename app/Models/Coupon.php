@@ -6,7 +6,6 @@ use App\Enums\CouponStatus;
 use App\Enums\CouponTypeVip;
 use App\Enums\CouponTypePrivate;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Coupon extends Model
 {
@@ -21,5 +20,10 @@ class Coupon extends Model
     public function passengers()
     {
         return $this->hasMany(Passenger::class);
+    }
+
+    public function ticketType()
+    {
+        return $this->hasOne(Tickettype::class, 'id', 'tickettype_id');
     }
 }
