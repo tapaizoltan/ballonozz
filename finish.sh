@@ -1,4 +1,7 @@
 #! /bin/bash
+project_name=ballon
+project_folder=ballon
+
 today="$(date '+%Y-%m-%d')"
 
 # SQL szerver config
@@ -13,8 +16,8 @@ clear
 # Adatbázis mentés
 echo "MySql adatok mentese..."
 sleep 1
-mysqldump --host="$db_host" --port="$db_port" --user="$db_username" --password="$db_password" $db_database > /database/backup/$db_database-$today.sql
-echo $(date) /database/backup/$db_database-$today.sql: mysqldump >> /storage/logs/daily_finish.log
+mysqldump --host="$db_host" --port="$db_port" --user="$db_username" --password="$db_password" $db_database > var/www/html/$project_folder/database/backup/$db_database-$today.sql
+echo $(date) /database/backup/$db_database-$today.sql: mysqldump >> /var/www/html/$project_folder/storage/logs/daily_finish.log
 echo "MySql adatok mentese... OK!"
 
 # Git repository feltöltés
