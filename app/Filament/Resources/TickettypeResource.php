@@ -66,7 +66,6 @@ class TickettypeResource extends Resource
                                 ->required()
                                 ->numeric()
                                 ->default(0)
-                                ->minValue(1)
                                 ->minLength(1)
                                 ->maxLength(2)
                                 ->suffix(' fő'),

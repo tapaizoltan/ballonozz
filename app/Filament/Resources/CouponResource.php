@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CouponStatus;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Coupon;
@@ -27,6 +28,7 @@ use Filament\Forms\Components\ToggleButtons;
 use App\Filament\Resources\CouponResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CouponResource\RelationManagers;
+use App\Models\Tickettype;
 
 class CouponResource extends Resource
 {
@@ -36,7 +38,7 @@ class CouponResource extends Resource
     protected static ?string $modelLabel = 'kupon';
     protected static ?string $pluralModelLabel = 'kuponok';
 
-    public static function form(Form $form): Form
+        public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -52,14 +54,16 @@ class CouponResource extends Resource
                                     ->placeholder('ABC-'. random_int(100000, 999999))
                                     ->required()
                                     ->minLength(3)
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->disabledOn('edit'),
                                 
-                                Actions::make([
-                                    Forms\Components\Actions\Action::make('Ellenőrzés')
+                                Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
                                         ->action(function (Forms\Get $get, Forms\Set $set) {
                                             //$set('coupon_code', str($get('content'))->words(45, end: ''));
                                         })
-                                ]),
+                                ])
+                                ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb'))
+                                ->hiddenOn('edit'),
 
                                 Fieldset::make('Forrás')
                                     ->hiddenOn('edit')
@@ -71,6 +75,7 @@ class CouponResource extends Resource
                                             ->required()
                                             ->default('Meglepkék')
                                             ->disabledOn('edit')
+                                            ->live()
                                             ->options([
                                                 'Meglepkék' => 'Meglepkék',
                                                 'Ballonozz' => 'Ballonozz.hu',
@@ -90,6 +95,7 @@ class CouponResource extends Resource
                             ])->columnSpan(4),
 
                         Section::make()
+                            ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb'))                
                             ->schema([
                                 Fieldset::make('Utasok száma')
                                     ->schema([
@@ -104,11 +110,7 @@ class CouponResource extends Resource
                                             ->minValue(1)
                                             ->minLength(1)
                                             ->maxLength(10)
-                                            //->live()
-                                            //->afterStateUpdated(fn ($state) => dd($state))
-                                            ->reactive()
-                                            ->suffix(' fő'),
-                                            
+                                            ->suffix(' fő'),  
                                         TextInput::make('children')
                                             ->helperText('Adja meg a kuponhoz tartozó gyermek utasok számát.')
                                             ->label('Gyermek')
@@ -120,7 +122,6 @@ class CouponResource extends Resource
                                             ->minLength(1)
                                             ->maxLength(10)
                                             ->suffix(' fő'),
-
                                     ])->columns(2),
 
                                 Fieldset::make('Extra beállítások')
@@ -146,68 +147,60 @@ class CouponResource extends Resource
 
                                     ])->columns(2),
                             ])->columnSpan(4),
-                        Hidden::make('status')->default('1'),
+                        //Hidden::make('status')->default('0'),
                     ]),
                     
-                    Grid::make(12)
+                Grid::make(12)
+                    ->hiddenOn('create')
+                    ->hidden(fn (GET $get) => ($get('status')!='1') && ($get('status')!='2'))
                     ->schema([
-                        Section::make()    
+                        Section::make()
                         ->schema([
-                                Repeater::make('passengers')
-                                //->hidden(fn (Get $get) => $get('adult') === 0)
+                            Repeater::make('passengers')
                                 ->addActionLabel('Új utas felvétele')
                                 ->label('Utasok')
                                 ->relationship()
-                                //->defaultItems(1)
-
-                                //->defaultItems(fn (Get $get) => $get('adult') ?? 0)
-
-                                //->reorderable(true)
-                                //->reorderableWithButtons()
-                                //->collapsible()
-                                //->collapsed()
-                                //->cloneable()
-                                //->disabled()
-                                //->orderColumn('firstname')
-                                //->itemLabel(fn (array $state): ?string => $state['lastname'] ?? null)
+                                ->maxItems(fn (Get $get) => $get('adult')+$get('children'))
                                 ->schema([
                                     TextInput::make('lastname')
-                                    ->label('Vezetéknév')
-                                    ->prefixIcon('tabler-writing-sign')
-                                    ->placeholder('pl.: Gipsz')
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(255),
+                                        ->disabledOn('create')
+                                        ->label('Vezetéknév')
+                                        ->prefixIcon('tabler-writing-sign')
+                                        ->placeholder('pl.: Gipsz')
+                                        ->required()
+                                        ->minLength(3)
+                                        ->maxLength(255),
                                     TextInput::make('firstname')
-                                    ->label('Keresztnév')
-                                    ->prefixIcon('tabler-writing-sign')
-                                    ->placeholder('Jakab')
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(255),
+                                        ->label('Keresztnév')
+                                        ->prefixIcon('tabler-writing-sign')
+                                        ->placeholder('Jakab')
+                                        ->required()
+                                        ->minLength(3)
+                                        ->maxLength(255),
                                     DatePicker::make('date_of_birth')
-                                    ->label('Születési dátum')
-                                    ->prefixIcon('tabler-calendar')
-                                    ->weekStartsOnMonday()
-                                    ->displayFormat('Y-m-d')
-                                    ->required()
-                                    ->native(false),
+                                        ->label('Születési dátum')
+                                        ->prefixIcon('tabler-calendar')
+                                        ->weekStartsOnMonday()
+                                        ->displayFormat('Y-m-d')
+                                        ->required()
+                                        ->native(false),
                                     TextInput::make('id_card_number')
-                                    ->label('Igazolvány szám')
-                                    ->prefixIcon('tabler-id')
-                                    ->placeholder('432654XX')
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(10),
+                                        ->label('Igazolvány szám')
+                                        ->prefixIcon('tabler-id')
+                                        ->placeholder('432654XX')
+                                        ->required()
+                                        ->minLength(3)
+                                        ->maxLength(10),
                                     TextInput::make('body_weight')
-                                    ->label('Testsúly')
-                                    ->prefixIcon('iconoir-weight-alt')
-                                    ->required()
-                                    ->numeric()
-                                    ->minLength(1)
-                                    ->maxLength(10)
-                                    ->suffix(' kg'),
-                                ])->columns(5),
+                                        ->label('Testsúly')
+                                        ->prefixIcon('iconoir-weight-alt')
+                                        ->required()
+                                        ->numeric()
+                                        ->minLength(1)
+                                        ->maxLength(10)
+                                        ->suffix(' kg'),
+                                ])->defaultItems(3)
+                                ->columns(5),
                             ]),
                         ])->columnSpan(12),
                     ]);
@@ -221,6 +214,8 @@ class CouponResource extends Resource
                     ->label('Kuponkód')
                     ->description(fn (Coupon $record): string => $record->source)
                     ->wrap()
+                    ->icon('tabler-alert-triangle')
+                    ->color('Amber')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('adult')
                     ->label('Utasok')
@@ -245,13 +240,29 @@ class CouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                /*
-                Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
-                */
-                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
+                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link()
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
+            ->recordUrl(
+                /* így is lehet
+                fn (Coupon $record): string => ($record->status==CouponStatus::Used) ?false: route('filament.admin.resources.coupons.edit', ['record' => $record]),
+                vagy úgy ahogy ez alatt van */
+                function($record)
+                {
+                    if ($record->status == CouponStatus::Used)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return route('filament.admin.resources.coupons.edit', ['record' => $record]);
+                    }
+                },
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()->label('Mind törlése'),

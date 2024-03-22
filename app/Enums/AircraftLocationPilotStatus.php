@@ -10,14 +10,16 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Draft = "0"; //tervezett
     case Published = "1"; //publikált
-    case Executed = "2"; //végrehajtott
-    case Deleted = "3"; //törölt
+    case Closed = "2"; //lezárt
+    case Executed = "3"; //végrehajtott
+    case Deleted = "4"; //törölt
 
     public function getLabel(): string
     {
         return match ($this) {
             self::Draft => 'Tervezett',
             self::Published => 'Publikált',
+            self::Closed => 'Lezárt',
             self::Executed => 'Végrehajtott',
             self::Deleted => 'Törölt',
         };
@@ -28,6 +30,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Draft => 'warning',
             self::Published => 'success',
+            self::Closed => 'warning',
             self::Executed => 'info',
             self::Deleted => 'danger',
         };
@@ -38,6 +41,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Draft => 'tabler-player-pause',
             self::Published => 'tabler-player-play',
+            self::Closed => 'tabler-player-play',
             self::Executed => 'tabler-player-stop',
             self::Deleted => 'tabler-playstation-x',
         };
