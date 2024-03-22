@@ -8,38 +8,38 @@ use Filament\Support\Contracts\HasLabel;
 
 enum CouponStatus: string implements HasColor, HasIcon, HasLabel
 {
-    case CanBeUsed = "0"; //felhasználható
-    case UnderProcess = "1"; //feldolgozás alatt
-    case Used = "2"; //felhasznált
-    case Gift = "3"; //ajándék
-
+    case UnderProcess = "0"; //feldolgozás alatt
+    case CanBeUsed = "1"; //felhasználható
+    case Gift = "2"; //ajándék
+    case Used = "3"; //felhasznált
+    
     public function getLabel(): string
     {
         return match ($this) {
-            self::CanBeUsed => 'Felhasználható',
             self::UnderProcess => 'Feldolgozás alatt',
-            self::Used => 'Felhasznált',
+            self::CanBeUsed => 'Felhasználható',
             self::Gift => 'Ajándék',
+            self::Used => 'Felhasznált',
         };
     }
 
     public function getColor(): string | array | null
     {
         return match ($this) {
-            self::CanBeUsed => 'success',
             self::UnderProcess => 'warning',
-            self::Used => 'danger',
+            self::CanBeUsed => 'success',
             self::Gift => 'info',
+            self::Used => 'danger',
         };
     }
 
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::CanBeUsed => 'tabler-discount-check',
             self::UnderProcess => 'tabler-progress-check',
-            self::Used => 'tabler-circle-x',
+            self::CanBeUsed => 'tabler-discount-check',
             self::Gift => 'tabler-gift',   
+            self::Used => 'tabler-circle-x',
         };
     }
 }

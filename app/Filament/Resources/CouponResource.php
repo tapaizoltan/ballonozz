@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CouponStatus;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Coupon;
@@ -37,7 +38,7 @@ class CouponResource extends Resource
     protected static ?string $modelLabel = 'kupon';
     protected static ?string $pluralModelLabel = 'kuponok';
 
-    public static function form(Form $form): Form
+        public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -146,11 +147,12 @@ class CouponResource extends Resource
 
                                     ])->columns(2),
                             ])->columnSpan(4),
-                        Hidden::make('status')->default('1'),
+                        //Hidden::make('status')->default('0'),
                     ]),
                     
                 Grid::make(12)
                     ->hiddenOn('create')
+                    ->hidden(fn (GET $get) => ($get('status')!='1') && ($get('status')!='2'))
                     ->schema([
                         Section::make()
                         ->schema([
@@ -158,19 +160,7 @@ class CouponResource extends Resource
                                 ->addActionLabel('Új utas felvétele')
                                 ->label('Utasok')
                                 ->relationship()
-
-                                //->minItems(2)
                                 ->maxItems(fn (Get $get) => $get('adult')+$get('children'))
-                                //->defaultItems(fn (Get $get) => $get('adult') ?? 0)
-                                //->defaultItems(fn (GET $get): bool => ($get('adult')))
-                                //->reorderable(true)
-                                //->reorderableWithButtons()
-                                //->collapsible()
-                                //->collapsed()
-                                //->cloneable()
-                                //->disabled()
-                                //->itemLabel(fn (array $state): ?string => $state['lastname'] ?? null)
-
                                 ->schema([
                                     TextInput::make('lastname')
                                         ->disabledOn('create')
@@ -224,6 +214,8 @@ class CouponResource extends Resource
                     ->label('Kuponkód')
                     ->description(fn (Coupon $record): string => $record->source)
                     ->wrap()
+                    ->icon('tabler-alert-triangle')
+                    ->color('Amber')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('adult')
                     ->label('Utasok')
@@ -248,13 +240,29 @@ class CouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                /*
-                Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
-                */
-                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
+                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link()
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
+            ->recordUrl(
+                /* így is lehet
+                fn (Coupon $record): string => ($record->status==CouponStatus::Used) ?false: route('filament.admin.resources.coupons.edit', ['record' => $record]),
+                vagy úgy ahogy ez alatt van */
+                function($record)
+                {
+                    if ($record->status == CouponStatus::Used)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return route('filament.admin.resources.coupons.edit', ['record' => $record]);
+                    }
+                },
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()->label('Mind törlése'),
