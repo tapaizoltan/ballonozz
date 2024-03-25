@@ -6,8 +6,9 @@ use App\Models\Coupon;
 use App\Enums\CouponStatus;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
 use Filament\Notifications\Notification;
+use Illuminate\Support\ServiceProvider;
 use Filament\Support\Facades\FilamentView;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,14 +32,10 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::BODY_START,
             function()
             {
-                $coupons = Coupon::query()->with(['passengers'])->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->get();
-                //dd($coupons);
                 $coupons_not_filled_with_passengers = 0;
-                foreach ($coupons as $coupon) 
+                foreach (Coupon::all() as $coupon) 
                 {
-                    $coupon_total_passenger_nums = $coupon->adult + $coupon->children;
-                    $coupon_registered_passeger_nums = $coupon->passengers->count();
-                    if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums)
+                    if (!$coupon->isActive) 
                     {
                         $coupons_not_filled_with_passengers++;
                     }
@@ -56,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
                 //die;
             },
         );
-
+        
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEAD_START,
+            fn (): string => Blade::render('@vite([\'resources/css/checking.css\'])'),
+        );
     }
 }
