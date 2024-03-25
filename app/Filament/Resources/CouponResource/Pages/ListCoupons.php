@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\CouponResource\Pages;
 
-use App\Filament\Resources\CouponResource;
 use Filament\Actions;
+use App\Enums\CouponStatus;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\CouponResource;
 
 class ListCoupons extends ListRecords
 {
@@ -22,9 +23,23 @@ class ListCoupons extends ListRecords
     {
         return [
             null => Tab::make('Mind'),
-            'Felhasználható' => Tab::make()->query(fn ($query) => $query->where('status', '0')->orwhere('status', '4'))->icon('tabler-discount-check')->badgeColor('success'),
-            'Feldolgozás alatt' => Tab::make()->query(fn ($query) => $query->where('status', '1'))->icon('tabler-progress-check')->badgeColor('warning'),
-            'Felhasznált' => Tab::make()->query(fn ($query) => $query->where('status', '2'))->icon('tabler-circle-x')->badgeColor('danger'),
+            'Figyelmeztetések' => Tab::make()
+                            ->query(function($record)
+                            {
+                                $coupon_total_passenger_nums = $record->adult + $record->children;
+                                $coupon_registered_passeger_nums = $record->passengers->count();
+    
+                                if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
+                                {
+                                    
+                                }
+                            })
+                            ->icon('tabler-alert-triangle')
+                            ->badgeColor('danger'),
+
+            'Feldolgozás alatt' => Tab::make()->query(fn ($query) => $query->where('status', '0'))->icon('tabler-progress-check')->badgeColor('warning'),
+            'Felhasználható' => Tab::make()->query(fn ($query) => $query->where('status', '1')->orwhere('status', '2'))->icon('tabler-discount-check')->badgeColor('success'),
+            'Felhasznált' => Tab::make()->query(fn ($query) => $query->where('status', '3'))->icon('tabler-circle-x')->badgeColor('danger'),
         ];
     }
 }

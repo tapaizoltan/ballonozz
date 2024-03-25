@@ -22,4 +22,6 @@ class Coupon extends Model
     {
         return $this->hasMany(Passenger::class);
     }
+
+        
 }

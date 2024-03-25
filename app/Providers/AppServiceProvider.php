@@ -33,21 +33,23 @@ class AppServiceProvider extends ServiceProvider
             {
                 $coupons = Coupon::query()->with(['passengers'])->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->get();
                 //dd($coupons);
-                $hibasak = 0;
+                $coupons_not_filled_with_passengers = 0;
                 foreach ($coupons as $coupon) 
                 {
-                    $all_passengers_of_coupon = $coupon->adult + $coupon->children;
-                    $kitoltott = $coupon->passengers->count();
-                    if ($all_passengers_of_coupon != $kitoltott)
+                    $coupon_total_passenger_nums = $coupon->adult + $coupon->children;
+                    $coupon_registered_passeger_nums = $coupon->passengers->count();
+                    if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums)
                     {
-                        $hibasak++;
+                        $coupons_not_filled_with_passengers++;
                     }
                 }
-                if($hibasak>0)
+                if($coupons_not_filled_with_passengers>0)
                 {
                     Notification::make()
-                    ->title('Hiányzó utas(ok)')
-                    ->success()
+                    ->title('Hiányzó utasadatok!')
+                    ->iconColor('danger')
+                    ->color('danger')
+                    ->icon('tabler-alert-triangle')
                     ->persistent()
                     ->send();
                 }

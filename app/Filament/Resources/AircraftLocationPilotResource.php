@@ -80,20 +80,23 @@ class AircraftLocationPilotResource extends Resource
                                     ->options([
                                         '0' => 'Tervezett',
                                         '1' => 'Publikált',
-                                        '2' => 'Végrehajtott',
-                                        '3' => 'Törölt',
+                                        '2' => 'Véglegesített',
+                                        '3' => 'Végrehajtott',
+                                        '4' => 'Törölt',
                                     ])
                                     ->colors([
                                         '0' => 'warning',
                                         '1' => 'success',
-                                        '2' => 'info',
-                                        '3' => 'danger',
+                                        '2' => 'success',
+                                        '3' => 'info',
+                                        '4' => 'danger',
                                     ])
                                     ->icons([
                                         '0' => 'tabler-player-pause',
                                         '1' => 'tabler-player-play',
-                                        '2' => 'tabler-player-stop',
-                                        '3' => 'tabler-playstation-x',
+                                        '2' => 'tabler-flag-check',
+                                        '3' => 'tabler-player-stop',
+                                        '4' => 'tabler-playstation-x',
                                     ])
                                     ->default(0),
                                 ])->columns(1),
