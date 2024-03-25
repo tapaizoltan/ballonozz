@@ -6,6 +6,7 @@ use App\Enums\CouponStatus;
 use App\Enums\CouponTypeVip;
 use App\Enums\CouponTypePrivate;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Coupon extends Model
 {
@@ -25,5 +26,19 @@ class Coupon extends Model
     public function ticketType()
     {
         return $this->hasOne(Tickettype::class, 'id', 'tickettype_id');
+    }
+
+    protected function isActive(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                
+                if (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children == $this->passengers->count())) {
+                    return true;
+                }
+
+                return false;
+            },
+        );
     }
 }
