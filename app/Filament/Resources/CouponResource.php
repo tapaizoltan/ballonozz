@@ -2,18 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\CouponStatus;
 use Filament\Forms;
 use Filament\Tables;
+use Faker\Core\Color;
 use App\Models\Coupon;
 use Faker\Core\Number;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use App\Models\Passenger;
+use App\Models\Tickettype;
 use Filament\Tables\Table;
+use App\Enums\CouponStatus;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -21,6 +24,7 @@ use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,7 +32,6 @@ use Filament\Forms\Components\ToggleButtons;
 use App\Filament\Resources\CouponResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CouponResource\RelationManagers;
-use App\Models\Tickettype;
 
 class CouponResource extends Resource
 {
@@ -58,9 +61,18 @@ class CouponResource extends Resource
                                     ->disabledOn('edit'),
                                 
                                 Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
-                                        ->action(function (Forms\Get $get, Forms\Set $set) {
-                                            //$set('coupon_code', str($get('content'))->words(45, end: ''));
-                                        })
+                                        ->action(
+                                            function(Get $get)
+                                            {
+                                                $checkable_coupon_code = $get('coupon_code');
+                                                //dd($checkable_coupon_code);
+                                                $finding = Coupon::where('coupon_code', $checkable_coupon_code)->first();
+                                                if (!empty($finding))
+                                                {
+                                                    
+                                                }
+                                            }
+                                        )
                                 ])
                                 ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb'))
                                 ->hiddenOn('edit'),
@@ -209,12 +221,44 @@ class CouponResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            /*->heading('Clients')->description('ez egy teszt')
+            ->striped()*/
             ->columns([
+                IconColumn::make('alert')
+                ->label('')
+                ->width(0)
+                ->default('')
+                ->color('danger')
+                ->size(IconColumn\IconColumnSize::Medium)
+                ->icon(
+                    function($record)
+                        {
+                            $coupon_total_passenger_nums = $record->adult + $record->children;
+                            $coupon_registered_passeger_nums = $record->passengers->count();
+
+                            if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
+                            {
+                                return 'tabler-alert-triangle';
+                            }
+                        }
+                    )
+                    ->tooltip(
+                        function($record)
+                            {
+                                $coupon_total_passenger_nums = $record->adult + $record->children;
+                                $coupon_registered_passeger_nums = $record->passengers->count();
+    
+                                if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
+                                {
+                                    return 'Hiányzó utasadatok!';
+                                }
+                            }
+                        ),
+                    //->tooltip(),
                 Tables\Columns\TextColumn::make('coupon_code')
                     ->label('Kuponkód')
                     ->description(fn (Coupon $record): string => $record->source)
                     ->wrap()
-                    ->icon('tabler-alert-triangle')
                     ->color('Amber')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('adult')

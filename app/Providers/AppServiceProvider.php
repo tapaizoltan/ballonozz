@@ -32,19 +32,21 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::BODY_START,
             function()
             {
-                $hibasak = 0;
+                $coupons_not_filled_with_passengers = 0;
                 foreach (Coupon::all() as $coupon) 
                 {
                     if (!$coupon->isActive) 
                     {
-                        $hibasak++;
+                        $coupons_not_filled_with_passengers++;
                     }
                 }
-                if($hibasak>0)
+                if($coupons_not_filled_with_passengers>0)
                 {
                     Notification::make()
-                    ->title('Hiányzó utas(ok)')
-                    ->success()
+                    ->title('Hiányzó utasadatok!')
+                    ->iconColor('danger')
+                    ->color('danger')
+                    ->icon('tabler-alert-triangle')
                     ->persistent()
                     ->send();
                 }
