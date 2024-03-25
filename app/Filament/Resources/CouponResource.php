@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use App\Enums\CouponStatus;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Filament\Actions\CreateAction;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
@@ -25,10 +26,13 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\IconColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\CouponResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CouponResource\RelationManagers;
@@ -41,7 +45,14 @@ class CouponResource extends Resource
     protected static ?string $modelLabel = 'kupon';
     protected static ?string $pluralModelLabel = 'kuponok';
 
-        public static function form(Form $form): Form
+    /*
+    public static function canCreate(): bool
+    {
+       return false;
+    }
+    */
+    
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -59,23 +70,6 @@ class CouponResource extends Resource
                                     ->minLength(3)
                                     ->maxLength(255)
                                     ->disabledOn('edit'),
-                                
-                                Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
-                                        ->action(
-                                            function(Get $get)
-                                            {
-                                                $checkable_coupon_code = $get('coupon_code');
-                                                //dd($checkable_coupon_code);
-                                                $finding = Coupon::where('coupon_code', $checkable_coupon_code)->first();
-                                                if (!empty($finding))
-                                                {
-                                                    
-                                                }
-                                            }
-                                        )
-                                ])
-                                ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb'))
-                                ->hiddenOn('edit'),
 
                                 Fieldset::make('Forrás')
                                     ->hiddenOn('edit')
@@ -104,6 +98,33 @@ class CouponResource extends Resource
                                                 'Egyéb' => 'info',
                                             ]),
                                     ])->columns(1),
+                                
+                                    Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
+                                    ->action(
+                                        function(Get $get)
+                                        {
+                                            $checkable_coupon_code = $get('coupon_code');
+                                            $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
+                                            dd($finding_match);
+                                            if (!empty($finding_match))
+                                            {
+                                                //Ez fut le ha már van ilyen kupon a táblában
+                                            }
+                                            if (empty($finding_match))
+                                            {
+                                                //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
+                                            }
+                                        }
+                                    )
+                                    ])
+                                    ->hiddenOn('edit')
+                                    ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb')),
+
+                                    Actions::make([Action::make('Létrehozás')
+                                     ])
+                                        ->hiddenOn('edit')
+                                        ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb')),
+                            
                             ])->columnSpan(4),
 
                         Section::make()
@@ -291,6 +312,9 @@ class CouponResource extends Resource
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
                 ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
+            ->headerActions([
+
+            ])
             ->recordUrl(
                 /* így is lehet
                 fn (Coupon $record): string => ($record->status==CouponStatus::Used) ?false: route('filament.admin.resources.coupons.edit', ['record' => $record]),
@@ -335,6 +359,6 @@ class CouponResource extends Resource
         /** @var class-string<Model> $modelClass */
         $modelClass = static::$model;
 
-        return (string) $modelClass::where('status', '0')->count();
+        return (string) $modelClass::where('status', '0')->count(); 
     }
 }
