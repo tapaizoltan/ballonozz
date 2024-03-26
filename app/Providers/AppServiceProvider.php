@@ -44,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
                 {
                     Notification::make()
                     ->title('Hiányzó utasadatok!')
+                    ->body('Repülésre történő jelentkezéshez töltse fel elérhető kuponja utasainak adatait.')
                     ->iconColor('danger')
                     ->color('danger')
                     ->icon('tabler-alert-triangle')

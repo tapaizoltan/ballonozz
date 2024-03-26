@@ -16,6 +16,7 @@ class ListCoupons extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            /*Actions\Action::make('edit')->url(route('posts.edit', ['post' => $this->post])),*/
         ];
     }
 
@@ -23,18 +24,7 @@ class ListCoupons extends ListRecords
     {
         return [
             null => Tab::make('Mind'),
-            'Figyelmeztetések' => Tab::make()->query(
-                function($record)
-                {
-                    $coupon_total_passenger_nums = $record->adult + $record->children;
-                    $coupon_registered_passeger_nums = $record->passengers->count();
-                    dd($coupon_total_passenger_nums);
-
-                    if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
-                    {
-
-                    }
-                })
+            'Figyelmeztetések' => Tab::make()->query(fn ($query) => $query->MissingData())
                 ->icon('tabler-alert-triangle')
                 ->badgeColor('danger'),
             'Feldolgozás alatt' => Tab::make()->query(fn ($query) => $query->where('status', '0'))->icon('tabler-progress-check')->badgeColor('warning'),
