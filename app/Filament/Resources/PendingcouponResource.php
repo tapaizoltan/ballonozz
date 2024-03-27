@@ -6,13 +6,18 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Enums\CouponStatus;
 use App\Models\Pendingcoupon;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PendingcouponResource\Pages;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
+use Laravel\SerializableClosure\Serializers\Native;
 
 class PendingcouponResource extends Resource
 {
@@ -46,10 +51,22 @@ class PendingcouponResource extends Resource
                         return '<p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->adult . '</b> felnőtt</p><p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->children . '</b> gyerek</p>';
                     })->html()
                     ->searchable(),
-                TextColumn::make('status')
-                    ->label('Státusz')
+                TextColumn::make('vip')
+                    ->label(false)
                     ->badge()
-                    ->size('md'),
+                    ->width(30)
+                    ->size('sm'),
+                TextColumn::make('private')
+                    ->label(false)
+                    ->badge()
+                    ->size('sm'),
+                SelectColumn::make('status')
+                ->options([
+                    CouponStatus::UnderProcess->value => CouponStatus::UnderProcess->getSelectLabel(),
+                    CouponStatus::CanBeUsed->value => CouponStatus::CanBeUsed->getSelectLabel(),
+                ])
+                ->selectablePlaceholder(false),
+
             ])
             ->filters([
                 //
@@ -69,6 +86,12 @@ class PendingcouponResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->underProcess();
     }
 
     public static function getPages(): array

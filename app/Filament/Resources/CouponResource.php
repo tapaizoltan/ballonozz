@@ -270,6 +270,7 @@ class CouponResource extends Resource
                 TextColumn::make('vip')
                     ->label(false)
                     ->badge()
+                    ->width(30)
                     ->size('sm'),
                 TextColumn::make('private')
                     ->label(false)

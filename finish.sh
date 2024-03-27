@@ -21,12 +21,13 @@ echo $(date) /database/backup/$db_database-$today.sql: mysqldump >> /var/www/htm
 echo "MySql adatok mentese... OK!"
 
 # Git repository feltöltés
-echo "Napi munka feltoltese a Git repository-ba..."
-sleep 1
-git add --all
-git commit -m "Napi munka feltoltese a Git repository-ba."
-git fetch
-git push -u origin main
-echo $(date) origin main: git push >> /storage/logs/daily_finish.log
-echo "Napi munka feltoltese a Git repository-ba... OK!"
-echo "Jo pihenest! ;-)"
+
+# echo "Napi munka feltoltese a Git repository-ba..."
+# sleep 1
+# git add --all
+# git commit -m "Napi munka feltoltese a Git repository-ba."
+# git fetch
+# git push -u origin main
+# echo $(date) origin main: git push >> /storage/logs/daily_finish.log
+# echo "Napi munka feltoltese a Git repository-ba... OK!"
+# echo "Jo pihenest! ;-)"
