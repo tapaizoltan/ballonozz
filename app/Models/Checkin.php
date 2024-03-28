@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Checkin extends Model
 {
+
+    // NE töröld ezt a Model-t!
+    // Ezt a Model-t használjuk az `App\Filament\Pages\Checkin.php`-ben a `checkIn` és `checkOut` eljárásoknál;
+
     use HasFactory;
 
     public $timestamps = false;
