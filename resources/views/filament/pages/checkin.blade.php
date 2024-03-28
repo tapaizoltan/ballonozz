@@ -48,7 +48,7 @@
             <span class="pl-2 pt-1.5 sm:pt-2.5">{{ $this->coupon->source }} kupon</span>
         </div>
         <div class="flex gap-5 w-full p-2 overflow-x-auto">
-            @forelse ($this->dates as $date)
+            @foreach ($this->dates as $date)
                 @php
                     $selected = $date->isChecked($this->coupon->id);
                     $finalized = $date->status == App\Enums\AircraftLocationPilotStatus::Finalized;
@@ -111,15 +111,18 @@
                     </div>
 
                 </div>
-            @empty
+            @endforeach
+        
+            @if (!$this->dates->count())
                 <div class="card w-full">
                     <div class="flex justify-center">
                         <x-heroicon-o-x-circle class="w-8 justify-self-end"/>
                         <span class="text-lg ps-2 pt-0.5 justify-self-start">Jelenleg nincs kuponod. Nézz vissza később!</span>
                     </div>
                 </div>
-            @endforelse
+            @else
+                </div>
+            @endif
         </div>
-    </div>
     @endif
 </x-filament-panels::page>
