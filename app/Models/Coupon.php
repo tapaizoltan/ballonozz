@@ -66,7 +66,6 @@ class Coupon extends Model
         $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
     }
 
-    //isalreadyused
     protected function isUsed(): Attribute
     {
         return Attribute::make(
