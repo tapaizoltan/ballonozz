@@ -50,14 +50,16 @@
         <div class="flex gap-5 w-full p-2 overflow-x-auto">
             @forelse ($this->dates as $date)
                 @php
-                    $checked = $date->isChecked($this->coupon->id)
+                    $selected = $date->isChecked($this->coupon->id);
+                    $finalized = $date->status == App\Enums\AircraftLocationPilotStatus::Finalized;
+                    $checked = $date->coupons()->find($this->coupon)?->pivot->status == 1;
                 @endphp
                 @if ($loop->first)
                     @php
                         $fly_at = $date->date;
                     @endphp
                     <div class="grid grid-flow-col gap-2">
-                        <div><div class="card max-h-min">
+                        <div><div class="card max-h-min !py-2">
                         
                     <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d.') }}</div>
                 @elseif($fly_at != $date->date && $fly_at != null)
@@ -66,37 +68,49 @@
                     @endphp
                     </div></div></div><div class="grid grid-flow-col gap-2">
                         <div>
-                        <div class="card max-h-min">
+                        <div class="card max-h-min !py-2">
                     <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d.') }}</div>
                 @endif
 
-                <div class="card mb-4 grid gap-2 min-w-max border-2  @if($checked) border-green-500/80 @else dark:border-white/20 @endif">
-                    
-                    <div class="pt-1.5">{{ Carbon\Carbon::parse($date->time)->format('H:i') }}</div>
+                <div class="card mb-4 grid gap-2 min-w-max border-2 @if($selected && !$finalized && !$this->coupon->is_used || $finalized && $selected && $checked) border-green-500/80 @else dark:border-white/20 @endif @if($selected && $finalized && $checked) bg-green-600/10 dark:bg-[#4ade80]/10 @elseif($finalized) bg-zinc-200/20 text-zinc-400 @endif">
+                    <div class="flex justify-between">
+                        <div>{{ Carbon\Carbon::parse($date->time)->format('H:i') }}</div>
+                        @if ($date->status == App\Enums\AircraftLocationPilotStatus::Finalized)
+                            <div class="@if($selected && $finalized && $checked) text-green-600 @elseif($finalized) text-zinc-400 @endif">@svg('tabler-flag-check')</div>
+                        @endif
+                    </div>
                     
                     <div class="flex gap-2">
-                        <x-heroicon-c-map-pin class="w-6 text-red-500"/>
+                        <div class="@if($selected && !$finalized || $finalized && $selected && $checked || !$selected && !$finalized) text-red-500 @else text-red-500/50 @endif"">
+                            <x-heroicon-c-map-pin class="w-6"/>
+                        </div>
                         <span>{{ $date->location->name }}</span>
                     </div>
+
                     <div class="flex gap-2">
-                        <span class="text-blue-400">@svg($date->aircraft->type->getIcon())</span>
+                        <span class="@if($selected && !$finalized || $finalized && $selected && $checked || !$selected && !$finalized) text-blue-400 @else text-blue-400/50 @endif">@svg($date->aircraft->type->getIcon())</span>
                         <span>{{ $date->aircraft->name }}</span>
                     </div>
+
                     <div class="flex justify-between">
                         <div class="flex text-zinc-400 justify-self-center">
                             <x-heroicon-m-users class="w-5"/>
-                            <span class="ps-1 pt-2 text-sm font-semibold">{{ $date->coupons->sum('adult') + $date->coupons->sum('children') }}</span>
+                            <span class="ps-1 py-2 text-sm font-semibold">{{ $date->coupons->sum('adult') + $date->coupons->sum('children') }}</span>
                         </div>
                         <div>
-                            @if(!$checked)
+                            @if($selected && $finalized && $checked) 
+                                <div class="text-green-600 dark:text-green-400/80 font-semibold p-1.5">Résztveszek</div>
+                            @elseif($finalized) 
+                                <div class="text-zinc-400 font-semibold p-1.5">Lezárva</div>
+                            @elseif(!$selected && !$this->coupon->is_used)
                                 <x-filament::button wire:click="checkIn({{ $date->id }})">Jelentkezem</x-filament::button>
-                            @else
-                                <x-filament::button class="!bg-red-600" wire:click="checkOut({{ $date->id }})">Lejelentkezem</x-filament::button>
+                            @elseif($selected && !$this->coupon->is_used)
+                                <x-filament::button class="!bg-red-600 hover:!bg-red-700" wire:click="checkOut({{ $date->id }})">Lejelentkezem</x-filament::button>
                             @endif
                         </div>
                     </div>
+
                 </div>
-                
             @empty
                 <div class="card w-full">
                     <div class="flex justify-center">

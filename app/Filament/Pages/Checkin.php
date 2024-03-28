@@ -13,7 +13,7 @@ class Checkin extends Page
 {
     public $coupons;
     public $coupon_id;
-    protected static ?string $title = 'Felhasználható kupon(ok)';
+    protected static ?string $title = 'Kuponjaid';
     protected static ?string $navigationLabel = 'Jelentkezések';
     protected static ?string $navigationIcon = 'iconoir-user-badge-check';
     protected static string $view = 'filament.pages.checkin';
@@ -45,7 +45,7 @@ class Checkin extends Page
         }
 
         return AircraftLocationPilot::query()
-                ->where('status', AircraftLocationPilotStatus::Published)
+                ->whereIn('status', [AircraftLocationPilotStatus::Published, AircraftLocationPilotStatus::Finalized])
                 ->whereIn('aircraft_id', $this->coupon->ticketType->aircrafts->pluck('id')->toArray())
                 ->orderBy('date')
                 ->orderBy('time')

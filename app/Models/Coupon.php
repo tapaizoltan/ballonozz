@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CouponStatus;
 use App\Enums\CouponTypeVip;
+use Filament\Actions\Action;
 use App\Enums\CouponTypePrivate;
 use App\Models\Scopes\ClientScope;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,11 @@ class Coupon extends Model
         return $this->hasMany(Passenger::class);
     }
 
+    public function aircraftLocationPilots()
+    {
+        return $this->belongsToMany(AircraftLocationPilot::class, 'checkins', 'coupon_id', 'aircraft_location_pilot_id')->withPivot('status');
+    }
+
     public function ticketType()
     {
         return $this->hasOne(Tickettype::class, 'id', 'tickettype_id');
@@ -42,6 +48,27 @@ class Coupon extends Model
 
                 return false;
             },
+        );
+    }
+
+    //isalreadyused
+    protected function isUsed(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (count($this->aircraftLocationPilots->where('pivot.status', 1))) {
+                    return true;
+                }
+
+                return false;
+            },
+        );
+    }    
+
+    protected function membersCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->adult + $this->children,
         );
     }
 }

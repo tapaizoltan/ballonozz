@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class AircraftLocationPilot extends Model
 {
     //use HasFactory;
+
+    protected $with = ['coupons'];
     protected $casts = [
         'status' => AircraftLocationPilotStatus::class,
     ];
@@ -31,7 +33,7 @@ class AircraftLocationPilot extends Model
 
     public function coupons()
     {
-        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('coupon_id');
+        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at');
     }
 
     public function isChecked($coupon_id): bool

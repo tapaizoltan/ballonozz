@@ -56,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
         
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_START,
-            fn (): string => Blade::render('@vite([\'resources/css/checking.css\'])'),
+            fn (): string => Blade::render('@vite([\'resources/css/checking.css\', \'resources/css/list-checkins.css\'])'),
         );
     }
 }
