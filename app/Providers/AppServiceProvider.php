@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Coupon;
 use App\Enums\CouponStatus;
+use App\Filament\Resources\CouponResource;
+use Filament\Notifications\Actions\Action;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
@@ -32,27 +34,40 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::BODY_START,
             function()
             {
-                $coupons_not_filled_with_passengers = 0;
-                foreach (Coupon::all() as $coupon) 
-                {
-                    if (!$coupon->isActive) 
+                if (!auth()->user()->hasRole(['admin', 'super_admin'])) {
+                    $coupons_not_filled_with_passengers = 0;
+                    foreach (Coupon::all() as $coupon) 
                     {
-                        $coupons_not_filled_with_passengers++;
+                        if (!$coupon->isActive) 
+                        {
+                            $coupons_not_filled_with_passengers++;
+                        }
+                    }
+                    if($coupons_not_filled_with_passengers>0)
+                    {
+                        Notification::make()
+                        ->title('Hiányzó utasadatok!')
+                        ->body('Repülésre történő jelentkezéshez töltse fel elérhető kuponja utasainak adatait.')
+                        ->iconColor('danger')
+                        ->color('danger')
+                        ->icon('tabler-alert-triangle')
+                        ->persistent()
+                        ->actions(function () {
+                            if (str_contains($_SERVER['APP_URL'] . $_SERVER['REQUEST_URI'], CouponResource::getUrl())) {
+                                return [];
+                            }
+                            
+                            return [
+                                Action::make('redirect')
+                                    ->button()
+                                    ->label('Ugrás a kitöltendő kuponokhoz')
+                                    ->url(CouponResource::getUrl() . '?activeTab=Figyelmeztet%C3%A9sek')
+                            ];
+                        })
+                        ->send();
                     }
                 }
-                if($coupons_not_filled_with_passengers>0)
-                {
-                    Notification::make()
-                    ->title('Hiányzó utasadatok!')
-                    ->body('Repülésre történő jelentkezéshez töltse fel elérhető kuponja utasainak adatait.')
-                    ->iconColor('danger')
-                    ->color('danger')
-                    ->icon('tabler-alert-triangle')
-                    ->persistent()
-                    ->send();
-                }
-                //die;
-            },
+            }
         );
         
         FilamentView::registerRenderHook(
