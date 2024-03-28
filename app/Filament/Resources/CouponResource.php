@@ -26,6 +26,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -245,58 +246,37 @@ class CouponResource extends Resource
             /*->heading('Clients')->description('ez egy teszt')
             ->striped()*/
             ->columns([
-                IconColumn::make('alert')
-                ->label('')
-                ->width(0)
-                ->default('')
-                ->color('danger')
-                ->size(IconColumn\IconColumnSize::Medium)
-                ->icon(
-                    function($record)
-                        {
-                            $coupon_total_passenger_nums = $record->adult + $record->children;
-                            $coupon_registered_passeger_nums = $record->passengers->count();
-
-                            if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
-                            {
-                                return 'tabler-alert-triangle';
-                            }
-                        }
-                    )
-                    ->tooltip(
-                        function($record)
-                            {
-                                $coupon_total_passenger_nums = $record->adult + $record->children;
-                                $coupon_registered_passeger_nums = $record->passengers->count();
-    
-                                if ($coupon_total_passenger_nums != $coupon_registered_passeger_nums && $record->status != CouponStatus::Used && $record->status != CouponStatus::UnderProcess)
-                                {
-                                    return 'Hiányzó utasadatok!';
-                                }
-                            }
-                        ),
-                    //->tooltip(),
-                Tables\Columns\TextColumn::make('coupon_code')
+                IconColumn::make('missing_data')
+                    ->label('')
+                    ->width(0)
+                    ->boolean()
+                    ->trueIcon('tabler-alert-triangle')
+                    ->size(IconColumn\IconColumnSize::Medium)
+                    ->trueColor('danger')
+                    ->falseIcon('')
+                    ->tooltip(fn($state) => $state ? 'Hiányzó utasadatok!':''),
+                TextColumn::make('coupon_code')
                     ->label('Kuponkód')
                     ->description(fn (Coupon $record): string => $record->source)
                     ->wrap()
                     ->color('Amber')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('adult')
+                TextColumn::make('adult')
                     ->label('Utasok')
                     ->formatStateUsing(function ($state, Coupon $payload) {
                         return '<p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->adult . '</b> felnőtt</p><p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->children . '</b> gyerek</p>';
                     })->html()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('vip')
+                TextColumn::make('vip')
+                    ->label(false)
+                    ->badge()
+                    ->width(30)
+                    ->size('sm'),
+                TextColumn::make('private')
                     ->label(false)
                     ->badge()
                     ->size('sm'),
-                Tables\Columns\TextColumn::make('private')
-                    ->label(false)
-                    ->badge()
-                    ->size('sm'),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Státusz')
                     ->badge()
                     ->size('md'),
@@ -359,6 +339,6 @@ class CouponResource extends Resource
         /** @var class-string<Model> $modelClass */
         $modelClass = static::$model;
 
-        return (string) $modelClass::where('status', '0')->count(); 
+        return (string) $modelClass::where('status', '1')->orwhere('status', '2')->count(); 
     }
 }

@@ -2,25 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AircraftResource\Pages;
-use App\Filament\Resources\AircraftResource\RelationManagers;
-use App\Models\Aircraft;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Get;
+use App\Models\Aircraft;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
 
 /* saját use-ok */
+use Filament\Forms\Components\Fieldset;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Support\Contracts\HasLabel;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Fieldset;
+use App\Filament\Resources\AircraftResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\AircraftResource\RelationManagers;
 
 class AircraftResource extends Resource
 {
@@ -49,77 +51,111 @@ class AircraftResource extends Resource
                             ->required()
                             ->minLength(3)
                             ->maxLength(255),
-                    ])->columnSpan(3),
-                ]), 
+                            Forms\Components\Fieldset::make('Besorolás')
+                            ->schema([
+                                Forms\Components\ToggleButtons::make('type')
+                                    /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Válassza ki a légijármű típusát.')*/
+                                    ->helperText('Válassza ki a légijármű típusát.')
+                                    ->label('Típus')
+                                    ->inline()
+                                    /*->grouped()*/
+                                    ->required()
+                                    ->options([
+                                        '0' => 'Hőlégballon',
+                                        '1' => 'Kisrepülő',
+                                    ])
+                                    ->icons([
+                                        '0' => 'iconoir-hot-air-balloon',
+                                        '1' => 'iconoir-airplane',
+                                    ])
+                                    ->colors([
+                                        '0' => 'info',
+                                        '1' => 'info',
+                                    ])
+                                    ->default(0),
+                                Forms\Components\TextInput::make('registration_number')
+                                    /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
+                                    ->helperText('Ide a légijármű lajstromjelét adja meg.')
+                                    ->label('Lajstrom-jel')
+                                    ->prefixIcon('tabler-license')
+                                    ->placeholder('HA-1234 vagy HA-ABCD')
+                                    ->required()
+                                    ->minLength(3)
+                                    ->maxLength(10),
+                                ])->columns(2),
+                    ])->columnSpan(2),
 
-                Grid::make(4)
-                ->schema([
                     Section::make() 
                     ->schema([
-                        Forms\Components\Fieldset::make('Besorolás')
+                        Forms\Components\Fieldset::make('Terhelhetőség')
                         ->schema([
-                            Forms\Components\ToggleButtons::make('type')
-                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Válassza ki a légijármű típusát.')*/
-                                ->helperText('Válassza ki a légijármű típusát.')
-                                ->label('Típus')
-                                ->inline()
-                                /*->grouped()*/
-                                ->required()
-                                ->options([
-                                    '0' => 'Hőlégballon',
-                                    '1' => 'Kisrepülő',
-                                ])
-                                ->icons([
-                                    '0' => 'iconoir-hot-air-balloon',
-                                    '1' => 'iconoir-airplane',
-                                ])
-                                ->colors([
-                                    '0' => 'info',
-                                    '1' => 'info',
-                                ])
-                                ->default(0),
-                            Forms\Components\TextInput::make('registration_number')
-                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
-                                ->helperText('Ide a légijármű lajstromjelét adja meg.')
-                                ->label('Lajstrom-jel')
-                                ->prefixIcon('tabler-license')
-                                ->placeholder('HA-1234 vagy HA-ABCD')
-                                ->required()
-                                ->minLength(3)
-                                ->maxLength(10),
-                            ])->columns(2)
-                        ])->columnSpan(2),
+                            Forms\Components\TextInput::make('number_of_person')
+                            ->helperText('Adja meg a MAXIMÁLISAN szállítható személyek számát.')
+                            ->label('Szállítható személyek száma')
+                            ->prefixIcon('fluentui-people-team-24-o')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' fő'),
 
-                        Section::make() 
-                        ->schema([
-                            Forms\Components\Fieldset::make('Terhelhetőség')
+                            Forms\Components\TextInput::make('payload_capacity')
+                            ->helperText('Adja meg a légijármű a pilótával együttes MAXIMÁLIS terhetőségét kg-ban.')
+                            ->label('Terhetőség')
+                            ->prefixIcon('tabler-weight')
+                            ->required()
+                            ->numeric()
+                            ->default(0)
+                            ->step(10)
+                            ->minLength(2)
+                            ->maxLength(10)
+                            ->suffix(' kg'),
+
+                        ])->columns(2),
+
+                        Forms\Components\Fieldset::make('Extra beállítások')
                             ->schema([
-                                Forms\Components\TextInput::make('number_of_person')
-                                ->helperText('Adja meg a MAXIMÁLISAN szállítható személyek számát.')
-                                ->label('Szállítható személyek száma')
-                                ->prefixIcon('fluentui-people-team-24-o')
-                                ->required()
-                                ->numeric()
-                                ->default(0)
-                                ->minLength(1)
-                                ->maxLength(10)
-                                ->suffix(' fő'),
+                                Toggle::make('unlimited')
+                                    ->inline(false)
+                                    ->onColor('success')
+                                    ->onIcon('tabler-check')
+                                    ->offIcon('tabler-x')
+                                    ->helperText('Amennyiben ez be van kapcsolva, erre a légijárműre korlátlan számú utas jelentkezhet.')
+                                    ->label('Korlátlan utasszám')
+                                    ->default(0)
+                                    ->live()
+                                    ->disabled(fn (GET $get): bool => ($get('vip')!='0') || ($get('private')!='0'))
+                                    ->dehydrated(true),
 
-                                Forms\Components\TextInput::make('payload_capacity')
-                                ->helperText('Adja meg a légijármű a pilótával együttes MAXIMÁLIS terhetőségét kg-ban.')
-                                ->label('Terhetőség')
-                                ->prefixIcon('tabler-weight')
-                                ->required()
-                                ->numeric()
-                                ->default(0)
-                                ->step(10)
-                                ->minLength(2)
-                                ->maxLength(10)
-                                ->suffix(' kg'),
+                                Toggle::make('vip')
+                                    ->inline(false)
+                                    ->onColor('success')
+                                    ->onIcon('tabler-check')
+                                    ->offIcon('tabler-x')
+                                    ->helperText('Kapcsolja be amennyiben ez a légijármű VIP jegytípussal is használható.')
+                                    ->label('VIP')
+                                    ->default(0)
+                                    ->live()
+                                    ->disabled(fn (GET $get): bool => ($get('unlimited')!='0'))
+                                    ->dehydrated(true),
 
-                            ])->columns(2)
-                        ])->columnSpan(2)
-                ]),
+                                Toggle::make('private')
+                                    ->inline(false)
+                                    ->onColor('success')
+                                    ->onIcon('tabler-check')
+                                    ->offIcon('tabler-x')
+                                    ->helperText('Kapcsolja be amennyiben ez a légijármű PRIVÁT jegytípussal is használható.')
+                                    ->label('Privát')
+                                    ->default(0)
+                                    ->live()
+                                    ->disabled(fn (GET $get): bool => ($get('unlimited')!='0'))
+                                    ->dehydrated(true),
+
+                            ])->columns(3),
+
+                    ])->columnSpan(2),
+                ]), 
             ]);
     }
 
@@ -127,16 +163,49 @@ class AircraftResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Megnevezés')->searchable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('name')->label('Megnevezés')->searchable(),
+                TextColumn::make('type')
                     ->label('Típus')
                     ->badge()
                     ->size('md'),
-                Tables\Columns\TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable(),
-                Tables\Columns\TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
+                TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable(),
+                TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
                     ->formatStateUsing(fn($state)=>$state.' fő'),
-                Tables\Columns\TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
+                TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
                     ->formatStateUsing(fn($state)=>$state.' kg'),
+                IconColumn::make('unlimited')
+                    ->label('Extra')
+                    ->tooltip('Korlátlan utasszám felvétele')
+                    ->boolean()
+                    ->trueIcon('tabler-infinity')
+                    ->falseIcon('tabler-infinity-off')
+                    //->falseIcon('tabler-infinity')
+                    //->falseIcon('')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->width(20)
+                    ->size(IconColumn\IconColumnSize::Medium),
+                IconColumn::make('vip')
+                    ->label('')
+                    ->tooltip('VIP')
+                    ->boolean()
+                    ->trueIcon('tabler-vip')
+                    //->falseIcon('tabler-vip')
+                    ->falseIcon('')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->width(20)
+                    ->size(IconColumn\IconColumnSize::Medium),
+                IconColumn::make('private')
+                    ->label('')
+                    ->tooltip('PRIVATE')
+                    ->boolean()
+                    ->trueIcon('tabler-crown')
+                    //->falseIcon('tabler-crown')
+                    ->falseIcon('')
+                    ->trueColor('success')
+                    ->falseColor('gray')
+                    ->size(IconColumn\IconColumnSize::Medium),
 
             ])
             ->filters([

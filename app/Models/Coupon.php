@@ -7,7 +7,9 @@ use App\Enums\CouponTypeVip;
 use Filament\Actions\Action;
 use App\Enums\CouponTypePrivate;
 use App\Models\Scopes\ClientScope;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
@@ -41,7 +43,6 @@ class Coupon extends Model
     {
         return Attribute::make(
             get: function () {
-                
                 if (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children == $this->passengers->count())) {
                     return true;
                 }
@@ -49,6 +50,20 @@ class Coupon extends Model
                 return false;
             },
         );
+    }
+
+    protected function missingData(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && $this->adult + $this->children) != $this->passengers->count();
+            },
+        );
+    }
+
+    public function scopeMissingData(Builder $query): void
+    {
+        $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
     }
 
     //isalreadyused
