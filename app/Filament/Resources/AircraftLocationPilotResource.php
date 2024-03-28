@@ -20,6 +20,7 @@ use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\AircraftLocationPilotResource\Pages;
 use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 
 class AircraftLocationPilotResource extends Resource
@@ -169,6 +170,17 @@ class AircraftLocationPilotResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('checkins')
+                    ->label('Jelentkezők')
+                    ->badge(function ($record) {
+                        if ($record->coupons->count()) {
+                            return $record->coupons->count();
+                        }
+
+                        return null;
+                    })
+                    ->hidden(fn ($record) => !$record->coupons->count())
+                    ->action(fn ($record) => redirect(route('filament.admin.resources.aircraft-location-pilots.checkins', $record->id))),
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
                 /*
@@ -197,6 +209,7 @@ class AircraftLocationPilotResource extends Resource
             'create' => Pages\CreateAircraftLocationPilot::route('/create'),
             /*'view' => Pages\ViewAircraftLocationPilot::route('/{record}'),*/
             'edit' => Pages\EditAircraftLocationPilot::route('/{record}/edit'),
+            'checkins' => Pages\ListCheckins::route('/{record}/checkins'),
         ];
     }
 
