@@ -66,20 +66,6 @@ class Coupon extends Model
         $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
     }
 
-    protected function missingData(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                return (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && $this->adult + $this->children) != $this->passengers->count();
-            },
-        );
-    }
-
-    public function scopeMissingData(Builder $query): void
-    {
-        $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
-    }
-
     //isalreadyused
     protected function isUsed(): Attribute
     {
