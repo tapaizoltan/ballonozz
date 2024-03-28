@@ -2,25 +2,27 @@
 
 namespace App\Filament\Pages;
 
-use App\Enums\AircraftLocationPilotStatus;
-use App\Models\AircraftLocationPilot;
 use App\Models\Coupon;
-use App\Models\Checkin as CheckinModel;
+use App\Models\Aircraft;
 use Filament\Pages\Page;
 use Livewire\Attributes\Computed;
+use App\Models\AircraftLocationPilot;
+use App\Models\Checkin as CheckinModel;
+use App\Enums\AircraftLocationPilotStatus;
 
 class Checkin extends Page
 {
     public $coupons;
     public $coupon_id;
-    protected static ?string $title = 'Kuponjaid';
+    protected static ?string $title = 'Jelentkezések';
+    protected ?string $heading = 'Kuponjaid';
     protected static ?string $navigationLabel = 'Jelentkezések';
     protected static ?string $navigationIcon = 'iconoir-user-badge-check';
     protected static string $view = 'filament.pages.checkin';
 
     public function mount()
     {
-        $this->coupons = Coupon::query()->with('ticketType.aircrafts')->orderBy('source')->orderBy('coupon_code')->get();
+        $this->coupons = Coupon::query()->orderBy('source')->orderBy('coupon_code')->get();
 
         if ($this->coupons->count()) {
             $this->coupon_id = $this->coupons->first()->id;
@@ -46,7 +48,7 @@ class Checkin extends Page
 
         return AircraftLocationPilot::query()
                 ->whereIn('status', [AircraftLocationPilotStatus::Published, AircraftLocationPilotStatus::Finalized])
-                ->whereIn('aircraft_id', $this->coupon->ticketType->aircrafts->pluck('id')->toArray())
+                ->whereIn('aircraft_id', Aircraft::flyable($this->coupon->membersCount, $this->coupon->vip, $this->coupon->private, $this->coupon->aircraft_type)->pluck('id')->toArray())
                 ->orderBy('date')
                 ->orderBy('time')
                 ->get();
