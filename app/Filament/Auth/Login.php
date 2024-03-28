@@ -34,7 +34,7 @@ class Login extends BaseAuth
 
         $data = $this->form->getState();
 
-        if (User::withTrashed()->firstWhere('email', $data['email'])) {
+        if (User::onlyTrashed()->firstWhere('email', $data['email'])) {
             Notification::make()
                 ->title('Kitiltva')
                 ->body('További információkért írjon az ' . env('INFO_EMAIL') . ' email címre')
