@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::BODY_START,
             function()
             {
-                if (!auth()->user()->hasRole(['admin', 'super_admin'])) {
+                if (auth()->user() && !auth()->user()->hasRole(['admin', 'super_admin'])) {
                     $coupons_not_filled_with_passengers = 0;
                     foreach (Coupon::all() as $coupon) 
                     {

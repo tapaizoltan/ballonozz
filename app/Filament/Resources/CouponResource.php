@@ -15,10 +15,14 @@ use App\Models\Tickettype;
 use Filament\Tables\Table;
 use App\Enums\CouponStatus;
 use Illuminate\Support\Str;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
+use App\Models\CouponCodeAttempt;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Actions;
@@ -113,6 +117,11 @@ class CouponResource extends Resource
                                             }
                                             if (empty($finding_match))
                                             {
+                                                if (count(auth()->user()->attempts) === env('MAX_COUPON_CODE_ATTEMPTS', 5)) {
+                                                    Auth::user()->delete();                                              
+                                                }
+                                                CouponCodeAttempt::create(['user_id' => Auth::id()]);
+
                                                 //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
                                             }
                                         }
