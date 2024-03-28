@@ -18,10 +18,10 @@ class Aircraft extends Model
     use SoftDeletes;
 
     //légijármű selector szabályrendszer
-    public static function flyable($passenger_count, $vip_flag, $private_flag)
+    public static function flyable($passenger_count, $vip_flag, $private_flag, $aircraft_type)
     {
         return self::where(function ($q) use ($passenger_count) {
             $q->where('unlimited', '=', 1)->orWhere('number_of_person', '>=', $passenger_count);
-        })->where('vip', '=', $vip_flag)->where('private', '=', $private_flag)->get();
+        })->where('vip', '=', $vip_flag)->where('private', '=', $private_flag)->where('type', $aircraft_type)->get();
     }
 }

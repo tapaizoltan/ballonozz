@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AircraftType;
 use App\Enums\CouponStatus;
 use App\Enums\CouponTypeVip;
 use Filament\Actions\Action;
@@ -22,6 +23,7 @@ class Coupon extends Model
         'status' => CouponStatus::class,
         'vip' => CouponTypeVip::class,
         'private' => CouponTypePrivate::class,
+        'aircraft_type' => AircraftType::class,
     ];
 
     public function passengers()
