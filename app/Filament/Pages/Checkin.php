@@ -40,7 +40,7 @@ class Checkin extends Page
     }
 
     #[Computed]
-    public function dates()
+    public function events()
     {
         if ($this->coupon === null) {
             return false;
