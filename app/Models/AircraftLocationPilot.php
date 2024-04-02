@@ -33,7 +33,7 @@ class AircraftLocationPilot extends Model
 
     public function coupons()
     {
-        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at');
+        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at')->withoutGlobalScopes();
     }
 
     public function isChecked($coupon_id): bool

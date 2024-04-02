@@ -30,7 +30,7 @@ class ListCheckins extends Page
             ->get()
             ->map(fn ($coupon) => $this->selectedCoupons[] = $coupon->id);
     
-        $this->alreadyCheckedCoupons = array_filter(Coupon::with('aircraftLocationPilots')->get()->map(function ($coupon) {
+        $this->alreadyCheckedCoupons = array_filter(Coupon::with('aircraftLocationPilots')->withoutGlobalScopes()->get()->map(function ($coupon) {
             if (count($coupon->aircraftLocationPilots->where('pivot.aircraft_location_pilot_id', '!=', $this->record->id)->where('pivot.status', 1))) {
                 return $coupon->id;
             }
