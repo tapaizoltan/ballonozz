@@ -210,6 +210,7 @@ class AircraftLocationPilotResource extends Resource
             /*'view' => Pages\ViewAircraftLocationPilot::route('/{record}'),*/
             'edit' => Pages\EditAircraftLocationPilot::route('/{record}/edit'),
             'checkins' => Pages\ListCheckins::route('/{record}/checkins'),
+            'calendar' => Pages\Calendar::route('/calendar'),
         ];
     }
 
