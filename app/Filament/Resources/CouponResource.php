@@ -23,12 +23,14 @@ use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +38,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\CouponResource\Pages;
@@ -110,19 +113,34 @@ class CouponResource extends Resource
                                         {
                                             $checkable_coupon_code = $get('coupon_code');
                                             $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
-                                            dd($finding_match);
                                             if (!empty($finding_match))
                                             {
                                                 //Ez fut le ha már van ilyen kupon a táblában
                                             }
                                             if (empty($finding_match))
                                             {
+                                                /*
                                                 if (count(auth()->user()->attempts) === env('MAX_COUPON_CODE_ATTEMPTS', 5)) {
                                                     Auth::user()->delete();                                              
                                                 }
                                                 CouponCodeAttempt::create(['user_id' => Auth::id()]);
-
+                                                */
                                                 //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
+                                                $response_order = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
+                                                
+                                                if ($response_order->successful())
+                                                {
+                                                    $res = $response_order->json();
+                                                    foreach($res['line_items'] as $item) {
+                                                        //dump($item['product_id'], $item['quantity']);
+                                                        $product_id = $item['product_id'];
+
+                                                        $response_orders_atributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$product_id);
+
+                                                    }
+                                                    return;
+                                                    //dd($response_order->json()['line_items'][0]['product_id']);
+                                                }
                                             }
                                         }
                                     )
@@ -205,45 +223,67 @@ class CouponResource extends Resource
                                 ->relationship()
                                 ->maxItems(fn (Get $get) => $get('adult')+$get('children'))
                                 ->schema([
-                                    TextInput::make('lastname')
-                                        ->disabledOn('create')
-                                        ->label('Vezetéknév')
-                                        ->prefixIcon('tabler-writing-sign')
-                                        ->placeholder('pl.: Gipsz')
-                                        ->required()
-                                        ->minLength(3)
-                                        ->maxLength(255),
-                                    TextInput::make('firstname')
-                                        ->label('Keresztnév')
-                                        ->prefixIcon('tabler-writing-sign')
-                                        ->placeholder('Jakab')
-                                        ->required()
-                                        ->minLength(3)
-                                        ->maxLength(255),
-                                    DatePicker::make('date_of_birth')
-                                        ->label('Születési dátum')
-                                        ->prefixIcon('tabler-calendar')
-                                        ->weekStartsOnMonday()
-                                        ->displayFormat('Y-m-d')
-                                        ->required()
-                                        ->native(false),
-                                    TextInput::make('id_card_number')
-                                        ->label('Igazolvány szám')
-                                        ->prefixIcon('tabler-id')
-                                        ->placeholder('432654XX')
-                                        ->required()
-                                        ->minLength(3)
-                                        ->maxLength(10),
-                                    TextInput::make('body_weight')
-                                        ->label('Testsúly')
-                                        ->prefixIcon('iconoir-weight-alt')
-                                        ->required()
-                                        ->numeric()
-                                        ->minLength(1)
-                                        ->maxLength(10)
-                                        ->suffix(' kg'),
-                                ])->defaultItems(3)
-                                ->columns(5),
+                                    Fieldset::make('Kötelező utasadatok')
+                                    ->schema([
+                                        TextInput::make('lastname')
+                                            ->disabledOn('create')
+                                            ->label('Vezetéknév')
+                                            ->prefixIcon('tabler-writing-sign')
+                                            ->placeholder('pl.: Gipsz')
+                                            ->required()
+                                            ->minLength(3)
+                                            ->maxLength(255),
+                                        TextInput::make('firstname')
+                                            ->label('Keresztnév')
+                                            ->prefixIcon('tabler-writing-sign')
+                                            ->placeholder('Jakab')
+                                            ->required()
+                                            ->minLength(3)
+                                            ->maxLength(255),
+                                        DatePicker::make('date_of_birth')
+                                            ->label('Születési dátum')
+                                            ->prefixIcon('tabler-calendar')
+                                            ->weekStartsOnMonday()
+                                            ->displayFormat('Y-m-d')
+                                            ->required()
+                                            ->native(false),
+                                        TextInput::make('id_card_number')
+                                            ->label('Igazolvány szám')
+                                            ->prefixIcon('tabler-id')
+                                            ->placeholder('432654XX')
+                                            ->required()
+                                            ->minLength(3)
+                                            ->maxLength(10),
+                                        TextInput::make('body_weight')
+                                            ->label('Testsúly')
+                                            ->prefixIcon('iconoir-weight-alt')
+                                            ->required()
+                                            ->numeric()
+                                            ->minLength(1)
+                                            ->maxLength(10)
+                                            ->suffix(' kg'),
+                                    ])->columns(5),
+
+                                    Fieldset::make('Opcionális utasadatok')
+                                    ->schema([
+                                        Placeholder::make('created')
+                                        ->label('')
+                                        ->content('Kérem adja meg elérhetőségeit, az esetleges, fontos kapcsolatfelvétel céljából. Az itt megadott adatait csak és kizárólag fontos, eseménybeni változásokkor használjuk.'),
+                                        TextInput::make('email')
+                                            ->email()
+                                            ->label('Email cím')
+                                            ->prefixIcon('tabler-mail-forward')
+                                            ->placeholder('utas@repulnifogok.hu')
+                                            ->maxLength(255),
+                                        TextInput::make('phone')
+                                            ->tel()
+                                            ->label('Telefonszám')
+                                            ->prefixIcon('tabler-device-mobile')
+                                            ->placeholder('+36 __ ___ ____')
+                                            ->mask('+36 99 999 9999')
+                                            ->maxLength(30)
+                                    ])->columns(3),
+                                ])->columns(5),
                             ]),
                         ])->columnSpan(12),
                     ]);

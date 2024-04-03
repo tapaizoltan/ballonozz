@@ -10,11 +10,10 @@ class Location extends Model
 {
     //use HasFactory;
     
-    public function areatypes()
+    public function region()
     {
-        return $this->belongsTo(AreaType::class);
+        return $this->belongsTo(Region::class);
     }
 
     use SoftDeletes;
-    
 }

@@ -44,4 +44,9 @@ class AircraftLocationPilot extends Model
 
         return false;
     }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
 }

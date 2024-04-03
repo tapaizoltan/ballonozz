@@ -2,22 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TickettypeResource\Pages;
-use App\Filament\Resources\TickettypeResource\RelationManagers;
-use App\Models\Tickettype;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Tickettype;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-/* saját use-ok */
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+
+/* saját use-ok */
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ColorColumn;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Tables\Columns\CheckboxColumn;
+use Filament\Forms\Components\ToggleButtons;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TickettypeResource\Pages;
+use App\Filament\Resources\TickettypeResource\RelationManagers;
 
 class TickettypeResource extends Resource
 {
@@ -28,7 +33,7 @@ class TickettypeResource extends Resource
     protected static ?string $pluralModelLabel = 'jegytípusok';
 
     protected static ?string $navigationGroup = 'Alapadatok';
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -40,7 +45,7 @@ class TickettypeResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
-                            ->helperText('Adjon egy fantázianevet a jegytípusnak. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott jegytípus és a hozzá társított paraméterek.')
+                            ->helperText('Adjon egy fantázianevet a jegytípusnak. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz.')
                             ->label('Megnevezés')
                             ->prefixIcon('tabler-writing-sign')
                             ->required()
@@ -48,13 +53,64 @@ class TickettypeResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Textarea::make('description')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
-                            ->rows(8)
+                            ->rows(6)
                             ->cols(20)
                             ->autosize()
                             ->helperText('Itt néhány sorban leírhatja ennek a jegytípusnak a jellemzőit.')
                             ->label('Leírás'),
                     ])->columnSpan(2),
 
+                    Section::make() 
+                        ->schema([
+                            Forms\Components\Fieldset::make('Jegytípus paraméterek')
+                            ->schema([
+                            ColorPicker::make('color')
+                                ->helperText('Válasszon egy egyedi színt a jegytípusnak, akönnyebb megkülömböztetés érdekében.')
+                                ->label('Jegytípus színe')
+                                ->prefixIcon('tabler-color-swatch'),
+
+                            ToggleButtons::make('aircrafttype')
+                                ->helperText('Válassza ki a légijármű típusát.')
+                                ->label('Légijármű típusa')
+                                ->inline()
+                                /*->grouped()*/
+                                ->required()
+                                ->live()
+                                ->options([
+                                    '0' => 'Hőlégballon',
+                                    '1' => 'Kisrepülő',
+                                ])
+                                ->icons([
+                                    '0' => 'iconoir-hot-air-balloon',
+                                    '1' => 'iconoir-airplane',
+                                ])
+                                ->colors([
+                                    '0' => 'info',
+                                    '1' => 'info',
+                                ])
+                                ->default(0),
+                            
+                                ])->columns(1),
+                            /*
+                            Forms\Components\Fieldset::make('Társított légijárművek')
+                                ->schema([
+                                    Forms\Components\Select::make('aircrafts')
+                                        ->label(false)
+                                        ->helperText('Itt rögzíthet több légijárművet az adott jegytípushoz.')
+                                        ->multiple()
+                                        ->relationship(titleAttribute: 'name')
+                                        ->preload(),
+                                        /*
+                                        ->createOptionForm([
+                                            Forms\Components\TextInput::make('name')
+                                                ->required()->unique(),]),
+                                                */
+                                                /*
+                                ])->columns(1),*/
+
+                            ])->columnSpan(2),
+
+                    /*
                     Section::make() 
                     ->schema([
                             Forms\Components\Fieldset::make('Utasok száma')
@@ -85,7 +141,7 @@ class TickettypeResource extends Resource
                             
                             Forms\Components\Fieldset::make('Extra beállítások')
                             ->schema([
-                                Forms\Components\Toggle::make('vip')
+                            Forms\Components\Toggle::make('vip')
                                 ->inline(false)
                                 ->onColor('success')
                                 ->onIcon('tabler-check')
@@ -105,7 +161,8 @@ class TickettypeResource extends Resource
                             ])->columns(2),
 
                         ])->columnSpan(2),
-                    
+                    */
+                    /*
                         Section::make() 
                         ->schema([
                             Forms\Components\Fieldset::make('Forrás beállítások')
@@ -139,9 +196,10 @@ class TickettypeResource extends Resource
                                             Forms\Components\TextInput::make('name')
                                                 ->required()->unique(),]),
                                                 */
+                                                /*
                                 ])->columns(1),
 
-                            ])->columnSpan(2),
+                            ])->columnSpan(2),*/
                 ]), 
 
             ]);
@@ -151,12 +209,28 @@ class TickettypeResource extends Resource
     {
         return $table
         ->columns([
-            Tables\Columns\TextColumn::make('name')
+            TextColumn::make('id')
+                ->label('Attribútum ID')
+                ->tooltip('Amennyiben WooCommerce, vagy hasonló webshopot üzemeltet, az adott termékhez hozzá kell adni - mint rejtett attribútomot - "tickettype" néven úgy, hogy az attribútum értékének ezt az értéket kell megadni. Mindemellett további két fontos rejtett attribútumot is elengedhetetlen a működéshez, amelyek: a felnőtt utasok száma, azaz "adult", és ennek értéke, valamint a gyermek utasok száma, azaz "children", és ennek értéke.'),
+
+            TextColumn::make('name')
                 ->label('Megnevezés')
                 ->description(fn (Tickettype $record): string => $record->description)
                 ->wrap()
                 ->searchable(),
 
+            TextColumn::make('aircrafttype')
+                ->label('Típus')
+                ->badge()
+                ->size('md'),
+
+            ColorColumn::make('color')
+                ->label('Szín'),
+
+            CheckboxColumn::make('default')
+            ->label('Alapértelmezett')
+            ->disabled(),
+            /*
             Tables\Columns\TextColumn::make('source')
                 ->label('Forrás')
                 ->description(fn (Tickettype $record): string => $record->name_stored_at_source)
@@ -185,6 +259,7 @@ class TickettypeResource extends Resource
                 ->wrap()
                 ->badge()
                 ->size('sm'),
+                */
         ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()->native(false),

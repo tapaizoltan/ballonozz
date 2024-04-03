@@ -10,13 +10,15 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
 
 /* saját use-ok */
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ToggleButtons;
@@ -33,7 +35,7 @@ class AircraftResource extends Resource
     protected static ?string $pluralModelLabel = 'légijárművek';
 
     protected static ?string $navigationGroup = 'Alapadatok';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -113,7 +115,7 @@ class AircraftResource extends Resource
                             ->suffix(' kg'),
 
                         ])->columns(2),
-
+                        /*
                         Forms\Components\Fieldset::make('Extra beállítások')
                             ->schema([
                                 Toggle::make('unlimited')
@@ -152,7 +154,16 @@ class AircraftResource extends Resource
                                     ->disabled(fn (GET $get): bool => ($get('unlimited')!='0'))
                                     ->dehydrated(true),
 
-                            ])->columns(3),
+                            ])->columns(3),*/
+                        
+                            Forms\Components\Fieldset::make('Társított jegytípusok')
+                            ->schema([
+                                Select::make('tickettypes')
+                                ->label('Jegytípusok')
+                                ->multiple()
+                                ->relationship(titleAttribute: 'name')
+                                ->preload(),
+                                ])->columns(1),
 
                     ])->columnSpan(2),
                 ]), 
@@ -173,6 +184,7 @@ class AircraftResource extends Resource
                     ->formatStateUsing(fn($state)=>$state.' fő'),
                 TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
                     ->formatStateUsing(fn($state)=>$state.' kg'),
+                /*
                 IconColumn::make('unlimited')
                     ->label('Extra')
                     ->tooltip('Korlátlan utasszám felvétele')
@@ -206,7 +218,7 @@ class AircraftResource extends Resource
                     ->trueColor('success')
                     ->falseColor('gray')
                     ->size(IconColumn\IconColumnSize::Medium),
-
+                */
             ])
             ->filters([
                 Tables\Filters\Filter::make('type')

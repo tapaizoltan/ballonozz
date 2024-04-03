@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+
+use App\Enums\AircraftType;
 use App\Enums\TicketTypeVip;
 use App\Enums\TicketTypePrivate;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +16,8 @@ class Tickettype extends Model
     protected $casts = [
         'vip' => TicketTypeVip::class,
         'private' => TicketTypePrivate::class,
+
+        'aircrafttype' => AircraftType::class,
     ];
 
     //use HasFactory;
