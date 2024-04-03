@@ -16,7 +16,7 @@ class ListAircraftLocationPilots extends ListRecords
         return [
             Actions\Action::make('calendar-view')->label('Naptár nézet')
                 ->color('info')
-                ->url(route('filament.admin.resources.aircraft-location-pilots.calendar')),
+                ->url(route('filament.admin.resources.aircraft-location-pilots.calendar') . '?view=' . env('DEFAULT_CALENDAR_VIEW', 'havi')),
             Actions\CreateAction::make(),
         ];
     }

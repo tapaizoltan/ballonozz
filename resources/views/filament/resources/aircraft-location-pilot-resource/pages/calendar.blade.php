@@ -83,6 +83,40 @@
             });
             calendar.render();
             window.dispatchEvent(new Event('resize'));
+
+            // set the url parameter
+            const url = window.location.origin + window.location.pathname + '?view='
+            let params = new URLSearchParams(window.location.search);
+
+            const monthly = document.getElementsByClassName('fc-dayGridMonth-button')[0]
+            const weekly  = document.getElementsByClassName('fc-timeGridSevenDay-button')[0]
+            const daily   = document.getElementsByClassName('fc-timeGridDay-button')[0]
+
+            monthly.addEventListener('click', function() {
+                history.pushState(null, "", url + 'havi');
+            });
+            
+            weekly.addEventListener('click', function() {
+                history.pushState(null, "", url + 'heti');
+            });
+            
+            daily.addEventListener('click', function() {
+                history.pushState(null, "", url + 'napi');
+            });
+            
+            switch (params.get('view')) {
+                case 'heti':
+                    calendar.changeView('timeGridWeek')
+                    break;
+
+                case 'napi':
+                    calendar.changeView('timeGridDay')
+                    break;
+            
+                default:
+                    calendar.changeView('dayGridMonth')
+                    break;
+            }
         });
     </script>
 </x-filament-panels::page>
