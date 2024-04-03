@@ -18,6 +18,7 @@
             const calendar = new FullCalendar.Calendar(calendarEl, {
 
                 // Display settings
+                allDaySlot: false,
                 dayHeaderFormat: { weekday: 'short' },
                 locale: 'hu',
                 eventDisplay: 'block',
@@ -45,7 +46,6 @@
                     descriptionEl.style.display = 'block';
                     descriptionEl.style.left = (info.jsEvent.pageX + 10) + 'px';
                     descriptionEl.style.top = (info.jsEvent.pageY + 10) + 'px';
-                    console.log(descriptionEl);
                 },
                 eventMouseLeave: function () {
                     // Hide description when mouse leaves an event
@@ -82,6 +82,7 @@
 
             });
             calendar.render();
+            window.dispatchEvent(new Event('resize'));
         });
     </script>
 </x-filament-panels::page>
