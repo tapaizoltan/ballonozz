@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Illuminate\Database\Eloquent\Builder;
+use App\Enums\AircraftLocationPilotStatus;
 use App\Filament\Resources\AircraftLocationPilotResource\Pages;
 use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
 
@@ -152,6 +153,7 @@ class AircraftLocationPilotResource extends Resource
                                         '3' => 'tabler-player-stop',
                                         '4' => 'tabler-playstation-x',
                                     ])
+                                    ->disabled(fn ($record) => $record && in_array($record->status, [AircraftLocationPilotStatus::Executed, AircraftLocationPilotStatus::Deleted]))
                                     ->default(0),
                                 ])->columns(1),
                             ])->columnSpan(2),
@@ -218,7 +220,7 @@ class AircraftLocationPilotResource extends Resource
                     ->label('Jelentkezők')
                     ->badge(function ($record) {
                         if ($record->coupons->count()) {
-                            return $record->coupons->count();
+                            return $record->coupons->sum('adult') + $record->coupons->sum('children');
                         }
 
                         return null;
