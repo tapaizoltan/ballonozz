@@ -61,6 +61,11 @@ class AircraftLocationPilot extends Model
         return $this->belongsTo(Pilot::class);
     }
 
+    public function tickettypes()
+    {
+        return $this->belongsToMany(Tickettype::class, 'aircraft_tickettype', 'aircraft_id', 'tickettype_id');
+    }
+
     public function coupons()
     {
         return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at')->withoutGlobalScopes();
