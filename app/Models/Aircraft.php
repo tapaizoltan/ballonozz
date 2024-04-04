@@ -23,6 +23,10 @@ class Aircraft extends Model
         return $this->belongsToMany(Tickettype::class, 'aircraft_tickettype');
     }
 
+    public function events()
+    {
+        return $this->hasMany(AircraftLocationPilot::class, 'aircraft_id', 'id');
+    }
     //légijármű selector szabályrendszer
     public static function flyable($passenger_count, $tickettype_id)
     {

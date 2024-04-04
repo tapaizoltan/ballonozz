@@ -23,25 +23,35 @@
             </div>
             <x-filament::button class="justify-self-end" wire:click="save()">Véglegesít</x-filament::button>
         </div>
-        <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+        <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
 
             <div class="thead"></div>
             <div class="thead">Kupon kód</div>
             <div class="thead">Jelentkezett ekkor</div>
-            <div class="thead">fő</div>
-            <div class="thead">súly</div>
+            <div class="thead">Jegytípus</div>
+            <div class="thead">Fő</div>
+            <div class="thead">Súly</div>
 
             @foreach ($record->coupons()->withSum('passengers', 'body_weight')->get() as $coupon)
                 @php
                     $isCheckedAlready = in_array($coupon->id, $alreadyCheckedCoupons);
+
+                    $rgb = list($red, $green, $blue) = sscanf($coupon->tickettype->color, "#%02x%02x%02x");
+                    $backgroundColor = 'rgb(' . implode(', ', $rgb) . ')';
+                    if (($red * 0.299 + $green * 0.587 + $blue * 0.114) > 186) {
+                        $textColor = 'black';
+                    } else {
+                        $textColor = 'white';
+                    }
                 @endphp
-                <label id="checkbox" class="tbody @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10 @endif">
+                <label id="checkbox" class="tbody @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif>
                     <input id="coupon-{{ $coupon->id }}" class="checkbox ms-2" type="checkbox" @disabled($isCheckedAlready) wire:model.live="selectedCoupons" value="{{ $coupon->id }}">
                 </label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10 @endif">{{ $coupon->coupon_code }}</label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10 @endif">{{ Carbon\Carbon::parse($coupon->pivot->created_at)->translatedFormat('Y F d. H:i') }}</label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10 @endif">{{ $coupon->membersCount }}</label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10 @endif">{{ $coupon->passengers_sum_body_weight }} kg</label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->coupon_code }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ Carbon\Carbon::parse($coupon->pivot->created_at)->translatedFormat('Y F d. H:i') }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->tickettype->name }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersCount }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->passengers_sum_body_weight }} kg</span></label>
             @endforeach
         </div>
 
