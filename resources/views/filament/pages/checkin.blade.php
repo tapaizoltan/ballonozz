@@ -6,7 +6,6 @@
                 <div class="font-semibold">{{ $coupon->coupon_code }}</div>
                 <div class="grid">
                     <div>{{ $coupon->source }} kupon</div>
-                    {{-- <div class="description">{{ $coupon->tickettype?->name_stored_at_source ?? null }}</div> --}}
                     <div class="grid grid-cols-2 relative">
                         
                         <div class="flex flex-col justify-self-start">
@@ -23,14 +22,6 @@
                                 </div>
                             @endif
                         </div>
-                        {{-- <div class="flex flex-col justify-self-end absolute top-1/2 translate-y-[-50%]">
-                            @if($coupon->private->value)    
-                                @svg($coupon->private->getIcon())                             
-                            @endif
-                            @if ($coupon->vip->value)
-                                @svg($coupon->vip->getIcon())
-                            @endif
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -92,11 +83,6 @@
                         </div>
                         <span>{{ $event->region->name }}</span>
                     </div>
-
-                    {{-- <div class="flex gap-2">
-                        <span class="@if($selected && !$finalized || $finalized && $selected && $checked || !$selected && !$finalized) text-blue-400 @else text-blue-400/50 @endif">@svg($event->aircraft->type->getIcon())</span>
-                        <span>{{ $event->aircraft->name }}</span>
-                    </div> --}}
 
                     <div class="flex justify-between">
                         <div class="flex text-zinc-400 justify-self-center">
