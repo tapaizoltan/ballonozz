@@ -24,9 +24,6 @@ class ListAircraft extends ListRecords
             null => Tab::make('Mind'),
             'Hőlégballon' => Tab::make()->query(fn ($query) => $query->where('type', '0'))->icon('iconoir-hot-air-balloon'),
             'Kisrepülőgép' => Tab::make()->query(fn ($query) => $query->where('type', '1'))->icon('iconoir-airplane'),
-            'Korlátlan utasszám' => Tab::make()->query(fn ($query) => $query->where('unlimited', '1'))->icon('tabler-infinity'),
-            'VIP' => Tab::make()->query(fn ($query) => $query->where('vip', '1'))->icon('tabler-vip'),
-            'PRIVATE' => Tab::make()->query(fn ($query) => $query->where('private', '1'))->icon('tabler-crown'),
         ];
     }
 }

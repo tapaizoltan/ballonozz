@@ -22,8 +22,8 @@ class ListTickettypes extends ListRecords
     {
         return [
             null => Tab::make('Mind'),
-            'VIP' => Tab::make()->query(fn ($query) => $query->where('vip', '1')),
-            'Privát' => Tab::make()->query(fn ($query) => $query->where('private', '1')),
+            'Hőlégballonos jegytípusok' => Tab::make()->query(fn ($query) => $query->where('aircrafttype', '0'))->icon('iconoir-hot-air-balloon'),
+            'Kisrepülős jegytípusok' => Tab::make()->query(fn ($query) => $query->where('aircrafttype', '1'))->icon('iconoir-airplane'),
         ];
     }
 }

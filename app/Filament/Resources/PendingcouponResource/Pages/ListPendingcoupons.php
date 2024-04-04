@@ -11,13 +11,14 @@ class ListPendingcoupons extends ListRecords
 {
     protected static string $resource = PendingcouponResource::class;
 
+    /*
     protected function getHeaderActions(): array
     {
         return [
             Actions\CreateAction::make(),
         ];
     }
-
+    */
     public function getTabs(): array
     {
         return [

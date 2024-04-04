@@ -27,7 +27,8 @@ Route::get('/test', function(){
     //dd(Http::withBasicAuth('ck_2f380bdd989588e272cd87603c1c8551a7a999b6', 'cs_7f6ed0ae386d5c5b0deb6fbacb41bcabd9ca9bdc')->get("https://ballonozz.hu/wp-json/wc/v3/orders/1541"));
 
         $response = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))
-        ->withUrlParameters([
+        
+        /*->withUrlParameters([
             'endpoint' => 'https://ballonozz.hu',
             'page' => 'wp-json',
             'sub' => 'wc',
@@ -35,16 +36,16 @@ Route::get('/test', function(){
             'topic' => 'orders',
             'id' => '1503',
             ])
-            //->get('{+endpoint}/{page}/{sub}/{version}/{topic}/{id}')
-            ->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.'1503');
+            //->get('{+endpoint}/{page}/{sub}/{version}/{topic}/{id}')*/
+            ->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.'1567');
     
-        if ($response->successful())
-            {
-                $res = $response->json();
-                foreach($res['line_items'] as $item) {
-                    dump($item['product_id'], $item['quantity']);
+            if ($response->successful())
+                {
+                    $res = $response->json();
+                    foreach($res['line_items'] as $item) {
+                        dump($item['product_id'], $item['quantity']);
+                    }
+                    return;
+                    dd($response->json()['line_items'][0]['product_id']);
                 }
-                return;
-                dd($response->json()['line_items'][0]['product_id']);
-            }
 });

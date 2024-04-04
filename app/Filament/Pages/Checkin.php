@@ -47,6 +47,7 @@ class Checkin extends Page
         }
 
         return AircraftLocationPilot::query()
+                ->where('date', '>=', now()->format('Y-m-d')) // TODO: time column?
                 ->whereIn('status', [AircraftLocationPilotStatus::Published, AircraftLocationPilotStatus::Finalized])
                 ->whereIn('aircraft_id', Aircraft::flyable($this->coupon->membersCount, $this->coupon->vip, $this->coupon->private, $this->coupon->aircraft_type)->pluck('id')->toArray())
                 ->orderBy('date')

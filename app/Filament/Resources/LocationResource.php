@@ -4,21 +4,27 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Region;
+use App\Models\AreaType;
 use App\Models\Location;
 use Filament\Forms\Form;
+
 use Tables\Columns\Text;
 use Filament\Tables\Table;
-
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+
+/* saját use-ok */
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Fieldset;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TrashedFilter;
 use App\Filament\Resources\LocationResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LocationResource\RelationManagers;
-
-/* saját use-ok */
-use App\Models\AreaType;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 
 class LocationResource extends Resource
 {
@@ -29,17 +35,17 @@ class LocationResource extends Resource
     protected static ?string $pluralModelLabel = 'helyszínek';
 
     protected static ?string $navigationGroup = 'Alapadatok';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Grid::make(4)
+                Grid::make(7)
                 ->schema([
                     Section::make() 
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->helperText('Adjon egy fantázianevet a helyszínnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott helyszín.')
                             ->label('Elnevezés')
@@ -49,43 +55,60 @@ class LocationResource extends Resource
                             ->minLength(3)
                             ->maxLength(255),
                     ])->columnSpan(2),
+
+                    Section::make() 
+                    ->schema([
+                        Select::make('region_id')
+                            ->label('Régió')
+                            ->helperText('Válassza ki vagy a "+" gombra kattintva, hozzon létre egy új régiót, ahova tartozik az adott helyszín.')
+                            ->prefixIcon('iconoir-strategy')
+                            ->preload()
+                            //->options(Region::all()->pluck('name', 'id'))
+                            ->relationship(name: 'region', titleAttribute: 'name')
+                            ->native(false)
+                            ->required()
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('name')->label('Régió neve')->helperText('Adja meg az új régió nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
+                                    ->required()->unique(),]),
+                    ])->columnSpan(2),
                 ]),
 
-                Grid::make(4)
+                Grid::make(7)
                 ->schema([
                     Section::make() 
                     ->schema([
-                        Forms\Components\Fieldset::make('Település')
+                        Fieldset::make('Település')
                         ->schema([
-                            Forms\Components\TextInput::make('zip_code')
+                            TextInput::make('zip_code')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                                 /*->helperText('Adjon egy fantázianevet a helyszínnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott helyszín.')*/
                                 ->label('Irányítószám')
                                 ->prefixIcon('tabler-mailbox')
                                 ->placeholder('5600'),
-                            Forms\Components\TextInput::make('settlement')
+                            TextInput::make('settlement')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Település')
                                 ->prefixIcon('tabler-building-skyscraper')
                                 ->placeholder('Békéscsaba'),
-                            ])->columns(2),
+                            ])->columns(3),
 
-                        Forms\Components\Fieldset::make('Cím')
+                        Fieldset::make('Cím')
                         ->schema([
-                            Forms\Components\TextInput::make('address')
+                            TextInput::make('address')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Cím')
                                 ->prefixIcon('tabler-map-pin')
                                 ->placeholder('Repülőtér'),
-                            Forms\Components\Select::make('area_type_id')
+                            Select::make('area_type_id')
                                 ->label('Típus')
                                 ->prefixIcon('tabler-layout-list')
                                 ->options(AreaType::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->native(false),
-                            Forms\Components\TextInput::make('address_number')
+                            TextInput::make('address_number')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 /*->helperText('Ide a légijármű lajstromjelét adja meg.')*/
                                 ->label('Házszám')
@@ -94,20 +117,20 @@ class LocationResource extends Resource
                                 ->placeholder('13'),
                             ])->columns(3),
 
-                        ])->columnSpan(3),
+                        ])->columnSpan(4),
 
                     Section::make() 
                     ->schema([
-                        Forms\Components\Fieldset::make('Helyszín')
+                        Fieldset::make('Helyszín')
                         ->schema([
-                            Forms\Components\TextInput::make('parcel_number')
+                            TextInput::make('parcel_number')
                                 /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                 ->helperText('Amennyiben az adott helyszínnek nincs címe, helyrajzi számmal is rögzítheti azt.')
                                 ->label('Helyrajzi szám')
                                 ->prefixIcon('tabler-map-route')
                                 ->placeholder('0296/8/A'),
                             ])->columns(1)
-                    ])->columnSpan(1),
+                    ])->columnSpan(2),
                 ]),
             ]);
     }
@@ -116,17 +139,25 @@ class LocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Elnevezés')->searchable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('name')->label('Elnevezés')->searchable()
+                    /*->description(function ($state, Location $region) {
+                        $region_name = Region::find($region->region_id);
+                        return $region_name->name;
+                    })*/
+                    ,
+                TextColumn::make('region.name')
+                ->label('Régió'),
+                
+                TextColumn::make('address')
                     ->label('Cím')
                     ->formatStateUsing(function ($state, Location $location) {
                         $areatype_name = AreaType::find($location->area_type_id);
                         return $location->zip_code . ' ' . $location->settlement . ', '. $location->address . ' ' . $areatype_name->name . ' ' . $location->address_number .'.';
                     }),
-                    Tables\Columns\TextColumn::make('parcel_number')->label('Helyrajzi szám')->searchable(),
+                    TextColumn::make('parcel_number')->label('Helyrajzi szám')->searchable(),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()->native(false),
+                TrashedFilter::make()->native(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),

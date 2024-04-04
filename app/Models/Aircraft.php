@@ -4,8 +4,9 @@ namespace App\Models;
 
 use App\Enums\AircraftType;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Aircraft extends Model
 {
@@ -16,6 +17,11 @@ class Aircraft extends Model
     use HasFactory;
     
     use SoftDeletes;
+
+    public function tickettypes(): BelongsToMany
+    {
+        return $this->belongsToMany(Tickettype::class, 'aircraft_tickettype');
+    }
 
     //légijármű selector szabályrendszer
     public static function flyable($passenger_count, $vip_flag, $private_flag, $aircraft_type)
