@@ -14,9 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Tickettype extends Model
 {
     protected $casts = [
-        'vip' => TicketTypeVip::class,
-        'private' => TicketTypePrivate::class,
-
         'aircrafttype' => AircraftType::class,
     ];
 

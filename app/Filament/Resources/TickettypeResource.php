@@ -14,15 +14,20 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 
 /* saját use-ok */
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Forms\Components\ToggleButtons;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TickettypeResource\Pages;
 use App\Filament\Resources\TickettypeResource\RelationManagers;
+use DragonCode\Support\Facades\Helpers\Boolean;
+use Filament\Forms\Get;
 
 class TickettypeResource extends Resource
 {
@@ -43,7 +48,7 @@ class TickettypeResource extends Resource
                 ->schema([
                     Section::make() 
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->helperText('Adjon egy fantázianevet a jegytípusnak. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz.')
                             ->label('Megnevezés')
@@ -51,7 +56,7 @@ class TickettypeResource extends Resource
                             ->required()
                             ->minLength(3)
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->rows(6)
                             ->cols(20)
@@ -109,7 +114,22 @@ class TickettypeResource extends Resource
                                 ])->columns(1),*/
 
                             ])->columnSpan(2),
-
+                            
+                            Section::make() 
+                            ->schema([
+                                Placeholder::make('default_placeholder')
+                                    ->label('Alapértelmezett')
+                                    //->content('Alapértelmezett')
+                                    ,
+                                Toggle::make('default')
+                                    ->onColor('success')
+                                    ->onIcon('tabler-check')
+                                    ->offIcon('tabler-x')
+                                    ->helperText('Amennyiben ezt bekapcsolja, abban az esetben ez a jegytípus lesz az, amit alapértelmezettként használ későbbiekben a rendszer abba az esegtben, ha úgy vesz fel légijárművet, hogy annak nem ad meg jegytípust.')
+                                    ->label('Beállítás alapértelmezettként')
+                                    //->disabled(fn (GET $get): bool => ($get('default')=='1'))
+                                    ->default(0),
+                            ])->columnSpan(1),                            
                     /*
                     Section::make() 
                     ->schema([
@@ -227,9 +247,17 @@ class TickettypeResource extends Resource
             ColorColumn::make('color')
                 ->label('Szín'),
 
-            CheckboxColumn::make('default')
-            ->label('Alapértelmezett')
-            ->disabled(),
+            IconColumn::make('default')
+                ->label('Alapértelmezett')
+                ->icon(fn (string $state): string => match ($state) {
+                    '0' => '',
+                    '1' => 'tabler-circle-check',
+                   })
+                ->color(fn (string $state): string => match ($state) {
+                    '0' => '',
+                    '1' => 'success',
+                }),
+
             /*
             Tables\Columns\TextColumn::make('source')
                 ->label('Forrás')
