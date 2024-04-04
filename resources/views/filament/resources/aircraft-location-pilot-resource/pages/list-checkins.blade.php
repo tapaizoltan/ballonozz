@@ -1,27 +1,37 @@
+<x-filament-panels::page>
 <div class="flex flex-col h-[calc(100vh-64px)] gap-y-8 py-8">
         <header>
-            <div>
-                <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ Carbon\Carbon::parse($record->date . ' ' . $record->time)->translatedFormat('Y F d. H:i') }}</h1>
-                <h2 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-2xl">{{ $record->aircraft->name }}, {{ $record->region->name }}</h2>
+            <div class="grid grid-cols-2">
+                <div>
+                    @php
+                        $subHeading = [];
+                        $record->aircraft?->name && $subHeading[] = $record->aircraft->name;
+                        $record->region?->name   && $subHeading[] = $record->region->name;
+                        $record->location?->name && $subHeading[] = $record->location->name;
+                    @endphp
+                    <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ Carbon\Carbon::parse($record->date . ' ' . $record->time)->translatedFormat('Y F d. H:i') }}</h1>
+                    <h2 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-2xl">{{ implode(', ', $subHeading) }}</h2>
+                </div>
+                @php
+                    $bodiesWeight = 0;
+                    $membersCount = 0;
+
+                    foreach ($record->coupons()->withSum('passengers', 'body_weight')->whereIn('coupon_id', $selectedCoupons)->get() as $coupon) {
+        
+                        $bodiesWeight += $coupon->passengers_sum_body_weight;
+                        $membersCount += $coupon->membersCount;
+                    }
+                @endphp
+                <div class="flex gap-5 justify-end">
+                    <div class="@if($membersCount <= $record->aircraft->number_of_person) badge-success @else badge-danger @endif">Létszám: {{ $membersCount }} / {{ $record->aircraft->number_of_person }}</div>
+                    <div class="@if($bodiesWeight <= $record->aircraft->payload_capacity) badge-success @else badge-danger @endif">Súly: {{ $bodiesWeight }} / {{ $record->aircraft->payload_capacity }} kg</div>
+                </div>
             </div>
         </header>
         <div class="flex gap-5 justify-end">
     
-            @php
-                $bodiesWeight = 0;
-                $membersCount = 0;
-
-                foreach ($record->coupons()->withSum('passengers', 'body_weight')->whereIn('coupon_id', $selectedCoupons)->get() as $coupon) {
-    
-                    $bodiesWeight += $coupon->passengers_sum_body_weight;
-                    $membersCount += $coupon->membersCount;
-                }
-            @endphp
-            <div class="flex gap-5">
-                <div class="@if($membersCount <= $record->aircraft->number_of_person) badge-success @else badge-danger @endif">Létszám: {{ $membersCount }} / {{ $record->aircraft->number_of_person }}</div>
-                <div class="@if($bodiesWeight <= $record->aircraft->payload_capacity) badge-success @else badge-danger @endif">Súly: {{ $bodiesWeight }} / {{ $record->aircraft->payload_capacity }} kg</div>
-            </div>
-            <x-filament::button class="justify-self-end" wire:click="save()">Véglegesít</x-filament::button>
+            
+            {{-- <x-filament::button class="justify-self-end" wire:click="save()">Véglegesít</x-filament::button> --}}
         </div>
         <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
 
@@ -57,3 +67,4 @@
 
     
 </div>
+</x-filament-panels::page>
