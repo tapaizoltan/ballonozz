@@ -30,7 +30,7 @@ class CreateCoupon extends CreateRecord
     protected function getCreateFormAction(): \Filament\Actions\Action
     {
         return parent::getCreateFormAction()
-        ->hidden();
+        ->visible(fn (GET $get, $operation) => ($get('source') != 'Egyéb') && $operation == 'create');
     }
     */
     /*

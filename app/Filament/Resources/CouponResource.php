@@ -68,10 +68,8 @@ class CouponResource extends Resource
                     ->schema([
                         Section::make()
                             ->schema([
-
                                 Grid::make(2)
                                 ->schema([
-
                                     Section::make()
                                         ->schema([
                                             TextInput::make('coupon_code')
@@ -112,7 +110,7 @@ class CouponResource extends Resource
                                                     'Egyéb' => 'info',
                                                 ]),
 
-                                            /*
+                                            
                                             Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
                                                 ->action(
                                                     function(Get $get)
@@ -130,7 +128,7 @@ class CouponResource extends Resource
                                                                 Auth::user()->delete();                                              
                                                             }
                                                             CouponCodeAttempt::create(['user_id' => Auth::id()]);
-                                                            *//*
+                                                            */
                                                             //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
                                                             $response_order = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
                                                             
@@ -158,6 +156,10 @@ class CouponResource extends Resource
                                                 ])
                                                     ->hiddenOn('edit')
                                                     ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb')),
+                                            /*
+                                            CreateAction::make()
+                                                ->model(Coupon::class)
+                                                ->label('mehet'),
                                                 */
                                         ])->columnSpan(1),
 
@@ -353,7 +355,9 @@ class CouponResource extends Resource
                 ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
             ->headerActions([
-
+                /*
+                \Filament\Actions\Action::getCreateFormAction()
+                    ->visible(fn (GET $get, $operation) => ($get('source') == 'Egyéb') && $operation == 'create'),*/
             ])
             ->recordUrl(
                 /* így is lehet
