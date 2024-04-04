@@ -44,7 +44,7 @@ class Calendar extends Page
             }
             
             $this->events[] = [
-                'title' => $event->location->name,
+                'title' => $event->region->name,
                 'start' => Carbon::parse($event->date . ' ' . $event->time)->format('Y-m-d H:i:s'),
                 'end' => Carbon::parse($event->date . ' ' . $event->time)->addHours($event->period_of_time)->format('Y-m-d H:i:s'),
                 'description' => '<div>Státusz: <span style="color: ' . $color . '">' . __($event->status->name) . '</span></div><div>Pilóta: ' . $event->pilot->full_name . '</div>',

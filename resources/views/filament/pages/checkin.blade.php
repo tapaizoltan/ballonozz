@@ -90,7 +90,7 @@
                         <div class="@if($selected && !$finalized || $finalized && $selected && $checked || !$selected && !$finalized) text-red-500 @else text-red-500/50 @endif"">
                             <x-heroicon-c-map-pin class="w-6"/>
                         </div>
-                        <span>{{ $event->location->name }}</span>
+                        <span>{{ $event->region->name }}</span>
                     </div>
 
                     {{-- <div class="flex gap-2">

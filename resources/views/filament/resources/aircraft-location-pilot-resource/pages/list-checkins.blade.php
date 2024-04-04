@@ -2,7 +2,7 @@
         <header>
             <div>
                 <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ Carbon\Carbon::parse($record->date . ' ' . $record->time)->translatedFormat('Y F d. H:i') }}</h1>
-                <h2 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-2xl">{{ $record->aircraft->name }}, {{ $record->location->name }}</h2>
+                <h2 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-2xl">{{ $record->aircraft->name }}, {{ $record->region->name }}</h2>
             </div>
         </header>
         <div class="flex gap-5 justify-end">
