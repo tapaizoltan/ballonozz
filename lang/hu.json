@@ -208,5 +208,10 @@
     "Web Server is Down": "A webszerver nem működik",
     "Whoops!": "Hoppá!",
     "Yes": "Igen",
-    "You are receiving this email because we received a password reset request for your account.": "Azért kapja ezt az üzenetet, mert a fiókjára jelszó helyreállítási kérés érkezett."
+    "You are receiving this email because we received a password reset request for your account.": "Azért kapja ezt az üzenetet, mert a fiókjára jelszó helyreállítási kérés érkezett.",
+    "Draft": "Tervezett",
+    "Published": "Publikált",
+    "Finalized": "Véglegesített",
+    "Executed": "Végrehajtott",
+    "Deleted": "Törölt"
 }
