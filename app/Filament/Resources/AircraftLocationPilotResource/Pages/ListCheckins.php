@@ -64,24 +64,6 @@ class ListCheckins extends Page
             if (count($coupon->aircraftLocationPilots->where('pivot.aircraft_location_pilot_id', '!=', $this->record->id)->where('pivot.status', 1))) {
                 return $coupon->id;
             }
-            // TODO: használat/tervezett attributum a kuponon
         })->toArray());
     }
-
-    public function save()
-    {
-        $deselectedCoupons = $this->record->coupons()->wherePivotNotIn('coupon_id', $this->selectedCoupons)->pluck('coupon_id')->toArray();
-        $this->record->coupons()->updateExistingPivot($this->selectedCoupons, ['status' => 1]);
-        $this->record->coupons()->updateExistingPivot($deselectedCoupons, ['status' => 0]);
-
-        $this->record->update(['status' => AircraftLocationPilotStatus::Finalized]);
-
-        Notification::make()
-            ->success()
-            ->title(__('filament-panels::resources/pages/edit-record.notifications.saved.title'))
-            ->send();
-    }
-
-
-
 }
