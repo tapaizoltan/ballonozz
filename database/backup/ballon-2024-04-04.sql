@@ -59,7 +59,8 @@ CREATE TABLE `aircraft_location_pilots` (
   `time` time NOT NULL,
   `period_of_time` int NOT NULL,
   `aircraft_id` int unsigned NOT NULL,
-  `location_id` int unsigned NOT NULL,
+  `region_id` int unsigned NOT NULL DEFAULT '1',
+  `location_id` int unsigned DEFAULT NULL,
   `pilot_id` int unsigned DEFAULT NULL,
   `status` int NOT NULL DEFAULT '0' COMMENT 'feltöltése enum-ból',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -68,10 +69,12 @@ CREATE TABLE `aircraft_location_pilots` (
   KEY `aircraft_location_pilots_aircraft_id_foreign` (`aircraft_id`),
   KEY `aircraft_location_pilots_location_id_foreign` (`location_id`),
   KEY `aircraft_location_pilots_pilot_id_foreign` (`pilot_id`),
+  KEY `aircraft_location_pilots_region_id_foreign` (`region_id`),
   CONSTRAINT `aircraft_location_pilots_aircraft_id_foreign` FOREIGN KEY (`aircraft_id`) REFERENCES `aircraft` (`id`),
   CONSTRAINT `aircraft_location_pilots_location_id_foreign` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`),
-  CONSTRAINT `aircraft_location_pilots_pilot_id_foreign` FOREIGN KEY (`pilot_id`) REFERENCES `pilots` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `aircraft_location_pilots_pilot_id_foreign` FOREIGN KEY (`pilot_id`) REFERENCES `pilots` (`id`),
+  CONSTRAINT `aircraft_location_pilots_region_id_foreign` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +83,7 @@ CREATE TABLE `aircraft_location_pilots` (
 
 LOCK TABLES `aircraft_location_pilots` WRITE;
 /*!40000 ALTER TABLE `aircraft_location_pilots` DISABLE KEYS */;
-INSERT INTO `aircraft_location_pilots` VALUES (1,'2024-04-21','14:30:00',3,2,1,1,1,NULL,'2024-04-03 09:20:42'),(2,'2024-04-18','18:00:00',4,6,1,2,1,'2024-03-08 15:38:26','2024-04-03 09:04:50'),(3,'2024-05-11','08:00:00',4,6,3,1,1,'2024-03-22 10:32:16','2024-04-03 09:04:57'),(4,'2024-05-11','12:30:00',4,2,3,4,1,'2024-03-22 10:33:06','2024-04-03 09:05:04'),(5,'2024-05-11','16:00:00',3,6,3,4,2,'2024-03-22 10:35:55','2024-04-03 09:05:11'),(6,'2024-05-18','08:00:00',3,6,1,2,0,'2024-03-22 10:36:39','2024-04-03 09:05:20');
+INSERT INTO `aircraft_location_pilots` VALUES (1,'2024-04-21','14:30:00',3,2,3,1,1,1,NULL,'2024-04-04 11:41:25'),(2,'2024-04-18','18:00:00',4,6,1,NULL,2,1,'2024-03-08 15:38:26','2024-04-03 09:04:50'),(3,'2024-05-11','08:00:00',4,6,1,NULL,1,1,'2024-03-22 10:32:16','2024-04-03 09:04:57'),(4,'2024-05-11','12:30:00',4,2,1,NULL,4,1,'2024-03-22 10:33:06','2024-04-03 09:05:04'),(5,'2024-05-11','16:00:00',3,6,1,NULL,4,2,'2024-03-22 10:35:55','2024-04-03 09:05:11'),(6,'2024-05-18','08:00:00',3,6,1,NULL,2,0,'2024-03-22 10:36:39','2024-04-03 09:05:20'),(7,'2024-04-27','08:00:00',4,6,1,NULL,2,0,'2024-04-04 11:44:47','2024-04-04 11:44:47');
 /*!40000 ALTER TABLE `aircraft_location_pilots` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -107,7 +110,7 @@ CREATE TABLE `aircraft_tickettype` (
 
 LOCK TABLES `aircraft_tickettype` WRITE;
 /*!40000 ALTER TABLE `aircraft_tickettype` DISABLE KEYS */;
-INSERT INTO `aircraft_tickettype` VALUES (2,10),(6,2),(6,8);
+INSERT INTO `aircraft_tickettype` VALUES (2,10),(6,2),(6,8),(1,10);
 /*!40000 ALTER TABLE `aircraft_tickettype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +211,7 @@ CREATE TABLE `coupons` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,7 +220,7 @@ CREATE TABLE `coupons` (
 
 LOCK TABLES `coupons` WRITE;
 /*!40000 ALTER TABLE `coupons` DISABLE KEYS */;
-INSERT INTO `coupons` VALUES (4,1,'RE45678','Egyeb',1,0,8,0,'2024-03-20 10:02:58','2024-03-27 17:39:12'),(8,1,'etwetwetw','Egyéb',2,0,8,0,'2024-03-20 10:27:21','2024-03-27 09:21:50'),(12,1,'dsa343223','Egyéb',1,0,8,1,'2024-03-21 15:17:33','2024-03-27 09:11:40'),(13,1,'dsasd','Egyéb',2,0,8,3,'2024-03-21 16:02:15','2024-03-21 16:02:15'),(14,1,'e507638','Egyéb',2,0,8,1,'2024-03-22 14:06:53','2024-03-27 09:05:54'),(15,1,'zzz-7543','Egyéb',1,1,8,1,'2024-03-25 07:37:29','2024-03-27 09:12:04');
+INSERT INTO `coupons` VALUES (8,1,'etwetwetw','Egyéb',2,0,8,0,'2024-03-20 10:27:21','2024-03-27 09:21:50'),(12,1,'dsa343223','Egyéb',1,0,8,1,'2024-03-21 15:17:33','2024-03-27 09:11:40'),(13,1,'dsasd','Egyéb',2,0,8,3,'2024-03-21 16:02:15','2024-03-21 16:02:15'),(14,1,'e507638','Egyéb',2,0,8,1,'2024-03-22 14:06:53','2024-03-27 09:05:54'),(15,1,'zzz-7543','Meglepkék',1,1,8,1,'2024-03-25 07:37:29','2024-03-27 09:12:04'),(16,1,'wq1234','Egyéb',2,2,NULL,0,'2024-04-04 13:02:45','2024-04-04 13:02:45'),(17,1,'ewewewe','Egyéb',1,0,NULL,0,'2024-04-04 13:09:37','2024-04-04 13:09:37');
 /*!40000 ALTER TABLE `coupons` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -325,7 +328,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -334,7 +337,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1),(2,'2014_10_12_100000_create_password_reset_tokens_table',1),(3,'2019_08_19_000000_create_failed_jobs_table',1),(4,'2019_12_14_000001_create_personal_access_tokens_table',1),(6,'2024_03_05_074750_create_aircrafts_table',2),(7,'2024_03_05_075315_create_locations_table',3),(8,'2024_03_05_080828_create_pilots_table',4),(9,'2024_03_05_080959_create_aircraft_location_pilots_table',5),(10,'2024_03_05_081104_create_tickettypes_table',6),(12,'2024_03_05_084152_create_aircraft_table',8),(13,'2024_03_05_084857_create_aircraft_location_pilots_table',9),(14,'2024_03_05_085249_create_tickettype_aircraft_table',10),(17,'2024_03_06_092937_create_area_types_table',11),(23,'2024_03_11_130827_create_tickettype_aircraft_table',12),(25,'2024_03_18_120004_create_coupons_table',13),(26,'2024_03_19_105531_create_passengers_table',14),(27,'2024_03_19_132138_add_field_to_coupons_table',15),(29,'2024_03_19_140228_create_jobs_table',16),(30,'2024_03_19_125745_create_permission_tables',17),(33,'2024_03_19_150033_add_coupon_code_column_to_coupons_table',18),(34,'2024_03_19_155715_add_body_weight_column_to_passengers_table',19),(38,'2024_03_20_091008_add_coupon_id_column_to_passengers_table',20),(40,'2024_03_21_094811_add_tickettype_id_column_to_coupons_table',21),(41,'2024_03_21_095628_create_checkins_table',22),(42,'2024_03_21_071203_add_phone_column_to_users_table',23),(43,'2024_03_26_140026_add_ticket_type_flags_columns_to_aircraft_table',24),(44,'2024_03_28_121758_add_aircraft_type_column_to_coupons_table',25),(45,'2024_03_28_131125_add_deleted_at_column_to_users_table',25),(46,'2024_03_28_141306_create_coupon_code_attempts_table',25),(48,'2024_04_02_095958_add_email_and_phone_columns_to_passengers_table',26),(51,'2024_04_02_134327_modifying_columns_to_tickettypes_table',27),(52,'2024_04_03_074914_modifying_columns_to_aircraft_table',28),(53,'2024_04_03_084825_add_period_of_time_column_to_aircraft_location_pilots_table',29),(54,'2024_04_03_094115_create_regions_table',30),(58,'2024_04_03_122627_add_region_id_column_to_locations_table',31),(59,'2024_04_03_141000_create_aircraft_tickettype_table',32),(60,'2024_04_04_070055_modifying_columns_to_coupons_table',33);
+INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1),(2,'2014_10_12_100000_create_password_reset_tokens_table',1),(3,'2019_08_19_000000_create_failed_jobs_table',1),(4,'2019_12_14_000001_create_personal_access_tokens_table',1),(6,'2024_03_05_074750_create_aircrafts_table',2),(7,'2024_03_05_075315_create_locations_table',3),(8,'2024_03_05_080828_create_pilots_table',4),(9,'2024_03_05_080959_create_aircraft_location_pilots_table',5),(10,'2024_03_05_081104_create_tickettypes_table',6),(12,'2024_03_05_084152_create_aircraft_table',8),(13,'2024_03_05_084857_create_aircraft_location_pilots_table',9),(14,'2024_03_05_085249_create_tickettype_aircraft_table',10),(17,'2024_03_06_092937_create_area_types_table',11),(23,'2024_03_11_130827_create_tickettype_aircraft_table',12),(25,'2024_03_18_120004_create_coupons_table',13),(26,'2024_03_19_105531_create_passengers_table',14),(27,'2024_03_19_132138_add_field_to_coupons_table',15),(29,'2024_03_19_140228_create_jobs_table',16),(30,'2024_03_19_125745_create_permission_tables',17),(33,'2024_03_19_150033_add_coupon_code_column_to_coupons_table',18),(34,'2024_03_19_155715_add_body_weight_column_to_passengers_table',19),(38,'2024_03_20_091008_add_coupon_id_column_to_passengers_table',20),(40,'2024_03_21_094811_add_tickettype_id_column_to_coupons_table',21),(41,'2024_03_21_095628_create_checkins_table',22),(42,'2024_03_21_071203_add_phone_column_to_users_table',23),(43,'2024_03_26_140026_add_ticket_type_flags_columns_to_aircraft_table',24),(44,'2024_03_28_121758_add_aircraft_type_column_to_coupons_table',25),(45,'2024_03_28_131125_add_deleted_at_column_to_users_table',25),(46,'2024_03_28_141306_create_coupon_code_attempts_table',25),(48,'2024_04_02_095958_add_email_and_phone_columns_to_passengers_table',26),(51,'2024_04_02_134327_modifying_columns_to_tickettypes_table',27),(52,'2024_04_03_074914_modifying_columns_to_aircraft_table',28),(53,'2024_04_03_084825_add_period_of_time_column_to_aircraft_location_pilots_table',29),(54,'2024_04_03_094115_create_regions_table',30),(58,'2024_04_03_122627_add_region_id_column_to_locations_table',31),(59,'2024_04_03_141000_create_aircraft_tickettype_table',32),(60,'2024_04_04_070055_modifying_columns_to_coupons_table',33),(61,'2024_04_04_072218_add_default_column_to_tickettypes_table',34),(62,'2024_04_04_093023_modifying_columns_to_aircraft_location_pilots',35);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -631,6 +634,7 @@ CREATE TABLE `tickettypes` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
   `color` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `default` tinyint(1) NOT NULL DEFAULT '0',
   `aircrafttype` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -645,7 +649,7 @@ CREATE TABLE `tickettypes` (
 
 LOCK TABLES `tickettypes` WRITE;
 /*!40000 ALTER TABLE `tickettypes` DISABLE KEYS */;
-INSERT INTO `tickettypes` VALUES (2,'Normál','Egy egy általános jegytípus','#ff11ee',0,'2024-03-11 10:03:24','2024-04-03 07:16:41',NULL),(3,'Felnőtt 3 személyes VIP és PRIVÁT jegy','Ez egy három személyes VIP repülés PRIVÁT ellátással',NULL,NULL,'2024-03-11 11:25:38','2024-03-22 10:50:15','2024-03-22 10:50:15'),(4,'Gyermek jegy','Gyermek jegyünket 6-14 éves korig tudja egy ifjú titán igénybe venni felnőtt kísérővel.',NULL,NULL,'2024-03-22 10:40:00','2024-04-02 12:58:47','2024-04-02 12:58:47'),(5,'Privát','Ez egy privát jegytípus','#e88014',0,'2024-03-22 10:41:25','2024-04-03 07:11:45',NULL),(6,'Félprivát','Ez egy félprivát jegytípus','#d10000',0,'2024-03-22 10:42:34','2024-04-03 07:12:30',NULL),(7,'VIP','Ez egy VIP jegytípus','#00bab5',0,'2024-03-22 10:44:07','2024-04-03 07:14:02',NULL),(8,'Sztratoszféra','Ez egy sztratoszféra jegytípus','#001db5',0,'2024-03-22 10:45:10','2024-04-03 07:15:01',NULL),(9,'Szuperior','Ez egy szuperior jegytípus','#34e000',0,'2024-03-22 10:49:52','2024-04-03 07:15:43',NULL),(10,'Kisrepülős','Ez egy kisrepülős jegytípus','#8829e8',1,'2024-04-03 07:16:28','2024-04-03 07:16:28',NULL);
+INSERT INTO `tickettypes` VALUES (2,'Normál','Egy egy általános jegytípus','#ff11ee',1,0,'2024-03-11 10:03:24','2024-04-03 07:16:41',NULL),(5,'Privát','Ez egy privát jegytípus','#e88014',0,0,'2024-03-22 10:41:25','2024-04-04 08:35:12',NULL),(6,'Félprivát','Ez egy félprivát jegytípus','#d10000',0,0,'2024-03-22 10:42:34','2024-04-03 07:12:30',NULL),(7,'VIP','Ez egy VIP jegytípus','#00bab5',0,0,'2024-03-22 10:44:07','2024-04-03 07:14:02',NULL),(8,'Sztratoszféra','Ez egy sztratoszféra jegytípus','#001db5',0,0,'2024-03-22 10:45:10','2024-04-03 07:15:01',NULL),(9,'Szuperior','Ez egy szuperior jegytípus','#34e000',0,0,'2024-03-22 10:49:52','2024-04-03 07:15:43',NULL),(10,'Kisrepülős','Ez egy kisrepülős jegytípus','#8829e8',1,1,'2024-04-03 07:16:28','2024-04-03 07:16:28',NULL);
 /*!40000 ALTER TABLE `tickettypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -691,4 +695,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-04  9:10:23
+-- Dump completed on 2024-04-04 15:16:58
