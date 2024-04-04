@@ -9,9 +9,12 @@ use Livewire\Attributes\Computed;
 use App\Models\AircraftLocationPilot;
 use App\Models\Checkin as CheckinModel;
 use App\Enums\AircraftLocationPilotStatus;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Checkin extends Page
 {
+    use HasPageShield;
+    
     public $coupons;
     public $coupon_id;
     protected static ?string $title = 'Jelentkezések';
