@@ -68,95 +68,105 @@ class CouponResource extends Resource
                     ->schema([
                         Section::make()
                             ->schema([
-                                TextInput::make('coupon_code')
-                                    /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
-                                    ->helperText('Adja meg a már korábban megkapott kuponkódját.')
-                                    ->label('Kuponkód')
-                                    ->prefixIcon('iconoir-password-cursor')
-                                    ->placeholder('ABC-'. random_int(100000, 999999))
-                                    ->required()
-                                    ->minLength(3)
-                                    ->maxLength(255)
-                                    ->disabledOn('edit'),
 
-                                Fieldset::make('Forrás')
-                                    ->hiddenOn('edit')
-                                    ->schema([
-                                        ToggleButtons::make('source')
-                                            ->helperText('Válassza ki honnan származik az adott kupon.')
-                                            ->label('Válasszon')
-                                            ->inline()
-                                            ->required()
-                                            ->default('Meglepkék')
-                                            ->disabledOn('edit')
-                                            ->live()
-                                            ->options([
-                                                'Meglepkék' => 'Meglepkék',
-                                                'Ballonozz' => 'Ballonozz.hu',
-                                                'Egyéb' => 'Egyéb',
-                                            ])
-                                            ->icons([
-                                                'Meglepkék' => 'iconoir-hot-air-balloon',
-                                                'Ballonozz' => 'tabler-butterfly',
-                                                'Egyéb' => 'tabler-progress-help',
-                                            ])
-                                            ->colors([
-                                                'Meglepkék' => 'info',
-                                                'Ballonozz' => 'info',
-                                                'Egyéb' => 'info',
-                                            ]),
-                                    ])->columns(1),
-                                
-                                    Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
-                                    ->action(
-                                        function(Get $get)
-                                        {
-                                            $checkable_coupon_code = $get('coupon_code');
-                                            $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
-                                            if (!empty($finding_match))
-                                            {
-                                                //Ez fut le ha már van ilyen kupon a táblában
-                                            }
-                                            if (empty($finding_match))
-                                            {
-                                                /*
-                                                if (count(auth()->user()->attempts) === env('MAX_COUPON_CODE_ATTEMPTS', 5)) {
-                                                    Auth::user()->delete();                                              
-                                                }
-                                                CouponCodeAttempt::create(['user_id' => Auth::id()]);
-                                                */
-                                                //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
-                                                $response_order = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
-                                                
-                                                if ($response_order->successful())
-                                                {
-                                                    $res = $response_order->json();
-                                                    foreach($res['line_items'] as $item) {
-                                                        //dump($item['product_id'], $item['quantity']);
-                                                        $product_id = $item['product_id'];
+                                Grid::make(2)
+                                ->schema([
 
-                                                        $response_orders_atributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$product_id);
+                                    Section::make()
+                                        ->schema([
+                                            TextInput::make('coupon_code')
+                                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
+                                                ->helperText('Adja meg a már korábban megkapott kuponkódját.')
+                                                ->label('Kuponkód')
+                                                ->prefixIcon('iconoir-password-cursor')
+                                                ->placeholder('ABC-'. random_int(100000, 999999))
+                                                ->required()
+                                                ->minLength(3)
+                                                ->maxLength(255)
+                                                ->disabledOn('edit'),
+                                        ])->columnSpan(1),
+                                    Section::make()
+                                        ->schema([
 
+                                            ToggleButtons::make('source')
+                                                ->helperText('Válassza ki honnan származik az adott kupon.')
+                                                ->label('Válassza ki kuponjának forrását')
+                                                ->inline()
+                                                ->required()
+                                                ->default('Meglepkék')
+                                                ->disabledOn('edit')
+                                                ->live()
+                                                ->options([
+                                                    'Meglepkék' => 'Meglepkék',
+                                                    'Ballonozz' => 'Ballonozz.hu',
+                                                    'Egyéb' => 'Egyéb',
+                                                ])
+                                                ->icons([
+                                                    'Meglepkék' => 'iconoir-hot-air-balloon',
+                                                    'Ballonozz' => 'tabler-butterfly',
+                                                    'Egyéb' => 'tabler-progress-help',
+                                                ])
+                                                ->colors([
+                                                    'Meglepkék' => 'info',
+                                                    'Ballonozz' => 'info',
+                                                    'Egyéb' => 'info',
+                                                ]),
+
+                                            /*
+                                            Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
+                                                ->action(
+                                                    function(Get $get)
+                                                    {
+                                                        $checkable_coupon_code = $get('coupon_code');
+                                                        $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
+                                                        if (!empty($finding_match))
+                                                        {
+                                                            //Ez fut le ha már van ilyen kupon a táblában
+                                                        }
+                                                        if (empty($finding_match))
+                                                        {
+                                                            /*
+                                                            if (count(auth()->user()->attempts) === env('MAX_COUPON_CODE_ATTEMPTS', 5)) {
+                                                                Auth::user()->delete();                                              
+                                                            }
+                                                            CouponCodeAttempt::create(['user_id' => Auth::id()]);
+                                                            *//*
+                                                            //Ez fut le ha még nincs ilyen kupon a táblában, innen mehet az api lekérdezés
+                                                            $response_order = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
+                                                            
+                                                            if ($response_order->successful())
+                                                            {
+                                                                $res = $response_order->json();
+                                                                foreach($res['line_items'] as $item) {
+                                                                    //dump($item['product_id'], $item['quantity']);
+                                                                    $product_id = $item['product_id'];
+
+                                                                    $response_orders_atributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$product_id);
+
+                                                                }
+                                                                return;
+                                                                //dd($response_order->json()['line_items'][0]['product_id']);
+                                                            }
+                                                        }
                                                     }
-                                                    return;
-                                                    //dd($response_order->json()['line_items'][0]['product_id']);
-                                                }
-                                            }
-                                        }
-                                    )
-                                    ])
-                                    ->hiddenOn('edit')
-                                    ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb')),
+                                                )
+                                                ])
+                                                ->hiddenOn('edit')
+                                                ->hidden(fn (GET $get): bool => ($get('source')=='Egyéb')),
 
-                                    Actions::make([Action::make('Létrehozás')
-                                     ])
-                                        ->hiddenOn('edit')
-                                        ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb')),
-                            
-                            ])->columnSpan(4),
+                                            Actions::make([Action::make('Létrehozás')
+                                                ])
+                                                    ->hiddenOn('edit')
+                                                    ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb')),
+                                                */
+                                        ])->columnSpan(1),
+
+                                    ]),
+
+                            ])->columnSpan(8),
 
                         Section::make()
-                            ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb'))                
+                            ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' && $operation=='create'))                
                             ->schema([
                                 Fieldset::make('Utasok száma')
                                     ->schema([
@@ -184,7 +194,7 @@ class CouponResource extends Resource
                                             ->maxLength(10)
                                             ->suffix(' fő'),
                                     ])->columns(2),
-
+                                /*
                                 Fieldset::make('Extra beállítások')
                                     ->schema([
                                         Forms\Components\Toggle::make('vip')
@@ -207,13 +217,14 @@ class CouponResource extends Resource
                                             ->default(0),
 
                                     ])->columns(2),
+                                    */
                             ])->columnSpan(4),
                         //Hidden::make('status')->default('0'),
                     ]),
                     
                 Grid::make(12)
-                    ->hiddenOn('create')
-                    ->hidden(fn (GET $get) => ($get('status')!='1') && ($get('status')!='2'))
+                    //->hiddenOn('create')
+                    ->visible(fn (GET $get, $operation) => (($get('adult') + $get('children')) > 0) && $operation == 'edit')
                     ->schema([
                         Section::make()
                         ->schema([

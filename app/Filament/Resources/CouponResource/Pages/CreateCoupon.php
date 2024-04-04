@@ -17,20 +17,22 @@ class CreateCoupon extends CreateRecord
         return $data;
     }
 
+    /*
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
-
+    */
     protected static bool $canCreateAnother = false;
     
+
     /*
     protected function getCreateFormAction(): \Filament\Actions\Action
     {
         return parent::getCreateFormAction()
-            ->label(fn ($get): bool => ($get('source')=='Egyéb') ? 'Létrehozás':'Ellenőrzés');
+        ->hidden();
     }
-    */  
+    */
     /*
     protected function getCancelFormAction(): \Filament\Actions\Action
     {
