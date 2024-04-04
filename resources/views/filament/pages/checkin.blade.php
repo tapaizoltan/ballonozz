@@ -1,37 +1,39 @@
 <x-filament-panels::page>
     <div class="flex gap-5 p-2 overflow-x-auto">
         @forelse ($coupons as $coupon)
-            @if ($coupon->isActive)
-                <div class="clickable card grid justify-between min-w-max @if ($coupon->id === $coupon_id) selected @endif"
-                    wire:click="$set('coupon_id', {{ $coupon->id }})">
-                    <div class="font-semibold">{{ $coupon->coupon_code }}</div>
-                    <div class="grid">
-                        <div>{{ $coupon->source }} kupon</div>
-                        <div class="description">{{ $coupon->ticketType?->name_stored_at_source ?? null }}</div>
-                        <div class="grid grid-cols-2 relative">
-                            
-                            <div class="flex flex-col justify-self-start">
+            <div class="clickable card grid justify-between min-w-max @if ($coupon->id === $coupon_id) selected @endif"
+                wire:click="$set('coupon_id', {{ $coupon->id }})">
+                <div class="font-semibold">{{ $coupon->coupon_code }}</div>
+                <div class="grid">
+                    <div>{{ $coupon->source }} kupon</div>
+                    {{-- <div class="description">{{ $coupon->tickettype?->name_stored_at_source ?? null }}</div> --}}
+                    <div class="grid grid-cols-2 relative">
+                        
+                        <div class="flex flex-col justify-self-start">
+                            @if ($coupon->adult)  
                                 <div class="flex">
                                     <span class="quantity">{{ $coupon->adult }} </span>
                                     <span class="quantity-description">felnőtt</span>
                                 </div>
+                            @endif
+                            @if ($coupon->children)    
                                 <div class="flex">
                                     <span class="quantity">{{ $coupon->children }} </span>
                                     <span class="quantity-description">gyerek</span>
                                 </div>
-                            </div>
-                            <div class="flex flex-col justify-self-end absolute top-1/2 translate-y-[-50%]">
-                                @if($coupon->private->value)    
-                                    @svg($coupon->private->getIcon())                             
-                                @endif
-                                @if ($coupon->vip->value)
-                                    @svg($coupon->vip->getIcon())
-                                @endif
-                            </div>
+                            @endif
                         </div>
+                        {{-- <div class="flex flex-col justify-self-end absolute top-1/2 translate-y-[-50%]">
+                            @if($coupon->private->value)    
+                                @svg($coupon->private->getIcon())                             
+                            @endif
+                            @if ($coupon->vip->value)
+                                @svg($coupon->vip->getIcon())
+                            @endif
+                        </div> --}}
                     </div>
                 </div>
-            @endif
+            </div>
         @empty
             <div class="card w-full">
                 <div class="grid justify-center p-10">
@@ -65,7 +67,7 @@
                     <div class="grid grid-flow-col gap-2">
                         <div><div class="card max-h-min !py-2">
                         
-                    <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d.') }}</div>
+                    <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d. (l)') }}</div>
                 @elseif($fly_at != $event->date && $fly_at != null)
                     @php
                         $fly_at = $event->date;
@@ -73,7 +75,7 @@
                     </div></div></div><div class="grid grid-flow-col gap-2">
                         <div>
                         <div class="card max-h-min !py-2">
-                    <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d.') }}</div>
+                    <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d. (l)') }}</div>
                 @endif
 
                 <div class="card mb-4 grid gap-2 min-w-max border-2 @if($selected && !$finalized && !$this->coupon->is_used || $finalized && $selected && $checked) border-green-500/80 @else dark:border-white/20 @endif @if($selected && $finalized && $checked) bg-green-600/10 dark:bg-[#4ade80]/10 @elseif($finalized) bg-zinc-200/20 text-zinc-400 @endif">
@@ -91,10 +93,10 @@
                         <span>{{ $event->location->name }}</span>
                     </div>
 
-                    <div class="flex gap-2">
+                    {{-- <div class="flex gap-2">
                         <span class="@if($selected && !$finalized || $finalized && $selected && $checked || !$selected && !$finalized) text-blue-400 @else text-blue-400/50 @endif">@svg($event->aircraft->type->getIcon())</span>
                         <span>{{ $event->aircraft->name }}</span>
-                    </div>
+                    </div> --}}
 
                     <div class="flex justify-between">
                         <div class="flex text-zinc-400 justify-self-center">

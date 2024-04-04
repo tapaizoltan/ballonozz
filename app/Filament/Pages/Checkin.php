@@ -22,7 +22,19 @@ class Checkin extends Page
 
     public function mount()
     {
-        $this->coupons = Coupon::query()->orderBy('source')->orderBy('coupon_code')->get();
+        $this->coupons = Coupon::query()
+            ->orderBy('source')
+            ->orderBy('coupon_code')
+            ->get()
+            ->map(function ($coupon) {
+                
+                if ($coupon->isActive) {
+                    return $coupon;
+                }
+
+                return null;
+
+            })->whereNotNull();
 
         if ($this->coupons->count()) {
             $this->coupon_id = $this->coupons->first()->id;
@@ -36,7 +48,7 @@ class Checkin extends Page
             return null;
         }
         
-        return $this->coupons->find($this->coupon_id);
+        return $this->coupons->where('id', $this->coupon_id)->first();
     }
 
     #[Computed]
@@ -47,12 +59,21 @@ class Checkin extends Page
         }
 
         return AircraftLocationPilot::query()
-                ->where('date', '>=', now()->format('Y-m-d')) // TODO: time column?
-                ->whereIn('status', [AircraftLocationPilotStatus::Published, AircraftLocationPilotStatus::Finalized])
-                ->whereIn('aircraft_id', Aircraft::flyable($this->coupon->membersCount, $this->coupon->vip, $this->coupon->private, $this->coupon->aircraft_type)->pluck('id')->toArray())
-                ->orderBy('date')
-                ->orderBy('time')
-                ->get();
+
+            // TODO Jelenleg csak a mainapra szűrünk,
+            // azaz tudunk jelentkezni olyan eseményre ami ma van, de már pl. 1 órája végét ért.
+            ->where('date', '>=', now()->format('Y-m-d'))  
+        
+            ->whereIn('status', [AircraftLocationPilotStatus::Published, AircraftLocationPilotStatus::Finalized])
+            ->withWhereHas('aircraft', function ($query) {
+                $query->where('number_of_person', '>=', $this->coupon->membersCount);
+            })
+            ->withWhereHas('aircraft.tickettypes', function ($query) {
+                $query->where('id', $this->coupon->tickettype->id);
+            })
+            ->orderBy('date')
+            ->orderBy('time')
+            ->get();
     }
 
     public function checkIn($aircraftLocationPilotId)

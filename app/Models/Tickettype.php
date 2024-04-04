@@ -14,9 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Tickettype extends Model
 {
     protected $casts = [
-        'vip' => TicketTypeVip::class,
-        'private' => TicketTypePrivate::class,
-
         'aircrafttype' => AircraftType::class,
     ];
 
@@ -29,7 +26,12 @@ class Tickettype extends Model
     */
     public function aircrafts(): BelongsToMany
     {
-        return $this->belongsToMany(Aircraft::class, 'tickettype_aircraft');
+        return $this->belongsToMany(Aircraft::class, 'aircraft_tickettype');
+    }
+
+    public function coupons()
+    {
+        return $this->hasMany(Coupon::class);
     }
 
     use SoftDeletes;

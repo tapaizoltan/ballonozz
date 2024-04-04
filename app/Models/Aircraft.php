@@ -23,11 +23,13 @@ class Aircraft extends Model
         return $this->belongsToMany(Tickettype::class, 'aircraft_tickettype');
     }
 
-    //légijármű selector szabályrendszer
-    public static function flyable($passenger_count, $vip_flag, $private_flag, $aircraft_type)
+    public function events()
     {
-        return self::where(function ($q) use ($passenger_count) {
-            $q->where('unlimited', '=', 1)->orWhere('number_of_person', '>=', $passenger_count);
-        })->where('vip', '=', $vip_flag)->where('private', '=', $private_flag)->where('type', $aircraft_type)->get();
+        return $this->hasMany(AircraftLocationPilot::class, 'aircraft_id', 'id');
+    }
+    //légijármű selector szabályrendszer
+    public static function flyable($passenger_count, $tickettype_id)
+    {
+        return self::Where('number_of_person', '>=', $passenger_count)->where('type', $tickettype_id)->get();
     }
 }
