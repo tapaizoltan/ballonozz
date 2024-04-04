@@ -313,7 +313,7 @@ class CouponResource extends Resource
                 TextColumn::make('adult')
                     ->label('Utasok')
                     ->formatStateUsing(function ($state, Coupon $payload) {
-                        return '<p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->adult . '</b> felnőtt</p><p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->children . '</b> gyerek</p>';
+                        return '<p style="color:gray; font-size:9pt;"><b style="font-size:11pt; font-weight:normal;">' . $payload->adult . '</b> felnőtt</p><p style="color:gray; font-size:9pt;"><b style="color:white; font-size:11pt; font-weight:normal;">' . $payload->children . '</b> gyerek</p>';
                     })->html()
                     ->searchable(),
                 TextColumn::make('vip')

@@ -24,10 +24,8 @@ class Aircraft extends Model
     }
 
     //légijármű selector szabályrendszer
-    public static function flyable($passenger_count, $vip_flag, $private_flag, $aircraft_type)
+    public static function flyable($passenger_count, $tickettype_id)
     {
-        return self::where(function ($q) use ($passenger_count) {
-            $q->where('unlimited', '=', 1)->orWhere('number_of_person', '>=', $passenger_count);
-        })->where('vip', '=', $vip_flag)->where('private', '=', $private_flag)->where('type', $aircraft_type)->get();
+        return self::Where('number_of_person', '>=', $passenger_count)->where('type', $tickettype_id)->get();
     }
 }
