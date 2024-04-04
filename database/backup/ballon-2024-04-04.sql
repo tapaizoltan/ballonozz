@@ -163,7 +163,7 @@ CREATE TABLE `checkins` (
 
 LOCK TABLES `checkins` WRITE;
 /*!40000 ALTER TABLE `checkins` DISABLE KEYS */;
-INSERT INTO `checkins` VALUES (2,12,0,'2024-03-27 17:15:28'),(3,12,0,'2024-03-27 17:15:38'),(5,12,0,'2024-03-27 17:15:41');
+INSERT INTO `checkins` VALUES (2,12,0,'2024-04-04 13:20:33'),(3,12,0,'2024-03-27 17:15:38'),(5,12,0,'2024-03-27 17:15:41');
 /*!40000 ALTER TABLE `checkins` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,7 +220,7 @@ CREATE TABLE `coupons` (
 
 LOCK TABLES `coupons` WRITE;
 /*!40000 ALTER TABLE `coupons` DISABLE KEYS */;
-INSERT INTO `coupons` VALUES (8,1,'etwetwetw','Egyéb',2,0,8,0,'2024-03-20 10:27:21','2024-03-27 09:21:50'),(12,1,'dsa343223','Egyéb',1,0,8,1,'2024-03-21 15:17:33','2024-03-27 09:11:40'),(13,1,'dsasd','Egyéb',2,0,8,3,'2024-03-21 16:02:15','2024-03-21 16:02:15'),(14,1,'e507638','Egyéb',2,0,8,1,'2024-03-22 14:06:53','2024-03-27 09:05:54'),(15,1,'zzz-7543','Meglepkék',1,1,8,1,'2024-03-25 07:37:29','2024-03-27 09:12:04'),(16,1,'wq1234','Egyéb',2,2,NULL,0,'2024-04-04 13:02:45','2024-04-04 13:02:45'),(17,1,'ewewewe','Egyéb',1,0,NULL,0,'2024-04-04 13:09:37','2024-04-04 13:09:37');
+INSERT INTO `coupons` VALUES (8,1,'etwetwetw','Egyéb',2,0,10,1,'2024-03-20 10:27:21','2024-04-04 16:36:36'),(12,1,'dsa343223','Egyéb',1,0,7,1,'2024-03-21 15:17:33','2024-03-27 09:11:40'),(13,1,'dsasd','Egyéb',2,0,8,3,'2024-03-21 16:02:15','2024-03-21 16:02:15'),(14,1,'e507638','Egyéb',2,0,8,1,'2024-03-22 14:06:53','2024-03-27 09:05:54'),(15,1,'zzz-7543','Meglepkék',1,1,8,1,'2024-03-25 07:37:29','2024-03-27 09:12:04'),(16,1,'wq1234','Egyéb',2,2,NULL,0,'2024-04-04 13:02:45','2024-04-04 13:02:45'),(17,1,'ewewewe','Egyéb',1,0,NULL,0,'2024-04-04 13:09:37','2024-04-04 13:09:37');
 /*!40000 ALTER TABLE `coupons` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -649,7 +649,7 @@ CREATE TABLE `tickettypes` (
 
 LOCK TABLES `tickettypes` WRITE;
 /*!40000 ALTER TABLE `tickettypes` DISABLE KEYS */;
-INSERT INTO `tickettypes` VALUES (2,'Normál','Egy egy általános jegytípus','#ff11ee',1,0,'2024-03-11 10:03:24','2024-04-03 07:16:41',NULL),(5,'Privát','Ez egy privát jegytípus','#e88014',0,0,'2024-03-22 10:41:25','2024-04-04 08:35:12',NULL),(6,'Félprivát','Ez egy félprivát jegytípus','#d10000',0,0,'2024-03-22 10:42:34','2024-04-03 07:12:30',NULL),(7,'VIP','Ez egy VIP jegytípus','#00bab5',0,0,'2024-03-22 10:44:07','2024-04-03 07:14:02',NULL),(8,'Sztratoszféra','Ez egy sztratoszféra jegytípus','#001db5',0,0,'2024-03-22 10:45:10','2024-04-03 07:15:01',NULL),(9,'Szuperior','Ez egy szuperior jegytípus','#34e000',0,0,'2024-03-22 10:49:52','2024-04-03 07:15:43',NULL),(10,'Kisrepülős','Ez egy kisrepülős jegytípus','#8829e8',1,1,'2024-04-03 07:16:28','2024-04-03 07:16:28',NULL);
+INSERT INTO `tickettypes` VALUES (2,'Normál','Egy egy általános jegytípus','#ff11ee',1,0,'2024-03-11 10:03:24','2024-04-03 07:16:41',NULL),(5,'Privát','Ez egy privát jegytípus','#e88014',0,0,'2024-03-22 10:41:25','2024-04-04 08:35:12',NULL),(6,'Félprivát','Ez egy félprivát jegytípus','#d10000',0,0,'2024-03-22 10:42:34','2024-04-03 07:12:30',NULL),(7,'VIP','Ez egy VIP jegytípus','#ffffff',0,0,'2024-03-22 10:44:07','2024-04-04 13:24:21',NULL),(8,'Sztratoszféra','Ez egy sztratoszféra jegytípus','#001db5',0,0,'2024-03-22 10:45:10','2024-04-03 07:15:01',NULL),(9,'Szuperior','Ez egy szuperior jegytípus','#34e000',0,0,'2024-03-22 10:49:52','2024-04-03 07:15:43',NULL),(10,'Kisrepülős','Ez egy kisrepülős jegytípus','#8829e8',1,1,'2024-04-03 07:16:28','2024-04-03 07:16:28',NULL);
 /*!40000 ALTER TABLE `tickettypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -695,4 +695,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-04 15:16:58
+-- Dump completed on 2024-04-04 18:40:02
