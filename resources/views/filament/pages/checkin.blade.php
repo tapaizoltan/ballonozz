@@ -44,7 +44,7 @@
             <h1 class="text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ $this->coupon->coupon_code }}</h1>
             <span class="pl-2 pt-1.5 sm:pt-2.5">{{ $this->coupon->source }} kupon</span>
         </div>
-        <div class="flex gap-5 w-full p-2 overflow-x-auto">
+        <div class="flex flex-wrap gap-x-5 gap-y-8 w-full p-2 overflow-x-auto">
             @foreach ($this->events as $event)
                 @php
                     $selected = $event->isChecked($this->coupon->id);
