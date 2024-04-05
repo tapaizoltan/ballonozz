@@ -51,7 +51,7 @@ class PendingcouponResource extends Resource
                                     ->minLength(3)
                                     ->maxLength(255)
                                     ->disabledOn('edit'),
-                                ])->columnSpan(4),
+                                ])->columnSpan(2),
 
                         Section::make()
                             ->schema([
@@ -118,7 +118,7 @@ class PendingcouponResource extends Resource
                                                 ]),
                                             
                                         ])->columns(2),
-                                    ])->columnSpan(4),
+                                    ])->columnSpan(5),
 
                         ]),
                     ]);
