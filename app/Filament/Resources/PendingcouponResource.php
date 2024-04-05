@@ -146,6 +146,20 @@ class PendingcouponResource extends Resource
                         return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
                     })->html()
                     ->searchable(),
+                TextColumn::make('status')
+                    ->label('Státusz')
+                    ->badge()
+                    ->size('md'),
+                TextColumn::make('tickettype_id')
+                    ->label('Jegytípus')
+                    ->badge()
+                    //->color('gray')
+                    ->color(fn ($record) => \Filament\Support\Colors\Color::Hex ($record->tickettype->color))
+                    ->formatStateUsing(function ($state, Pendingcoupon $tickettype) {
+                        $tickettype_name = Tickettype::find($tickettype->tickettype_id);
+                        return $tickettype_name->name;
+                    }),
+                    
                 /*    
                 TextColumn::make('vip')
                     ->label(false)
