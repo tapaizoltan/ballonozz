@@ -1,0 +1,22 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-CCpx8fZS.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/checking.css": {
+    "file": "assets/checking-Qdbt2Ikc.css",
+    "src": "resources/css/checking.css",
+    "isEntry": true
+  },
+  "resources/css/list-checkins.css": {
+    "file": "assets/list-checkins-MByQQMAn.css",
+    "src": "resources/css/list-checkins.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-D2jpX1vH.js",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
