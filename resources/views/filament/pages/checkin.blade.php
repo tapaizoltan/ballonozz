@@ -69,7 +69,7 @@
                     <div class="pb-2">{{ Carbon\Carbon::parse($fly_at)->translatedFormat('Y F d. (l)') }}</div>
                 @endif
 
-                <div class="card mb-4 grid gap-2 min-w-max border-2 @if($selected && !$finalized && !$this->coupon->is_used || $finalized && $selected && $checked) border-green-500/80 @else dark:border-white/20 @endif @if($selected && $finalized && $checked) bg-green-600/10 dark:bg-[#4ade80]/10 @elseif($finalized) bg-zinc-200/20 text-zinc-400 @endif">
+                <div class="card mb-4 grid gap-2 min-w-[220px] border-2 @if($selected && !$finalized && !$this->coupon->is_used || $finalized && $selected && $checked) border-green-500/80 @else dark:border-white/20 @endif @if($selected && $finalized && $checked) bg-green-600/10 dark:bg-[#4ade80]/10 @elseif($finalized) bg-zinc-200/20 text-zinc-400 @endif">
                     <div class="flex justify-between">
                         <div>{{ Carbon\Carbon::parse($event->time)->format('H:i') }}</div>
                         @if ($finalized)
@@ -84,7 +84,7 @@
                         <span>{{ $event->region->name }}</span>
                     </div>
 
-                    <div class="flex justify-between">
+                    <div class="flex justify-between gap-2">
                         <div class="flex text-zinc-400 justify-self-center">
                             <x-heroicon-m-users class="w-5"/>
                             <span class="ps-1 py-2 text-sm font-semibold">{{ $event->coupons->sum('adult') + $event->coupons->sum('children') }}</span>
