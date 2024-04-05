@@ -17,6 +17,14 @@ class CreateCoupon extends CreateRecord
         return $data;
     }
 
+    protected function getFormActions(): array
+    {
+        return [
+            Actions\Action::make('teszt'),
+            parent::getCancelFormAction()
+
+        ];
+    }   
     /*
     protected function getRedirectUrl(): string
     {
