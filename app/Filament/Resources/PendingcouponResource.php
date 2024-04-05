@@ -93,8 +93,14 @@ class PendingcouponResource extends Resource
                                                 ->prefixIcon('heroicon-o-ticket')
                                                 ->required()
                                                 //->disabledOn('edit')
-                                                ->options(Tickettype::all()->pluck('name', 'id'))
-                                                ->native(false),
+                                                //->options(Tickettype::all()->pluck('name', 'id'))
+                                                ->native(false)
+                                                //->relationship('tickettype')
+                                                ->relationship(
+                                                    name: 'tickettype',
+                                                    modifyQueryUsing: fn (Builder $query) => $query->orderBy('aircrafttype')->orderBy('default', 'desc')->orderBy('name'),
+                                                )
+                                                ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->aircrafttype->getLabel()} - {$record->name}"),
 
                                             ToggleButtons::make('status')
                                                 ->helperText('Válassza ki honnan származik az adott kupon.')
@@ -118,7 +124,7 @@ class PendingcouponResource extends Resource
                                                 ]),
                                             
                                         ])->columns(2),
-                                    ])->columnSpan(5),
+                                    ])->columnSpan(6),
 
                         ]),
                     ]);
@@ -156,7 +162,7 @@ class PendingcouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
