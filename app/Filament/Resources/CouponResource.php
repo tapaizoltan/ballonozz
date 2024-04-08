@@ -175,7 +175,7 @@ class CouponResource extends Resource
                             ])->columnSpan(6),
 
                         Section::make()
-                            ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' && $operation=='create'))                
+                            ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' && $operation=='create'))
                             ->schema([
                                 Fieldset::make('Utasok száma')
                                     ->schema([
@@ -304,9 +304,9 @@ class CouponResource extends Resource
                                             ->maxLength(30)
                                     ])->columns(3),
                                 ])->columns(5),
-                            ]),
-                        ])->columnSpan(12),
-                    ]);
+                            ])->columnSpan(12),
+                        ]),
+            ]);
     }
 
     public static function table(Table $table): Table
