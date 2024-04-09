@@ -58,7 +58,7 @@ class TickettypeResource extends Resource
                             ->maxLength(255),
                         Textarea::make('description')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
-                            ->rows(6)
+                            ->rows(4)
                             ->cols(20)
                             ->autosize()
                             ->helperText('Itt néhány sorban leírhatja ennek a jegytípusnak a jellemzőit.')

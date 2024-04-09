@@ -176,7 +176,10 @@ class PendingcouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

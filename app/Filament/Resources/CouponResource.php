@@ -104,72 +104,94 @@ class CouponResource extends Resource
                                                     'Ballonozz' => 'info',
                                                     'Egyéb' => 'info',
                                                 ]),
-
-                                            
-                                            Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
+                                                /*
+                                                Actions::make([Forms\Components\Actions\Action::make('Ellenőrzés')
                                                 ->action(
-                                                    function(Get $get)
-                                                    {
-                                                        $checkable_coupon_code = $get('coupon_code');
-                                                        $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
-                                                        if (!empty($finding_match))
+                                                        function($livewire)
                                                         {
-                                                            //Ez fut le ha már van ilyen kupon a táblában
-                                                        }
-                                                        if (empty($finding_match))
-                                                        {
-                                                            $response_coupon = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
-                                                            //Felőtt(3db->3f): 1567 
-                                                            //Családi(1db->2f+2gy): 1508
-                                                            if ($response_coupon->successful())
+                                                            $data = $livewire->form->getState();
+                                                            $checkable_coupon_code = $data['coupon_code'];
+                                                            if (!empty($checkable_coupon_code))
                                                             {
-                                                                $coupons_data = $response_coupon->json();
-                                                                foreach($coupons_data['line_items'] as $coupon)
+                                                                $finding_match = Coupon::where('coupon_code', $checkable_coupon_code)->first();
+                                                                if (!empty($finding_match))
                                                                 {
-                                                                    $response_item_nums = $coupon['quantity']; 
-                                                                    $response_product_id = $coupon['product_id'];
-                                                                    
-                                                                    $response_product_attributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$response_product_id);
-                                                                    if ($response_product_attributes->successful())
+                                                                    //Ez fut le ha már van ilyen kupon a táblában
+                                                                }
+                                                                if (empty($finding_match))
+                                                                {
+                                                                    $response_coupon = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.$checkable_coupon_code);
+                                                                    //Felőtt(3db->3f): 1567 
+                                                                    //Családi(1db->2f+2gy): 1508
+                                                                    if ($response_coupon->successful())
                                                                     {
-                                                                        $product_attributes = $response_product_attributes->json();
-
-                                                                        $tickettype = ($product_attributes['attributes'][0]['options'][0])*1;
-                                                                        $adult = ($product_attributes['attributes'][1]['options'][0])*$response_item_nums;
-                                                                        $children = ($product_attributes['attributes'][2]['options'][0])*$response_item_nums;
-
-                                                                        $new_coupon = Coupon::create([
-                                                                            'user_id' => Auth::id(),
-                                                                            'coupon_code' => $checkable_coupon_code,
-                                                                            'source' => 'Ballonozz',
-                                                                            'adult' => $adult,
-                                                                            'children' => $children,
-                                                                            'tickettype_id' => $tickettype,
-                                                                            'status' => CouponStatus::CanBeUsed,
-                                                                        ]);
-
-                                                                        return redirect()->route('filament.admin.resources.coupons.edit', ['record' => $new_coupon]);
-
+                                                                        $coupons_data = $response_coupon->json();
+                                                                        dd($payment_status = ($coupons_data['status']));
+                                                                        foreach($coupons_data['line_items'] as $coupon)
+                                                                        {
+                                                                            $response_item_nums = $coupon['quantity']; 
+                                                                            $response_product_id = $coupon['product_id'];
+                                                                            
+                                                                            $response_product_attributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$response_product_id);
+                                                                            if ($response_product_attributes->successful())
+                                                                            {
+                                                                                $product_attributes = $response_product_attributes->json();
+                                                                                $tickettype = ($product_attributes['attributes'][0]['options'][0])*1;
+                                                                                $adult = ($product_attributes['attributes'][1]['options'][0])*$response_item_nums;
+                                                                                $children = ($product_attributes['attributes'][2]['options'][0])*$response_item_nums;
+        
+                                                                                $new_coupon = Coupon::create([
+                                                                                    'user_id' => Auth::id(),
+                                                                                    'coupon_code' => $checkable_coupon_code,
+                                                                                    'source' => 'Ballonozz',
+                                                                                    'adult' => $adult,
+                                                                                    'children' => $children,
+                                                                                    'tickettype_id' => $tickettype,
+                                                                                    'status' => CouponStatus::CanBeUsed,
+                                                                                ]);
+        
+                                                                                return redirect()->route('filament.admin.resources.coupons.edit', ['record' => $new_coupon]);
+        
+                                                                            }
+                                                                        }
                                                                     }
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                )
-                                                ])
-                                                ->hidden(fn (GET $get, $operation): bool => ($get('source')=='Egyéb' || $operation=='edit')),
+                                                    )
+                                                    ])
+                                                    ->hidden(fn (GET $get, $operation): bool => ($get('source')=='Egyéb' || $operation=='edit')),*/
 
-                                            Actions::make([Action::make('Létrehozás')
-                                                ])
-                                                    ->hiddenOn('edit')
-                                                    ->hidden(fn (GET $get): bool => ($get('source')!='Egyéb')),
                                             /*
-                                            CreateAction::make()
-                                                ->model(Coupon::class)
-                                                ->label('mehet'),
-                                                */
+                                            Actions::make([Forms\Components\Actions\Action::make('Létrehozás')
+                                                    //->hiddenOn('edit')
+                                                    ->extraAttributes(['type'=>'submit'])
+                                                    ->action(
+                                                        function(Get $get, $livewire)
+                                                        {
+                                                            $data = $livewire->form->getState();
+                                                            dd($data);
+                                                            $checkable_coupon_code = $get('coupon_code');
+                                                            $adult = $get('adult');
+                                                            $children = $get('children');
+                                                            if (!empty($checkable_coupon_code) && !empty($adult))
+                                                            {
+                                                                $new_coupon = Coupon::create([
+                                                                'user_id' => Auth::id(),
+                                                                'coupon_code' => $checkable_coupon_code,
+                                                                'source' => 'Egyéb',
+                                                                'adult' => $adult,
+                                                                'children' => $children,
+                                                                'tickettype_id' => NULL,
+                                                                'status' => CouponStatus::UnderProcess,
+                                                                ]);
+                                                                return redirect()->route('filament.admin.resources.coupons.edit', ['record' => $new_coupon]);
+                                                            }                                   
+                                                        })
+                                                    ])
+                                                    ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' || $operation=='edit')),
+                                                    */
                                         ])->columnSpan(8),
-
                                     ]),
 
                             ])->columnSpan(6),
@@ -195,7 +217,6 @@ class CouponResource extends Resource
                                             ->helperText('Adja meg a kuponhoz tartozó gyermek utasok számát.')
                                             ->label('Gyermek')
                                             ->prefixIcon('tabler-horse-toy')
-                                            ->required()
                                             ->disabledOn('edit')
                                             ->numeric()
                                             ->default(0)
