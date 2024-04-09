@@ -59,7 +59,7 @@ class EditTickettype extends EditRecord
         }
         if ($aircrafttype_deafaut_tickettype_check != 0)
         {
-            //megkeresni, hogy melyik a default, abban módosítani 0-ra és ebben felülírni 1-re
+            //megkeresni, hogy melyik a default, abban módosítani 0-ra és ebben felülírni 1-re  
         }
 
         return $data;
