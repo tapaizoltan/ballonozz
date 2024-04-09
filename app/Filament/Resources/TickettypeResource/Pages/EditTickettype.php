@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TickettypeResource\Pages;
 
 use Filament\Actions;
 use App\Models\Tickettype;
+use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\TickettypeResource;
@@ -42,26 +43,13 @@ class EditTickettype extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $aircrafttype = $data['aircrafttype'];
-
-        if ($data['default'] == 0)
+        
+        if ($data['default'] == 1)
         {
-            $aircrafttype_deafaut_tickettype_check = Tickettype::where('aircrafttype', $aircrafttype)->where('default', 1)->get()->count();
-            if ($aircrafttype_deafaut_tickettype_check == 0)
-            {
-                $data['default'] = 1;
-            }
+            DB::table('tickettypes')
+            ->where('default', 1)->where('aircrafttype',$aircrafttype)
+            ->update(['default' => 0]);
         }
-
-        $aircrafttype_deafaut_tickettype_check = Tickettype::where('aircrafttype', $aircrafttype)->where('default', 1)->get()->count();
-        if ($aircrafttype_deafaut_tickettype_check == 0)
-        {
-            $data['default'] = 1;
-        }
-        if ($aircrafttype_deafaut_tickettype_check != 0)
-        {
-            //megkeresni, hogy melyik a default, abban módosítani 0-ra és ebben felülírni 1-re  
-        }
-
         return $data;
     }
 

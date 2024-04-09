@@ -115,12 +115,11 @@ class TickettypeResource extends Resource
 
                             ])->columnSpan(2),
                             
-                            Section::make() 
+                            Section::make()
+                            //->hidden(fn (GET $get, $operation): bool => ($get('default')== 1 && $operation=='edit'))
                             ->schema([
                                 Placeholder::make('default_placeholder')
-                                    ->label('Alapértelmezett')
-                                    //->content('Alapértelmezett')
-                                    ,
+                                    ->label('Alapértelmezett'),
                                 Toggle::make('default')
                                     ->onColor('success')
                                     ->onIcon('tabler-check')
