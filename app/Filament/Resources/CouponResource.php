@@ -356,16 +356,8 @@ class CouponResource extends Resource
                     ->formatStateUsing(function ($state, Coupon $payload) {
                         return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
                     })->html()
-                    ->searchable(),
-                TextColumn::make('vip')
-                    ->label(false)
-                    ->badge()
-                    ->width(30)
-                    ->size('sm'),
-                TextColumn::make('private')
-                    ->label(false)
-                    ->badge()
-                    ->size('sm'),
+                    ->searchable()
+                    ->visibleFrom('md'),
                 TextColumn::make('status')
                     ->label('Státusz')
                     ->badge()
@@ -375,10 +367,10 @@ class CouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link()
-                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
-                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                //Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link()
+                //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
                 ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
