@@ -43,10 +43,18 @@ class Calendar extends Page
                     break;
             }
             
+            $signed     = array_sum($event->coupons->map(fn ($coupon) => $coupon->membersCount)->toArray());
+            $classified = array_sum($event->coupons->map(function ($coupon) {
+                if ($coupon->pivot->status == 1) {
+                    return $coupon->membersCount;
+                }
+                return 0;
+            })->toArray());   
+
             $this->events[] = [
-                'title' => $event->region->name,
+                'title' => $event->region->name . ' '  . $classified . '/' . $signed,
                 'start' => Carbon::parse($event->date . ' ' . $event->time)->format('Y-m-d H:i:s'),
-                'end' => Carbon::parse($event->date . ' ' . $event->time)->addHours($event->period_of_time)->format('Y-m-d H:i:s'),
+                'end'   => Carbon::parse($event->date . ' ' . $event->time)->addHours($event->period_of_time)->format('Y-m-d H:i:s'),
                 'description' => '<div>Státusz: <span style="color: ' . $color . '">' . __($event->status->name) . '</span></div><div>Pilóta: ' . $event->pilot->full_name . '</div>',
                 'color' => $color
             ];
