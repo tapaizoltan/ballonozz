@@ -1,6 +1,13 @@
 <x-filament-panels::page>
 
     <div id="description" class="hidden absolute bg-white rounded-lg shadow py-2 px-4 z-50"></div>
+    <div class="flex flex-wrap justify-center gap-2">
+        <div class="bg-[#d97706] px-4 rounded text-white">Tervezett</div>
+        <div class="bg-[#2563eb] px-4 rounded text-white">Publikált</div>
+        <div class="bg-[#16a34a] px-4 rounded text-white">Véglegesített</div>
+        <div class="bg-[#71717a] px-4 rounded text-white">Végrehajtott</div>
+        <div class="bg-[#dc2626] px-4 rounded text-white">Törölt</div>
+    </div>
     <div id='calendar' class="z-10"></div>
     
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
@@ -44,7 +51,7 @@
                     // Display description when hovering over an event
                     descriptionEl.innerHTML = info.event.extendedProps.description;
                     descriptionEl.style.display = 'block';
-                    descriptionEl.style.left = (info.jsEvent.pageX + 10) + 'px';
+                    descriptionEl.style.left = (info.jsEvent.pageX - descriptionEl.offsetWidth / 2) + 'px';
                     descriptionEl.style.top = (info.jsEvent.pageY + 10) + 'px';
                 },
                 eventMouseLeave: function () {
