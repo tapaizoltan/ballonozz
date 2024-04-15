@@ -51,11 +51,18 @@ class Calendar extends Page
                 return 0;
             })->toArray());   
 
+            $classifiedWeight = array_sum($event->coupons->map(function ($coupon) {
+                if ($coupon->pivot->status == 1) {
+                    return $coupon->passengers->sum('body_weight');
+                }
+                return 0;
+            })->toArray());
+
             $this->events[] = [
                 'title' => $event->region->name . ' '  . $classified . '/' . $signed,
                 'start' => Carbon::parse($event->date . ' ' . $event->time)->format('Y-m-d H:i:s'),
                 'end'   => Carbon::parse($event->date . ' ' . $event->time)->addHours($event->period_of_time)->format('Y-m-d H:i:s'),
-                'description' => '<div>Státusz: <span style="color: ' . $color . '">' . __($event->status->name) . '</span></div><div>Pilóta: ' . $event->pilot->full_name . '</div>',
+                'description' => '<div>Helyszín: ' . ($event->location?->name ?? 'Ismeretlen') . '</div><div>Össz. tömeg: '. $classifiedWeight .'/' . $event->aircraft->payload_capacity . ' kg</div>',
                 'color' => $color
             ];
         }
