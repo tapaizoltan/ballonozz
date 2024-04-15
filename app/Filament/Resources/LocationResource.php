@@ -140,10 +140,10 @@ class LocationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->label('Elnevezés')->searchable()
-                    /*->description(function ($state, Location $region) {
+                    ->description(function ($state, Location $region) {
                         $region_name = Region::find($region->region_id);
                         return $region_name->name;
-                    })*/
+                    })
                     ,
                 TextColumn::make('region.name')
                 ->label('Régió'),
@@ -153,16 +153,16 @@ class LocationResource extends Resource
                     ->formatStateUsing(function ($state, Location $location) {
                         $areatype_name = AreaType::find($location->area_type_id);
                         return $location->zip_code . ' ' . $location->settlement . ', '. $location->address . ' ' . $areatype_name->name . ' ' . $location->address_number .'.';
-                    }),
-                    TextColumn::make('parcel_number')->label('Helyrajzi szám')->searchable(),
+                    })->visibleFrom('md'),
+                    TextColumn::make('parcel_number')->label('Helyrajzi szám')->searchable()->visibleFrom('md'),
             ])
             ->filters([
                 TrashedFilter::make()->native(false),
             ])
             ->actions([
+                /*
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
                 */
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),

@@ -5,15 +5,16 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Aircraft;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 
 /* saját use-ok */
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\IconColumn;
@@ -22,9 +23,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\AircraftResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AircraftResource\RelationManagers;
+use App\Models\Tickettype;
 
 class AircraftResource extends Resource
 {
@@ -61,6 +64,8 @@ class AircraftResource extends Resource
                                     ->label('Típus')
                                     ->inline()
                                     /*->grouped()*/
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set) => $set ('tickettypes', NULL))
                                     ->required()
                                     ->options([
                                         '0' => 'Hőlégballon',
@@ -160,8 +165,15 @@ class AircraftResource extends Resource
                             ->schema([
                                 Select::make('tickettypes')
                                 ->label('Jegytípusok')
+                                ->relationship(titleAttribute: 'name', modifyQueryUsing: fn (Builder $query, $get) => $query->where('aircrafttype',$get('type')),)
+                                ->loadingMessage('Jegytípusok betöltése...')
+                                ->suffixAction(function () {
+                                    return Action::make('remove_all')
+                                        ->icon('heroicon-s-x-circle')
+                                        ->tooltip('Összes törlése')
+                                        ->action(fn ($set) => $set('tickettypes', null));
+                                })
                                 ->multiple()
-                                ->relationship(titleAttribute: 'name')
                                 ->preload(),
                                 ])->columns(1),
 
@@ -178,12 +190,13 @@ class AircraftResource extends Resource
                 TextColumn::make('type')
                     ->label('Típus')
                     ->badge()
-                    ->size('md'),
-                TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable(),
+                    ->size('md')
+                    ->visibleFrom('sm'),
+                TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable()->visibleFrom('md'),
                 TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
-                    ->formatStateUsing(fn($state)=>$state.' fő'),
+                    ->formatStateUsing(fn($state)=>$state.' fő')->visibleFrom('lg'),
                 TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
-                    ->formatStateUsing(fn($state)=>$state.' kg'),
+                    ->formatStateUsing(fn($state)=>$state.' kg')->visibleFrom('lg'),
                 /*
                 IconColumn::make('unlimited')
                     ->label('Extra')
@@ -220,6 +233,7 @@ class AircraftResource extends Resource
                     ->size(IconColumn\IconColumnSize::Medium),
                 */
             ])
+            
             ->filters([
                 Tables\Filters\Filter::make('type')
                     ->query(fn (Builder $query) => $query->where('type', true)),
@@ -233,8 +247,8 @@ class AircraftResource extends Resource
                 Tables\Filters\TrashedFilter::make()->native(false),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                //Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
+                //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
                 /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
                 */

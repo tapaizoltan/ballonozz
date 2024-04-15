@@ -4,6 +4,7 @@ use App\Livewire\Home;
 use App\Models\Aircraft;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CouponsController;
+use App\Models\Tickettype;
 use Filament\Http\Controllers\Auth\EmailVerificationController;
 use Illuminate\Support\Facades\Http;
 /*
@@ -22,30 +23,33 @@ Route::get('/test', function(){
     //dump(env('AIRCRAFT_PASSENGER_LIMIT', 30));
     //dd(Aircraft::flyable(3, false, false));
 
-    //dump(Http::get("https://ballonozz.hu/wp-json/wc/v3/orders/1541"));
-
-    //dd(Http::withBasicAuth('ck_2f380bdd989588e272cd87603c1c8551a7a999b6', 'cs_7f6ed0ae386d5c5b0deb6fbacb41bcabd9ca9bdc')->get("https://ballonozz.hu/wp-json/wc/v3/orders/1541"));
-
-        $response = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))
-        
-        /*->withUrlParameters([
-            'endpoint' => 'https://ballonozz.hu',
-            'page' => 'wp-json',
-            'sub' => 'wc',
-            'version' => 'v3',
-            'topic' => 'orders',
-            'id' => '1503',
-            ])
-            //->get('{+endpoint}/{page}/{sub}/{version}/{topic}/{id}')*/
-            ->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.'1567');
-    
-            if ($response->successful())
+        $response_coupon = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/orders/'.'1567');
+        //Felőtt: 1567
+        //Családi: 1508
+        if ($response_coupon->successful())
+        {
+            //dd($response_coupon->json());
+            $coupons_data = $response_coupon->json();
+            foreach($coupons_data['line_items'] as $coupon)
+            {
+                //dump($item['product_id'], $item['quantity']);
+                $response_item_nums = $coupon['quantity']; 
+                $response_product_id = $coupon['product_id'];
+                
+                $response_product_attributes = Http::withBasicAuth(env('BALLONOZZ_API_USER_KEY'), env('BALLONOZZ_API_SECRET_KEY'))->get('https://ballonozz.hu/wp-json/wc/v3/products/'.$response_product_id);
+                if ($response_product_attributes->successful())
                 {
-                    $res = $response->json();
-                    foreach($res['line_items'] as $item) {
-                        dump($item['product_id'], $item['quantity']);
-                    }
-                    return;
-                    dd($response->json()['line_items'][0]['product_id']);
+                    //dd($response_product_attributes->json());
+                    $product_attributes = $response_product_attributes->json();
+                    dump(($product_attributes['attributes'][0]['options'][0])*1);
+                    dump(($product_attributes['attributes'][1]['options'][0])*$response_item_nums);
+                    dump(($product_attributes['attributes'][2]['options'][0])*$response_item_nums);
+
+                    /*foreach($product_attributes['attributes'] as $attribute)
+                    {
+                        //dump($attribute['options'][0]);
+                    }*/
                 }
+            }
+        }
 });

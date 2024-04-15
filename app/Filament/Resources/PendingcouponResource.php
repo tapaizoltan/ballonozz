@@ -145,7 +145,8 @@ class PendingcouponResource extends Resource
                     ->formatStateUsing(function ($state, Pendingcoupon $payload) {
                         return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
                     })->html()
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('md'),
                 TextColumn::make('status')
                     ->label('Státusz')
                     ->badge()
@@ -158,7 +159,8 @@ class PendingcouponResource extends Resource
                     ->formatStateUsing(function ($state, Pendingcoupon $tickettype) {
                         $tickettype_name = Tickettype::find($tickettype->tickettype_id);
                         return $tickettype_name->name;
-                    }),
+                    })
+                    ->visibleFrom('md'),
                     
                 /*    
                 TextColumn::make('vip')
@@ -176,7 +178,10 @@ class PendingcouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
+                //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -70,19 +70,19 @@ class PilotResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('lastname')
                     ->label('Név')
-                    ->searchable()
+                    ->searchable(['lastname','firstname'])
                     ->formatStateUsing(function ($state, Pilot $pilot) {
                         return $pilot->lastname . ' ' . $pilot->firstname;
                     }),
-                Tables\Columns\TextColumn::make('pilot_license_number')->label('Pilóta engedély')->searchable(),
+                Tables\Columns\TextColumn::make('pilot_license_number')->label('Pilóta engedély')->searchable()->visibleFrom('md'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()->native(false),
             ])
             ->actions([
+                /*
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
                 */
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),

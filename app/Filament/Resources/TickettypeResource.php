@@ -58,7 +58,7 @@ class TickettypeResource extends Resource
                             ->maxLength(255),
                         Textarea::make('description')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
-                            ->rows(6)
+                            ->rows(4)
                             ->cols(20)
                             ->autosize()
                             ->helperText('Itt néhány sorban leírhatja ennek a jegytípusnak a jellemzőit.')
@@ -115,12 +115,11 @@ class TickettypeResource extends Resource
 
                             ])->columnSpan(2),
                             
-                            Section::make() 
+                            Section::make()
+                            //->hidden(fn (GET $get, $operation): bool => ($get('default')== 1 && $operation=='edit'))
                             ->schema([
                                 Placeholder::make('default_placeholder')
-                                    ->label('Alapértelmezett')
-                                    //->content('Alapértelmezett')
-                                    ,
+                                    ->label('Alapértelmezett'),
                                 Toggle::make('default')
                                     ->onColor('success')
                                     ->onIcon('tabler-check')
@@ -231,7 +230,8 @@ class TickettypeResource extends Resource
         ->columns([
             TextColumn::make('id')
                 ->label('Attribútum ID')
-                ->tooltip('Amennyiben WooCommerce, vagy hasonló webshopot üzemeltet, az adott termékhez hozzá kell adni - mint rejtett attribútomot - "tickettype" néven úgy, hogy az attribútum értékének ezt az értéket kell megadni. Mindemellett további két fontos rejtett attribútumot is elengedhetetlen a működéshez, amelyek: a felnőtt utasok száma, azaz "adult", és ennek értéke, valamint a gyermek utasok száma, azaz "children", és ennek értéke.'),
+                ->tooltip('Amennyiben WooCommerce, vagy hasonló webshopot üzemeltet, az adott termékhez hozzá kell adni - mint rejtett attribútomot - "tickettype" néven úgy, hogy az attribútum értékének ezt az értéket kell megadni. Mindemellett további két fontos rejtett attribútumot is elengedhetetlen a működéshez, amelyek: a felnőtt utasok száma, azaz "adult", és ennek értéke, valamint a gyermek utasok száma, azaz "children", és ennek értéke.')
+                ->visibleFrom('sm'),
 
             TextColumn::make('name')
                 ->label('Megnevezés')
@@ -245,7 +245,8 @@ class TickettypeResource extends Resource
                 ->size('md'),
 
             ColorColumn::make('color')
-                ->label('Szín'),
+                ->label('Szín')
+                ->visibleFrom('md'),
 
             IconColumn::make('default')
                 ->label('Alapértelmezett')
@@ -256,7 +257,8 @@ class TickettypeResource extends Resource
                 ->color(fn (string $state): string => match ($state) {
                     '0' => '',
                     '1' => 'success',
-                }),
+                })
+                ->visibleFrom('sm'),
 
             /*
             Tables\Columns\TextColumn::make('source')
@@ -293,9 +295,9 @@ class TickettypeResource extends Resource
                 Tables\Filters\TrashedFilter::make()->native(false),
             ])
             ->actions([
+                /*
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
                 Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
-                /*
                 Tables\Actions\Action::make('delete')->icon('heroicon-m-trash')->color('danger')->hiddenLabel()->tooltip('Törlés')->link()->requiresConfirmation()->action(fn ($record) => $record->delete()),
                 */
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),

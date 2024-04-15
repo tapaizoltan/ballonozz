@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TickettypeResource\Pages;
 
 use Filament\Actions;
+use App\Models\Tickettype;
 use Illuminate\Support\Facades\DB;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\TickettypeResource;
@@ -11,22 +12,16 @@ class CreateTickettype extends CreateRecord
 {
     protected static string $resource = TickettypeResource::class;
 
-    /*
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if ($data['default'] == 1)
+        $aircrafttype = $data['aircrafttype'];
+        $first_tickettype_check = Tickettype::where('aircrafttype', $aircrafttype)->get()->count();
+        if ($data['default'] == 0)
         {
-            $aircrafttype = $data['aircrafttype'];
-
-            dd(DB::table('tickettype')
-              ->where('deafult', 1)
-              ->orwhere('aircrafttype', $aircrafttype)
-              ->update(['default' => 0]));
+            $data['default'] = 1;
         }
-        
         return $data;
     }
-    */
 
     protected function getRedirectUrl(): string
     {
