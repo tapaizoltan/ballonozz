@@ -48,6 +48,16 @@ class CreateCoupon extends CreateRecord
             if ($response_coupon->successful())
             {
                 $coupons_data = $response_coupon->json();
+                //vásárlás dátumának lekérése
+                $payment_datetime_completed = ($coupons_data['date_completed']);
+                $payment_date_completed = substr($payment_datetime_completed, 0, 10);
+                //kupon lejáratának számítása
+                $payment_date_completed_plus_one_year = strtotime(date("Y-m-d", strtotime($payment_date_completed)) . "+1 year");
+                $coupon_expiration_date = date('Y-m-d', $payment_date_completed_plus_one_year);
+                //kupon felhasználghatóságának türelmi dátumának számítása
+                $payment_date_completed_plus_one_year_plus_one_month = strtotime(date("Y-m-d", strtotime($coupon_expiration_date)) . "+1 month");
+                $coupon_expiration_grace_date = date('Y-m-d', $payment_date_completed_plus_one_year_plus_one_month);
+
                 if ($coupons_data['status'] == 'completed')
                 {
                     foreach($coupons_data['line_items'] as $coupon)
@@ -63,6 +73,7 @@ class CreateCoupon extends CreateRecord
                             $data['adult'] = ($product_attributes['attributes'][1]['options'][0])*$response_item_nums;
                             $data['children'] = ($product_attributes['attributes'][2]['options'][0])*$response_item_nums;
                             $data['status'] = CouponStatus::CanBeUsed;
+                            $data['expiration_at'] = $coupon_expiration_date;
                         }
                     }
                 }

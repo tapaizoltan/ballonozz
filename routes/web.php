@@ -30,9 +30,21 @@ Route::get('/test', function(){
         {
             //dd($response_coupon->json());
             $coupons_data = $response_coupon->json();
+
+            $payment_datetime_completed = ($coupons_data['date_completed']);
+            dump($payment_date_completed = substr($payment_datetime_completed, 0, 10));
+
+            $payment_date_completed_plus_one_year = strtotime(date("Y-m-d", strtotime($payment_date_completed)) . "+1 year");
+            dump($coupon_expiration_date = date('Y-m-d', $payment_date_completed_plus_one_year));
+
+            $payment_date_completed_plus_one_year_plus_one_month = strtotime(date("Y-m-d", strtotime($coupon_expiration_date)) . "+1 month");
+            dump($coupon_expiration_grace_date = date('Y-m-d', $payment_date_completed_plus_one_year_plus_one_month));
+
+            //dump($date = strotime($payment_date_completed));
             foreach($coupons_data['line_items'] as $coupon)
             {
                 //dump($item['product_id'], $item['quantity']);
+                
                 $response_item_nums = $coupon['quantity']; 
                 $response_product_id = $coupon['product_id'];
                 

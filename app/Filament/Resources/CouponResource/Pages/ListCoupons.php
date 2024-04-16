@@ -23,6 +23,7 @@ class ListCoupons extends ListRecords
     public function getTabs(): array
     {
         return [
+            /*
             null => Tab::make('Mind'),
             'Figyelmeztetések' => Tab::make()->query(fn ($query) => $query->MissingData())
                 ->icon('tabler-alert-triangle')
@@ -30,6 +31,8 @@ class ListCoupons extends ListRecords
             'Feldolgozás alatt' => Tab::make()->query(fn ($query) => $query->where('status', '0'))->icon('tabler-progress-check')->badgeColor('warning'),
             'Felhasználható' => Tab::make()->query(fn ($query) => $query->where('status', '1')->orwhere('status', '2'))->icon('tabler-discount-check')->badgeColor('success'),
             'Felhasznált' => Tab::make()->query(fn ($query) => $query->where('status', '3'))->icon('tabler-circle-x')->badgeColor('danger'),
+            */
         ];
     }
+
 }

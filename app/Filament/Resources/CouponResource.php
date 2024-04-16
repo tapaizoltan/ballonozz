@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Filament\Resources;
-
+use Closure;
 use Filament\Forms;
 use Filament\Tables;
 use Faker\Core\Color;
@@ -335,6 +335,7 @@ class CouponResource extends Resource
         return $table
             /*->heading('Clients')->description('ez egy teszt')
             ->striped()*/
+            ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'bg-lime-700' : null)
             ->columns([
                 IconColumn::make('missing_data')
                     ->label('')
@@ -358,6 +359,9 @@ class CouponResource extends Resource
                     })->html()
                     ->searchable()
                     ->visibleFrom('md'),
+                TextColumn::make('expiration_at')
+                    ->label('Felhasználható')
+                    ->searchable(),
                 TextColumn::make('status')
                     ->label('Státusz')
                     ->badge()

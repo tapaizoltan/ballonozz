@@ -184,92 +184,81 @@ class AircraftLocationPilotResource extends Resource
         return $table
             ->columns([
                 Split::make([
+                    TextColumn::make('status')
+                        ->label('Státusz')
+                        ->badge()
+                        ->size('md')
+                        ->width(20)->grow(false),
+                    TextColumn::make('date')
+                        ->icon('tabler-plane-departure')
+                        ->label('Dátum')
+                        ->formatStateUsing(function ($state, AircraftLocationPilot $fulldate) {
+                            $datesource = strtotime($state);
+                            $day_name = date('D', $datesource);
+                            if ($day_name == 'Mon'){$day_name = 'hétfő';}
+                            if ($day_name == 'Tue'){$day_name = 'kedd';}
+                            if ($day_name == 'Wed'){$day_name = 'szerda';}
+                            if ($day_name == 'Thu'){$day_name = 'csütörtök';}
+                            if ($day_name == 'Fri'){$day_name = 'péntek';}
+                            if ($day_name == 'Sat'){$day_name = 'szombat';}
+                            if ($day_name == 'Sun'){$day_name = 'vasárnap';}
+                            return $state . ' ' . $day_name;
+                        })
+                        ->searchable()
+                        ->grow(false),
+                    TextColumn::make('time')
+                        ->label('Időpont')
+                        ->icon('tabler-clock-share')
+                        ->searchable()
+                        ->formatStateUsing(function ($state, AircraftLocationPilot $time) {
+                            $timesource = strtotime($state);
+                            $hour_source = date('G', $timesource);
+                            $minute_source = date('i', $timesource);
+                            return $hour_source.' óra '.$minute_source.' perc';
+                        })
+                        ->grow(false),
+                    TextColumn::make('period_of_time')
+                        ->label('Tervezett repülési idő')
+                        ->icon('tabler-arrow-move-right')
+                        ->formatStateUsing(function ($state) {
+                            return $state.' óra';
+                        })->grow(false),
+                ]),
+                
+                Panel::make([
                     Stack::make([
-                        TextColumn::make('status')
-                            ->label('Státusz')
-                            ->badge()
-                            ->size('md'),
-                    ])->space(),
-
-                    Stack::make([
-                        TextColumn::make('date')
-                            ->icon('tabler-plane-departure')
-                            ->label('Dátum')
-                            ->formatStateUsing(function ($state, AircraftLocationPilot $fulldate) {
-                                $datesource = strtotime($state);
-                                $day_name = date('D', $datesource);
-                                if ($day_name == 'Mon'){$day_name = 'hétfő';}
-                                if ($day_name == 'Tue'){$day_name = 'kedd';}
-                                if ($day_name == 'Wed'){$day_name = 'szerda';}
-                                if ($day_name == 'Thu'){$day_name = 'csütörtök';}
-                                if ($day_name == 'Fri'){$day_name = 'péntek';}
-                                if ($day_name == 'Sat'){$day_name = 'szombat';}
-                                if ($day_name == 'Sun'){$day_name = 'vasárnap';}
-                                return $state . ' ' . $day_name;
+                        TextColumn::make('region_id')
+                            ->icon('iconoir-strategy')
+                            ->label('Régió/Helyszín')
+                            ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
+                                //$location_id = Location::find($aircraft_localtion_pilot->location_id);
+                                //$region_id = $location_id->id;
+                                $region_name = Region::find($state);
+                                $location_name = Location::find($aircraft_localtion_pilot->location_id);
+                                return $region_name->name. ' '.$location_name?->name;
                             })
+                            ->description(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
+                                $location_name = Location::find($aircraft_localtion_pilot->location_id);
+                                return $location_name?->name;
+                            })
+                            ->searchable(),
+                        TextColumn::make('aircraft_id')
+                            ->icon('iconoir-airplane-rotation')
+                            ->label('Légijármű')
                             ->searchable()
-                            /*
-                            ->description(function ($state, AircraftLocationPilot $name_of_the_day) {
-                                $datesource = strtotime($state);
-                                $day_name = date('D', $datesource);
-                                if ($day_name == 'Mon'){$day_name = 'hétfő';}
-                                if ($day_name == 'Tue'){$day_name = 'kedd';}
-                                if ($day_name == 'Wed'){$day_name = 'szerda';}
-                                if ($day_name == 'Thu'){$day_name = 'csütörtök';}
-                                if ($day_name == 'Fri'){$day_name = 'péntek';}
-                                if ($day_name == 'Sat'){$day_name = 'szombat';}
-                                if ($day_name == 'Sun'){$day_name = 'vasárnap';}
-                                return $day_name;
-                            })*/,
-                        TextColumn::make('time')
-                            ->label('Időpont')
-                            ->icon('tabler-clock-share')
-                            ->searchable()
-                            ->formatStateUsing(function ($state, AircraftLocationPilot $time) {
-                                $timesource = strtotime($state);
-                                $hour_source = date('G', $timesource);
-                                $minute_source = date('i', $timesource);
-                                return $hour_source.' óra '.$minute_source.' perc';
+                            ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
+                                $aircraft_name = Aircraft::find($aircraft_localtion_pilot->aircraft_id);
+                                return $aircraft_name->name;
                             }),
-                        TextColumn::make('period_of_time')
-                            ->label('Tervezett repülési idő')
-                            ->icon('tabler-arrow-move-right')
-                            ->formatStateUsing(function ($state) {
-                                return $state.' óra';
-                            }),
-                    ])->space(),
-
-                    Stack::make([
-                        Panel::make([
-                            Split::make([
-                                TextColumn::make('region_id')
-                                    ->label('Régió/Helyszín')
-                                    ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
-                                        //$location_id = Location::find($aircraft_localtion_pilot->location_id);
-                                        //$region_id = $location_id->id;
-                                        $region_name = Region::find($state);
-                                        return $region_name->name;
-                                    })
-                                    ->description(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
-                                        $location_name = Location::find($aircraft_localtion_pilot->location_id);
-                                        return $location_name?->name;
-                                    })
-                                    ->searchable(),
-                                TextColumn::make('aircraft_id')
-                                    ->label('Légijármű')
-                                    ->searchable()
-                                    ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
-                                        $aircraft_name = Aircraft::find($aircraft_localtion_pilot->aircraft_id);
-                                        return $aircraft_name->name;
-                                    }),
-                                TextColumn::make('pilot.fullname')
-                                    ->label('Pilóta')
-                                    ->searchable(),
-                            ])->from('sm'),
-                        ]),
+                        TextColumn::make('pilot.fullname')
+                            ->icon('iconoir-user-square')
+                            ->label('Pilóta')
+                            ->searchable(),
                     ]),
+                ])->collapsible(),
+                
 
-                ])->from('sm'),
+                
                 
                 /*
                 TextColumn::make('location_id')
@@ -298,7 +287,7 @@ class AircraftLocationPilotResource extends Resource
                 Tables\Actions\Action::make('checkins')
                     ->label('')
                     ->icon('tabler-users-group')
-                    /*
+                    
                     ->badge(function ($record) {
                         if ($record->coupons->count()) {
                             return $record->coupons->sum('adult') + $record->coupons->sum('children');
@@ -306,7 +295,7 @@ class AircraftLocationPilotResource extends Resource
 
                         return null;
                     })
-                    //->hidden(fn ($record) => !$record->coupons->count())*/
+                    ->hidden(fn ($record) => !$record->coupons->count())
                     ->action(fn ($record) => redirect(route('filament.admin.resources.aircraft-location-pilots.checkins', $record->id))),
                 /*
                 ViewAction::make()->hiddenLabel()->tooltip('Megtekintés')->link(),
