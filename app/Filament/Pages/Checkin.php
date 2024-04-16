@@ -17,10 +17,10 @@ class Checkin extends Page
     
     public $coupons;
     public $coupon_id;
-    protected static ?string $title = 'Jelentkezések';
+    protected static ?string $title = 'Időpontjaim';
     protected ?string $heading = 'Kuponjaid';
-    protected static ?string $navigationLabel = 'Jelentkezések';
-    protected static ?string $navigationIcon = 'iconoir-user-badge-check';
+    protected static ?string $navigationLabel = 'Időpontjaim';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static string $view = 'filament.pages.checkin';
 
     public function mount()

@@ -4,10 +4,10 @@ namespace App\Filament\Auth;
 
 use App\Models\User;
 use Filament\Facades\Filament;
+use App\Http\Responses\LoginResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Login as BaseAuth;
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
  
 class Login extends BaseAuth

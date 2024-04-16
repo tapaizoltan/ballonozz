@@ -58,7 +58,7 @@ class Coupon extends Model
     {
         return Attribute::make(
             get: function () {
-                return (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && $this->adult + $this->children) != $this->passengers->count();
+                return in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children != $this->passengers->count());
             },
         );
     }

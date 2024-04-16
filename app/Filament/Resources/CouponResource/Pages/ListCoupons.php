@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CouponResource\Pages;
 
 use Filament\Actions;
 use App\Enums\CouponStatus;
+use App\Filament\Pages\Checkin;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use App\Filament\Resources\CouponResource;
@@ -15,6 +16,9 @@ class ListCoupons extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('redirect-to-chekin')->label('Repüléseim kiválasztása')
+                ->color('info')
+                ->url(Checkin::getUrl()),
             Actions\CreateAction::make(),
             /*Actions\Action::make('edit')->url(route('posts.edit', ['post' => $this->post])),*/
         ];
