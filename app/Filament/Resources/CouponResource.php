@@ -23,6 +23,7 @@ use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Grouping\Group;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -52,8 +53,8 @@ class CouponResource extends Resource
     protected static ?string $model = Coupon::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
-    protected static ?string $modelLabel = 'kupon';
-    protected static ?string $pluralModelLabel = 'kuponok';
+    protected static ?string $modelLabel = 'kuponjaim';
+    protected static ?string $pluralModelLabel = 'kuponjaim';
 
     public static function form(Form $form): Form
     {
@@ -335,7 +336,15 @@ class CouponResource extends Resource
         return $table
             /*->heading('Clients')->description('ez egy teszt')
             ->striped()*/
-            ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'bg-lime-700' : null)
+            ->defaultSort('expiration_at', 'desc')
+            ->defaultGroup('status')
+            ->groups([
+                Group::make('status')
+                    ->label('Státusz')
+                    ->collapsible(),
+            ])
+            ->groupingSettingsHidden()
+            ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'opacity-[50%]' : null)
             ->columns([
                 IconColumn::make('missing_data')
                     ->label('')
@@ -360,7 +369,16 @@ class CouponResource extends Resource
                     ->searchable()
                     ->visibleFrom('md'),
                 TextColumn::make('expiration_at')
-                    ->label('Felhasználható')
+                    ->label('Lejárat')
+                    ->formatStateUsing(function($state)
+                    {
+                        $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                        return abs($diff_day_nums).($diff_day_nums < 0 ? ' nap múlva lejár' : ' napja lejárt');
+                    })
+                    ->description(function($state)
+                    {
+                        return Carbon::parse($state)->translatedFormat('Y F d');
+                    })
                     ->searchable(),
                 TextColumn::make('status')
                     ->label('Státusz')
@@ -376,7 +394,7 @@ class CouponResource extends Resource
                 //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
-                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used || $record->status==CouponStatus::Expired)),
             ])
             ->headerActions([
                 /*
@@ -389,7 +407,7 @@ class CouponResource extends Resource
                 vagy úgy ahogy ez alatt van */
                 function($record)
                 {
-                    if ($record->status == CouponStatus::Used)
+                    if ($record->status == CouponStatus::Used || $record->status == CouponStatus::Expired)
                     {
                         return false;
                     }

@@ -4,9 +4,8 @@ namespace App\Models;
 
 use App\Enums\AircraftType;
 use App\Enums\CouponStatus;
-use App\Enums\CouponTypeVip;
-use App\Enums\CouponTypePrivate;
 use App\Models\Scopes\ClientScope;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,17 +13,28 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
 #[ScopedBy([ClientScope::class])]
+
 class Coupon extends Model
 {
     //use HasFactory;
     protected $guarded = [];
 
     protected $casts = [
-        'status' => CouponStatus::class,
-        'vip' => CouponTypeVip::class,
-        'private' => CouponTypePrivate::class,
+        //'status' => CouponStatus::class,
         'aircraft_type' => AircraftType::class,
     ];
+
+    public function status(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if ($this->expiration_at < now()) {
+                    return CouponStatus::Expired;
+                }
+                return CouponStatus::from($value);
+            },
+        );
+    }
 
     public function passengers()
     {
@@ -45,10 +55,9 @@ class Coupon extends Model
     {
         return Attribute::make(
             get: function () {
-                if (in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children == $this->passengers->count())) {
+                if ($this->expiration_at > now() && in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children == $this->passengers->count())) {
                     return true;
                 }
-
                 return false;
             },
         );
@@ -75,7 +84,6 @@ class Coupon extends Model
                 if (count($this->aircraftLocationPilots->where('pivot.status', 1))) {
                     return true;
                 }
-
                 return false;
             },
         );

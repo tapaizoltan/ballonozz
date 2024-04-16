@@ -5,15 +5,22 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
+use App\Models\Tickettype;
 use Filament\Tables\Table;
 use App\Enums\CouponStatus;
 use App\Models\Pendingcoupon;
+use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,16 +30,14 @@ use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
-use App\Models\Tickettype;
-use Filament\Forms\Components\Select;
 
 class PendingcouponResource extends Resource
 {
     protected static ?string $model = Pendingcoupon::class;
 
     protected static ?string $navigationIcon = 'tabler-progress-check';
-    protected static ?string $modelLabel = 'elbírálásra váró kupon';
-    protected static ?string $pluralModelLabel = 'elbírálásra váró kuponok';
+    protected static ?string $modelLabel = 'kupon';
+    protected static ?string $pluralModelLabel = 'kuponok';
 
     public static function form(Form $form): Form
     {
@@ -101,7 +106,7 @@ class PendingcouponResource extends Resource
                                                     modifyQueryUsing: fn (Builder $query) => $query->orderBy('aircrafttype')->orderBy('default', 'desc')->orderBy('name'),
                                                 )
                                                 ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->aircrafttype->getLabel()} - {$record->name}"),
-
+                                            
                                             ToggleButtons::make('status')
                                                 ->helperText('Válassza ki honnan származik az adott kupon.')
                                                 ->label('Válassza ki kuponjának forrását')
@@ -124,6 +129,17 @@ class PendingcouponResource extends Resource
                                                 ]),
                                             
                                         ])->columns(2),
+
+                                        Fieldset::make('Érvényesség hosszabbítás')
+                                        ->schema([
+                                            DatePicker::make('expiration_at')
+                                                ->label('Felhasználható')
+                                                ->native(false)
+                                                ->format('Y-m-d')
+                                                ->displayFormat('Y-m-d')
+                                                ->default(now()),
+                                            
+                                        ])->columns(2),
                                     ])->columnSpan(6),
 
                         ]),
@@ -133,6 +149,57 @@ class PendingcouponResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultSort('expiration_at', 'desc')
+        ->defaultGroup('status')
+        ->groups([
+            Group::make('status')
+                ->label('Státusz')
+                ->collapsible(),
+        ])
+        ->groupingSettingsHidden()
+        ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'opacity-[50%]' : null)
+        ->columns([
+            TextColumn::make('coupon_code')
+                ->label('Kuponkód')
+                ->description(fn (Pendingcoupon $record): string => $record->source)
+                ->wrap()
+                ->color('Amber')
+                ->searchable(),
+            TextColumn::make('adult')
+                ->label('Utasok')
+                ->formatStateUsing(function ($state, Pendingcoupon $payload) {
+                    return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
+                })->html()
+                ->searchable()
+                ->visibleFrom('md'),
+            TextColumn::make('expiration_at')
+                ->label('Lejárat')
+                ->formatStateUsing(function($state)
+                {
+                    $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                    return abs($diff_day_nums).($diff_day_nums < 0 ? ' nap múlva lejár' : ' napja lejárt');
+                })
+                ->description(function($state)
+                {
+                    return Carbon::parse($state)->translatedFormat('Y F d');
+                })
+                ->searchable(),
+            TextColumn::make('status')
+                ->label('Státusz')
+                ->badge()
+                ->size('md'),
+            TextColumn::make('tickettype_id')
+                ->label('Jegytípus')
+                ->badge()
+                //->color('gray')
+                ->color(fn ($record) => \Filament\Support\Colors\Color::Hex ($record->tickettype->color))
+                ->formatStateUsing(function ($state, Pendingcoupon $tickettype) {
+                    $tickettype_name = Tickettype::find($tickettype->tickettype_id);
+                    return $tickettype_name->name;
+                })
+                ->visibleFrom('md'),
+        ])
+            /*
             ->columns([
                 TextColumn::make('coupon_code')
                     ->label('Kuponkód')
@@ -161,28 +228,65 @@ class PendingcouponResource extends Resource
                         return $tickettype_name->name;
                     })
                     ->visibleFrom('md'),
-                    
-                /*    
-                TextColumn::make('vip')
-                    ->label(false)
-                    ->badge()
-                    ->width(30)
-                    ->size('sm'),
-                TextColumn::make('private')
-                    ->label(false)
-                    ->badge()
-                    ->size('sm'),
-                */
-            ])
+            ])*/
             ->filters([
-                //
+                
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')->label('Létrehozási dátumtól')->native(false)->format('Y-m-d')->displayFormat('Y-m-d'),
+                        DatePicker::make('created_until')->label('Létrehozási dátumig')->native(false)->format('Y-m-d')->displayFormat('Y-m-d')->default(now()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                /*    
+                Filter::make('expiration_at')
+                    ->form([
+                        DatePicker::make('expiration_from')->label('Lejárati dátumtól')->native(false)->format('Y-m-d')->displayFormat('Y-m-d'),
+                        DatePicker::make('expiration_until')->label('Lejárati dátumig')->native(false)->format('Y-m-d')->displayFormat('Y-m-d')->default(now()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['expiration_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('expiration_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['expiration_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('expiration_at', '<=', $date),
+                            );
+                    })*/
             ])
             ->actions([
                 //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
-                ->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
+            ->recordUrl(
+                /* így is lehet
+                fn (Coupon $record): string => ($record->status==CouponStatus::Used) ?false: route('filament.admin.resources.coupons.edit', ['record' => $record]),
+                vagy úgy ahogy ez alatt van */
+                function($record)
+                {
+                    if ($record->status == CouponStatus::Used)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return route('filament.admin.resources.pendingcoupons.edit', ['record' => $record]);
+                    }
+                },
+            )
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -197,12 +301,14 @@ class PendingcouponResource extends Resource
         ];
     }
 
+    /*
+    //ez a scope ami a model-ben deklarálva lett
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->underProcess();
     }
-
+    */
     public static function getPages(): array
     {
         return [

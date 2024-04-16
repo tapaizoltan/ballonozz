@@ -4,10 +4,9 @@ namespace App\Models;
 
 use App\Enums\AircraftType;
 use App\Enums\CouponStatus;
-use App\Enums\CouponTypeVip;
-use App\Enums\CouponTypePrivate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,7 +17,7 @@ class Pendingcoupon extends Model
 
     protected $casts = [
         'aircrafttype' => AircraftType::class,
-        'status' => CouponStatus::class,
+        //'status' => CouponStatus::class,
     ];
 
     public function tickettype(): BelongsTo
@@ -26,9 +25,24 @@ class Pendingcoupon extends Model
         return $this->belongsTo(Tickettype::class);
     }
 
+    public function status(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if ($this->expiration_at < now()) {
+                    return CouponStatus::Expired;
+                }
+                return CouponStatus::from($value);
+            },
+        );
+    }
+
+    /*
+    //ez a scope amit ráhúzunk a resource-re
     public function scopeUnderProcess(Builder $query): void
     {
         $query->where('source', '=', 'Egyéb');
     }
+    */
 }
 
