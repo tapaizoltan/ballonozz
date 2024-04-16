@@ -26,12 +26,14 @@ class Registration extends Component
     {
         $this->validate();
 
-        User::create([
+        $user = User::create([
             'name'     => $this->name,
             'email'    => $this->email,
             'phone'    => $this->phone,
             'password' => $this->password,
         ]);
+
+        $user->assignRole('vásárló');
 
         $this->registered = true;
     }
