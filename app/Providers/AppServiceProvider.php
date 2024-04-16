@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                     $coupons_not_filled_with_passengers = 0;
                     foreach (Coupon::all() as $coupon) 
                     {
-                        if (!$coupon->isActive) 
+                        if ($coupon->missingData) 
                         {
                             $coupons_not_filled_with_passengers++;
                         }
