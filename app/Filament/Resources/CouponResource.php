@@ -78,10 +78,16 @@ class CouponResource extends Resource
                                                 ->minLength(3)
                                                 ->maxLength(255)
                                                 ->disabledOn('edit'),
-                                        ])->columnSpan(4),
+                                        ])//->columnSpan(4),
+                                        ->columnSpan([
+                                            'sm' => 12,
+                                            'md' => 12,
+                                            'lg' => 12,
+                                            'xl' => 6,
+                                            '2xl' => 4,
+                                        ]),
                                     Section::make()
                                         ->schema([
-
                                             ToggleButtons::make('source')
                                                 ->helperText('Válassza ki honnan származik az adott kupon.')
                                                 ->label('Válassza ki kuponjának forrását')
@@ -192,10 +198,24 @@ class CouponResource extends Resource
                                                     ])
                                                     ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' || $operation=='edit')),
                                                     */
-                                        ])->columnSpan(8),
+                                        ])//->columnSpan(8),
+                                        ->columnSpan([
+                                            'sm' => 12,
+                                            'md' => 12,
+                                            'lg' => 12,
+                                            'xl' => 6,
+                                            '2xl' => 8,
+                                        ]),
                                     ]),
 
-                            ])->columnSpan(6),
+                            ])//->columnSpan(6),
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 6,
+                            ]),
 
                         Section::make()
                             ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' && $operation=='create'))
@@ -249,7 +269,14 @@ class CouponResource extends Resource
 
                                     ])->columns(2),
                                     */
-                            ])->columnSpan(4),
+                            ])//->columnSpan(4),
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 6,
+                            ]),
                         //Hidden::make('status')->default('0'),
                     ]),
                     
@@ -326,7 +353,14 @@ class CouponResource extends Resource
                                             ->maxLength(30)
                                     ])->columns(3),
                                 ])->columns(5),
-                            ])->columnSpan(12),
+                            ])//->columnSpan(12),
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 12,
+                                '2xl' => 12,
+                            ]),
                         ]),
             ]);
     }

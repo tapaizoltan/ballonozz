@@ -48,7 +48,6 @@ class PendingcouponResource extends Resource
                         Section::make()
                             ->schema([
                                 TextInput::make('coupon_code')
-                                    ->helperText('Adja meg a már korábban megkapott kuponkódját.')
                                     ->label('Kuponkód')
                                     ->prefixIcon('iconoir-password-cursor')
                                     ->placeholder('ABC-'. random_int(100000, 999999))
@@ -56,7 +55,15 @@ class PendingcouponResource extends Resource
                                     ->minLength(3)
                                     ->maxLength(255)
                                     ->disabledOn('edit'),
-                                ])->columnSpan(2),
+                                ])
+                                //->columnSpan(2),
+                                ->columnSpan([
+                                    'sm' => 12,
+                                    'md' => 12,
+                                    'lg' => 4,
+                                    'xl' => 4,
+                                    '2xl' => 2,
+                                ]),
 
                         Section::make()
                             ->schema([
@@ -86,7 +93,15 @@ class PendingcouponResource extends Resource
                                             ->maxLength(10)
                                             ->suffix(' fő'),
                                     ])->columns(2),
-                                ])->columnSpan(4),
+                                ])
+                                //->columnSpan(4),
+                                ->columnSpan([
+                                    'sm' => 12,
+                                    'md' => 12,
+                                    'lg' => 8,
+                                    'xl' => 8,
+                                    '2xl' => 4,
+                                ]),
 
                             Section::make()
                                 ->schema([
@@ -108,7 +123,7 @@ class PendingcouponResource extends Resource
                                                 ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->aircrafttype->getLabel()} - {$record->name}"),
                                             
                                             ToggleButtons::make('status')
-                                                ->helperText('Válassza ki honnan származik az adott kupon.')
+                                                ->helperText('Hagyja jóvá vagy utasítsa el ennek a kuponnak a felhasználást.')
                                                 ->label('Válassza ki kuponjának forrását')
                                                 ->inline()
                                                 ->required()
@@ -134,13 +149,23 @@ class PendingcouponResource extends Resource
                                         ->schema([
                                             DatePicker::make('expiration_at')
                                                 ->label('Felhasználható')
+                                                ->helperText('Itt módosíthatja az adott kupon érvényességi idejét.')
+                                                ->prefixIcon('tabler-calendar')
+                                                ->weekStartsOnMonday()
                                                 ->native(false)
                                                 ->format('Y-m-d')
                                                 ->displayFormat('Y-m-d')
                                                 ->default(now()),
                                             
                                         ])->columns(2),
-                                    ])->columnSpan(6),
+                                    ])//->columnSpan(6),
+                                    ->columnSpan([
+                                        'sm' => 12,
+                                        'md' => 12,
+                                        'lg' => 12,
+                                        'xl' => 12,
+                                        '2xl' => 6,
+                                    ]),
 
                         ]),
                     ]);
@@ -183,7 +208,8 @@ class PendingcouponResource extends Resource
                 {
                     return Carbon::parse($state)->translatedFormat('Y F d');
                 })
-                ->searchable(),
+                ->searchable()
+                ->visibleFrom('md'),
             TextColumn::make('status')
                 ->label('Státusz')
                 ->badge()

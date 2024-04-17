@@ -17,7 +17,7 @@ class Pendingcoupon extends Model
 
     protected $casts = [
         'aircrafttype' => AircraftType::class,
-        //'status' => CouponStatus::class,
+        'status' => CouponStatus::class,
     ];
 
     public function tickettype(): BelongsTo
@@ -25,14 +25,13 @@ class Pendingcoupon extends Model
         return $this->belongsTo(Tickettype::class);
     }
 
-    public function status(): Attribute
+    public function couponStatusExpired(): Attribute
     {
         return Attribute::make(
-            get: function ($value) {
+            get: function () {
                 if ($this->expiration_at < now()) {
                     return CouponStatus::Expired;
                 }
-                return CouponStatus::from($value);
             },
         );
     }
