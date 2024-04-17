@@ -184,11 +184,19 @@ class AircraftLocationPilotResource extends Resource
         return $table
             ->columns([
                 Split::make([
+                    TextColumn::make('id')
+                    ->label('Azonosító')
+                    ->icon('tabler-number')
+                    ->badge()
+                    ->color('gray')
+                    ->size('md')
+                    ->width(20)->grow(false),
                     TextColumn::make('status')
                         ->label('Státusz')
                         ->badge()
                         ->size('md')
-                        ->width(20)->grow(false),
+                        ->width(100)
+                        ->grow(false),
                     TextColumn::make('date')
                         ->icon('tabler-plane-departure')
                         ->label('Dátum')

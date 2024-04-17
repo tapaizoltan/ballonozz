@@ -186,17 +186,27 @@ class AircraftResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Megnevezés')->searchable(),
+                /*
+                TextColumn::make('registration_number')
+                    ->label('Lajtsrom-jel')
+                    ->description(fn (Aircraft $record): string => $record->name)
+                    ->searchable(['registration_number','name'])
+                    ->visibleFrom('md'),
+                */
+                TextColumn::make('name')
+                    ->label('Megnevezés')
+                    ->description(fn (Aircraft $record): string => $record->registration_number)
+                    ->searchable(['name','registration_number']),
                 TextColumn::make('type')
                     ->label('Típus')
                     ->badge()
-                    ->size('md')
-                    ->visibleFrom('sm'),
-                TextColumn::make('registration_number')->label('Lajtsrom-jel')->searchable()->visibleFrom('md'),
-                TextColumn::make('number_of_person')->label('Száll.szem.száma')->searchable()
-                    ->formatStateUsing(fn($state)=>$state.' fő')->visibleFrom('lg'),
-                TextColumn::make('payload_capacity')->label('Max. terhelhetőség')->searchable()
-                    ->formatStateUsing(fn($state)=>$state.' kg')->visibleFrom('lg'),
+                    ->size('md'),
+                TextColumn::make('number_of_person')->label('Száll.szem.száma')
+                    ->formatStateUsing(fn($state)=>$state.' fő')
+                    ->visibleFrom('lg'),
+                TextColumn::make('payload_capacity')->label('Max. terhelhetőség')
+                    ->formatStateUsing(fn($state)=>$state.' kg')
+                    ->visibleFrom('lg'),
                 /*
                 IconColumn::make('unlimited')
                     ->label('Extra')

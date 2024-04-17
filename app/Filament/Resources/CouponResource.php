@@ -82,7 +82,7 @@ class CouponResource extends Resource
                                         ->columnSpan([
                                             'sm' => 12,
                                             'md' => 12,
-                                            'lg' => 12,
+                                            'lg' => 6,
                                             'xl' => 6,
                                             '2xl' => 4,
                                         ]),
@@ -202,7 +202,7 @@ class CouponResource extends Resource
                                         ->columnSpan([
                                             'sm' => 12,
                                             'md' => 12,
-                                            'lg' => 12,
+                                            'lg' => 6,
                                             'xl' => 6,
                                             '2xl' => 8,
                                         ]),
@@ -213,9 +213,9 @@ class CouponResource extends Resource
                                 'sm' => 12,
                                 'md' => 12,
                                 'lg' => 12,
-                                'xl' => 12,
+                                'xl' => 6,
                                 '2xl' => 6,
-                            ]),
+                        ])->columns(6),
 
                         Section::make()
                             ->hidden(fn (GET $get, $operation): bool => ($get('source')!='Egyéb' && $operation=='create'))
@@ -244,7 +244,32 @@ class CouponResource extends Resource
                                             ->minLength(1)
                                             ->maxLength(10)
                                             ->suffix(' fő'),
-                                    ])->columns(2),
+                                    ])//->columns(2)
+                                    ->columns([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                        'xl' => 2,
+                                        '2xl' => 2,
+                                    ]),
+                                Fieldset::make('Érvényesség')
+                                    ->schema([
+                                        DatePicker::make('expiration_at')
+                                            ->label('Kupon lejárati dátum')
+                                            ->helperText('Adja meg a kuponján szereplő kupon lejárti dátumot.')
+                                            ->prefixIcon('tabler-calendar')
+                                            ->weekStartsOnMonday()
+                                            ->native(false)
+                                            ->format('Y-m-d')
+                                            ->displayFormat('Y-m-d')
+                                            ->default(now()),
+                                    ])->columns([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                        'lg' => 2,
+                                        'xl' => 2,
+                                        '2xl' => 2,
+                                    ]),
                                 /*
                                 Fieldset::make('Extra beállítások')
                                     ->schema([
@@ -274,11 +299,11 @@ class CouponResource extends Resource
                                 'sm' => 12,
                                 'md' => 12,
                                 'lg' => 12,
-                                'xl' => 12,
+                                'xl' => 6,
                                 '2xl' => 6,
                             ]),
                         //Hidden::make('status')->default('0'),
-                    ]),
+                    ])->columns(12),
                     
                 Grid::make(12)
                     //->hiddenOn('create')
@@ -331,7 +356,14 @@ class CouponResource extends Resource
                                             ->minLength(1)
                                             ->maxLength(10)
                                             ->suffix(' kg'),
-                                    ])->columns(5),
+                                    ])//->columns(5)
+                                    ->columns([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                        'lg' => 3,
+                                        'xl' => 5,
+                                        '2xl' => 5,
+                                    ]),
 
                                     Fieldset::make('Opcionális utasadatok')
                                     ->schema([
@@ -351,7 +383,14 @@ class CouponResource extends Resource
                                             ->placeholder('+36 __ ___ ____')
                                             ->mask('+36 99 999 9999')
                                             ->maxLength(30)
-                                    ])->columns(3),
+                                    ])//->columns(3)
+                                    ->columns([
+                                        'sm' => 1,
+                                        'md' => 2,
+                                        'lg' => 3,
+                                        'xl' => 3,
+                                        '2xl' => 3,
+                                    ]),
                                 ])->columns(5),
                             ])//->columnSpan(12),
                             ->columnSpan([
@@ -370,6 +409,7 @@ class CouponResource extends Resource
         return $table
             /*->heading('Clients')->description('ez egy teszt')
             ->striped()*/
+            /*
             ->defaultSort('expiration_at', 'desc')
             ->defaultGroup('status')
             ->groups([
@@ -379,6 +419,7 @@ class CouponResource extends Resource
             ])
             ->groupingSettingsHidden()
             ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'opacity-[50%]' : null)
+            */
             ->columns([
                 IconColumn::make('missing_data')
                     ->label('')

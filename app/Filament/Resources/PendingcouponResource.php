@@ -130,7 +130,8 @@ class PendingcouponResource extends Resource
                                                 ->default('0')
                                                 //->disabledOn('edit')
                                                 ->live()
-                                                ->options([
+                                                ->options(CouponStatus::class)
+                                                /*->options([
                                                     '0' => 'Nem hagyom jóvá',
                                                     '1' => 'Jóváhagyom',
                                                 ])
@@ -141,7 +142,8 @@ class PendingcouponResource extends Resource
                                                 ->colors([
                                                     '0' => 'danger',
                                                     '1' => 'success',
-                                                ]),
+                                                ])
+                                                */,
                                             
                                         ])->columns(2),
 
@@ -156,7 +158,6 @@ class PendingcouponResource extends Resource
                                                 ->format('Y-m-d')
                                                 ->displayFormat('Y-m-d')
                                                 ->default(now()),
-                                            
                                         ])->columns(2),
                                     ])//->columnSpan(6),
                                     ->columnSpan([
@@ -174,6 +175,7 @@ class PendingcouponResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        /*
         ->defaultSort('expiration_at', 'desc')
         ->defaultGroup('status')
         ->groups([
@@ -183,6 +185,7 @@ class PendingcouponResource extends Resource
         ])
         ->groupingSettingsHidden()
         ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'opacity-[50%]' : null)
+        */
         ->columns([
             TextColumn::make('coupon_code')
                 ->label('Kuponkód')
