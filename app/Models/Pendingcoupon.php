@@ -25,17 +25,6 @@ class Pendingcoupon extends Model
         return $this->belongsTo(Tickettype::class);
     }
 
-    public function couponStatusExpired(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                if ($this->expiration_at < now()) {
-                    return CouponStatus::Expired;
-                }
-            },
-        );
-    }
-
     /*
     //ez a scope amit ráhúzunk a resource-re
     public function scopeUnderProcess(Builder $query): void

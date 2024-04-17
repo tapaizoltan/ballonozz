@@ -20,21 +20,9 @@ class Coupon extends Model
     protected $guarded = [];
 
     protected $casts = [
-        //'status' => CouponStatus::class,
+        'status' => CouponStatus::class,
         'aircraft_type' => AircraftType::class,
     ];
-
-    public function status(): Attribute
-    {
-        return Attribute::make(
-            get: function ($value) {
-                if ($this->expiration_at < now()) {
-                    return CouponStatus::Expired;
-                }
-                return CouponStatus::from($value);
-            },
-        );
-    }
 
     public function passengers()
     {

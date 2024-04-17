@@ -40,7 +40,7 @@ enum CouponStatus: int implements HasColor, HasIcon, HasLabel
             self::CanBeUsed => 'success',
             self::Gift => 'info',
             self::Used => 'danger',
-            self::Expired => 'gray',
+            self::Expired => 'warning',
         };
     }
 
