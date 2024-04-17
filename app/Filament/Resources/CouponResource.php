@@ -415,6 +415,7 @@ class CouponResource extends Resource
             ->groups([
                 Group::make('status')
                     ->label('Státusz')
+                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('expiration_at', $direction))
                     ->collapsible(),
             ])
             ->groupingSettingsHidden()
