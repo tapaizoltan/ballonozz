@@ -321,7 +321,7 @@ class AircraftLocationPilotResource extends Resource
                         //return $aircraft->registration_number.' '.$aircraft->name.' '.$pilot->lastname.' '.$pilot->firstname;
                         return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$aircraft->registration_number.' </span></p>
                         <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$aircraft->name.' </span></p>
-                        <p><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">'.$pilot->lastname.' '.$pilot->firstname.'</span></p>';
+                        <p><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">'.$pilot?->lastname.' '.$pilot?->firstname.'</span></p>';
                     })->html()
                     ->visibleFrom('md'),
                     /*
