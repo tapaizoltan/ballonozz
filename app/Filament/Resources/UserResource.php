@@ -65,7 +65,13 @@ class UserResource extends Resource
                         ->revealable()
                         ->dehydrated(false)
                         ->disabled(fn(\Filament\Forms\Get $get) => !filled($get('password'))),
-                ])->columns(2),
+                ])->columns([
+                    'sm' => 1,
+                    'md' => 2,
+                    'lg' => 2,
+                    'xl' => 2,
+                    '2xl' => 2,
+                    ]),
                 Select::make('roles')->label('Jogosultságok')
                     ->relationship('roles', 'name')
                     ->multiple()
@@ -81,7 +87,8 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Név')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('email')
+                ->visibleFrom('md'),
                 Tables\Columns\TextColumn::make('roles.name')->label('Jogosultságok')
                     ->badge()
                     ->label(__('Role'))
@@ -92,9 +99,11 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link(),
                 Impersonate::make()
-                ->redirectTo(route('filament.admin.pages.dashboard')),
+                ->tooltip('Átjelentkezés')
+                ->redirectTo(route('filament.admin.pages.dashboard'))
+                ->icon('tabler-ghost-2'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

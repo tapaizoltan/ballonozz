@@ -63,7 +63,13 @@ class TickettypeResource extends Resource
                             ->autosize()
                             ->helperText('Itt néhány sorban leírhatja ennek a jegytípusnak a jellemzőit.')
                             ->label('Leírás'),
-                    ])->columnSpan(2),
+                    ])->columnSpan([
+                        'sm' => 6,
+                        'md' => 6,
+                        'lg' => 3,
+                        'xl' => 2,
+                        '2xl' => 2,
+                    ]),
 
                     Section::make() 
                         ->schema([
@@ -113,7 +119,13 @@ class TickettypeResource extends Resource
                                                 /*
                                 ])->columns(1),*/
 
-                            ])->columnSpan(2),
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 3,
+                                'xl' => 2,
+                                '2xl' => 2,
+                            ]),
                             
                             Section::make()
                             //->hidden(fn (GET $get, $operation): bool => ($get('default')== 1 && $operation=='edit'))
@@ -128,7 +140,13 @@ class TickettypeResource extends Resource
                                     ->label('Beállítás alapértelmezettként')
                                     //->disabled(fn (GET $get): bool => ($get('default')=='1'))
                                     ->default(0),
-                            ])->columnSpan(1),                            
+                            ])->columnSpan([
+                                'sm' => 6,
+                                'md' => 6,
+                                'lg' => 6,
+                                'xl' => 2,
+                                '2xl' => 2,       
+                            ]),                     
                     /*
                     Section::make() 
                     ->schema([

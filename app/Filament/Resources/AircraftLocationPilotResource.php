@@ -52,7 +52,7 @@ class AircraftLocationPilotResource extends Resource
     {
         return $form
             ->schema([
-                Grid::make(6)
+                Grid::make(12)
                 ->schema([
                     Section::make() 
                     ->schema([
@@ -97,7 +97,13 @@ class AircraftLocationPilotResource extends Resource
                                 ->preload()
                                 ->required()
                                 ->native(false),
-                            ])->columns(3),
+                            ])->columns([
+                                'sm' => 1,
+                                'md' => 2,
+                                'lg' => 2,
+                                'xl' => 2,
+                                '2xl' => 3,
+                                ]),
 
                             Fieldset::make('Tervezett repülés paraméterei')
                             ->schema([
@@ -136,9 +142,21 @@ class AircraftLocationPilotResource extends Resource
                                     ->options(Pilot::all()->pluck('fullname', 'id')) // <-ez egy modell szinten deklarált atribútum
                                     ->native(false)
                                     ->searchable(),
-                                ])->columns(3),
+                                ])->columns([
+                                    'sm' => 1,
+                                    'md' => 2,
+                                    'lg' => 2,
+                                    'xl' => 2,
+                                    '2xl' => 3,
+                                    ]),
 
-                        ])->columnSpan(4),
+                        ])->columnSpan([
+                            'sm' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                            'xl' => 8,
+                            '2xl' => 8,
+                        ]),
 
                         Section::make() 
                         ->schema([
@@ -175,7 +193,13 @@ class AircraftLocationPilotResource extends Resource
                                     ->disabled(fn ($record) => $record && in_array($record->status, [AircraftLocationPilotStatus::Executed, AircraftLocationPilotStatus::Deleted]))
                                     ->default(0),
                                 ])->columns(1),
-                            ])->columnSpan(2),
+                            ])->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 4,
+                                '2xl' => 4,
+                            ]),
 
                 ]),
             ]);
@@ -213,7 +237,8 @@ class AircraftLocationPilotResource extends Resource
                     ->icon('tabler-number')
                     ->badge()
                     ->color('gray')
-                    ->size('md'),
+                    ->size('md')
+                    ->visibleFrom('md'),
                 TextColumn::make('status')
                     //->label('Státusz')
                     ->label('')
@@ -265,9 +290,11 @@ class AircraftLocationPilotResource extends Resource
                         $minute_source = date('i', $timesource);
 
                         $region_name = Region::find($state);
+                        $location_name = Location::find($fulldate->location_id);
 
                         return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$hour_source.' </span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> óra</span>'.$minute_source.' </span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> perc</span></p>
-                        <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$region_name->name.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"></span></p>';
+                        <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$region_name->name.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"></span></p>
+                        <p><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">'.$location_name?->name.'</span></p>';
                     })->html()
                     /*
                     ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
@@ -277,8 +304,6 @@ class AircraftLocationPilotResource extends Resource
                         $location_name = Location::find($aircraft_localtion_pilot->location_id);
                         //return $region_name->name. ' '.$location_name?->name;
                         return $region_name->name;
-
-
                     })
                     ->description(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
                         $location_name = Location::find($aircraft_localtion_pilot->location_id);
@@ -288,20 +313,29 @@ class AircraftLocationPilotResource extends Resource
                     ->searchable(),
                 TextColumn::make('aircraft_id')
                     ->icon('iconoir-airplane-rotation')
-                    ->label('Légijármű')
+                    ->label('Légijármű/Pilóta')
                     ->searchable()
                     ->formatStateUsing(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
                         $aircraft = Aircraft::find($aircraft_localtion_pilot->aircraft_id);
-                        return $aircraft->registration_number;
-                    })
+                        $pilot = Pilot::find($aircraft_localtion_pilot->pilot_id);
+                        //return $aircraft->registration_number.' '.$aircraft->name.' '.$pilot->lastname.' '.$pilot->firstname;
+                        return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$aircraft->registration_number.' </span></p>
+                        <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$aircraft->name.' </span></p>
+                        <p><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;">'.$pilot->lastname.' '.$pilot->firstname.'</span></p>';
+                    })->html()
+                    ->visibleFrom('md'),
+                    /*
                     ->description(function ($state, AircraftLocationPilot $aircraft_localtion_pilot) {
                         $aircraft = Aircraft::find($aircraft_localtion_pilot->aircraft_id);
                         return $aircraft->name;
-                    }),
+                    })
+                    */
+                /*    
                 TextColumn::make('pilot.fullname')
                     ->icon('iconoir-user-square')
                     ->label('Pilóta')
                     ->searchable(),
+                */
             ])
             ->filters([
                 //

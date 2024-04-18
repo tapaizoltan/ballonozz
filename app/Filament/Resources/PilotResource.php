@@ -32,7 +32,6 @@ class PilotResource extends Resource
     {
         return $form
             ->schema([
-
                 Grid::make(4)
                 ->schema([
                     Section::make() 
@@ -57,9 +56,21 @@ class PilotResource extends Resource
                                 ->label('Pilóta engedély azonosító')
                                 ->prefixIcon('tabler-id-badge-2')
                                 ->placeholder('PPL-SEP'),
-                            ])->columns(3),
+                            ])->columns([
+                                'sm' => 1,
+                                'md' => 2,
+                                'lg' => 2,
+                                'xl' => 3,
+                                '2xl' => 3,
+                                ]),
 
-                        ])->columnSpan(3),
+                        ])->columnSpan([
+                            'sm' => 4,
+                            'md' => 4,
+                            'lg' => 4,
+                            'xl' => 3,
+                            '2xl' => 3,
+                        ]),
                 ]),
             ]);
     }
@@ -74,7 +85,10 @@ class PilotResource extends Resource
                     ->formatStateUsing(function ($state, Pilot $pilot) {
                         return $pilot->lastname . ' ' . $pilot->firstname;
                     }),
-                Tables\Columns\TextColumn::make('pilot_license_number')->label('Pilóta engedély')->searchable()->visibleFrom('md'),
+                Tables\Columns\TextColumn::make('pilot_license_number')
+                ->label('Pilóta engedély')
+                ->searchable()
+                ->visibleFrom('md'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()->native(false),

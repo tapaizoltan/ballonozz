@@ -41,7 +41,7 @@ class LocationResource extends Resource
     {
         return $form
             ->schema([
-                Grid::make(7)
+                Grid::make(12)
                 ->schema([
                     Section::make() 
                     ->schema([
@@ -54,7 +54,13 @@ class LocationResource extends Resource
                             ->required()
                             ->minLength(3)
                             ->maxLength(255),
-                    ])->columnSpan(2),
+                    ])->columnSpan([
+                        'sm' => 6,
+                        'md' => 6,
+                        'lg' => 6,
+                        'xl' => 6,
+                        '2xl' => 4,
+                    ]),
 
                     Section::make() 
                     ->schema([
@@ -71,10 +77,16 @@ class LocationResource extends Resource
                             ->createOptionForm([
                                 TextInput::make('name')->label('Régió neve')->helperText('Adja meg az új régió nevét. Célszerű olyat választani ami a későbbiekben segítségére lehet a könnyebb azonosítás tekintetében.')
                                     ->required()->unique(),]),
-                    ])->columnSpan(2),
+                    ])->columnSpan([
+                        'sm' => 6,
+                        'md' => 6,
+                        'lg' => 6,
+                        'xl' => 6,
+                        '2xl' => 4,
+                    ]),
                 ]),
 
-                Grid::make(7)
+                Grid::make(12)
                 ->schema([
                     Section::make() 
                     ->schema([
@@ -92,7 +104,13 @@ class LocationResource extends Resource
                                 ->label('Település')
                                 ->prefixIcon('tabler-building-skyscraper')
                                 ->placeholder('Békéscsaba'),
-                            ])->columns(3),
+                            ])->columns([
+                                'sm' => 1,
+                                'md' => 2,
+                                'lg' => 2,
+                                'xl' => 3,
+                                '2xl' => 3,
+                                ]),
 
                         Fieldset::make('Cím')
                         ->schema([
@@ -115,9 +133,21 @@ class LocationResource extends Resource
                                 ->prefixIcon('tabler-number')
                                 ->numeric()
                                 ->placeholder('13'),
-                            ])->columns(3),
+                            ])->columns([
+                                'sm' => 1,
+                                'md' => 2,
+                                'lg' => 2,
+                                'xl' => 2,
+                                '2xl' => 3,
+                                ]),
 
-                        ])->columnSpan(4),
+                        ])->columnSpan([
+                            'sm' => 6,
+                            'md' => 6,
+                            'lg' => 7,
+                            'xl' => 8,
+                            '2xl' => 7,
+                        ]),
 
                     Section::make() 
                     ->schema([
@@ -129,8 +159,20 @@ class LocationResource extends Resource
                                 ->label('Helyrajzi szám')
                                 ->prefixIcon('tabler-map-route')
                                 ->placeholder('0296/8/A'),
-                            ])->columns(1)
-                    ])->columnSpan(2),
+                            ])->columns([
+                                'sm' => 2,
+                                'md' => 2,
+                                'lg' => 1,
+                                'xl' => 1,
+                                '2xl' => 1,
+                                ]),
+                    ])->columnSpan([
+                        'sm' => 6,
+                        'md' => 6,
+                        'lg' => 5,
+                        'xl' => 4,
+                        '2xl' => 3,
+                    ]),
                 ]),
             ]);
     }
