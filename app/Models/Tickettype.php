@@ -34,5 +34,10 @@ class Tickettype extends Model
         return $this->hasMany(Coupon::class);
     }
 
+    public function regions(): BelongsToMany
+    {
+        return $this->belongsToMany(Region::class, 'tickettype_region');
+    }
+
     use SoftDeletes;
 }

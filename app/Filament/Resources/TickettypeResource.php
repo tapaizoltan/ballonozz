@@ -4,16 +4,19 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Tickettype;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 
 /* saját use-ok */
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -23,11 +26,11 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Actions\Action;
+use DragonCode\Support\Facades\Helpers\Boolean;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TickettypeResource\Pages;
 use App\Filament\Resources\TickettypeResource\RelationManagers;
-use DragonCode\Support\Facades\Helpers\Boolean;
-use Filament\Forms\Get;
 
 class TickettypeResource extends Resource
 {
@@ -73,7 +76,7 @@ class TickettypeResource extends Resource
 
                     Section::make() 
                         ->schema([
-                            Forms\Components\Fieldset::make('Jegytípus paraméterek')
+                            Fieldset::make('Jegytípus paraméterek')
                             ->schema([
                             ColorPicker::make('color')
                                 ->helperText('Válasszon egy egyedi színt a jegytípusnak, akönnyebb megkülömböztetés érdekében.')
@@ -102,6 +105,23 @@ class TickettypeResource extends Resource
                                 ->default(0),
                             
                                 ])->columns(1),
+                            Fieldset::make('Repülhető régiók')
+                                ->schema([
+                                    Select::make('regions')
+                                        ->label('')
+                                        ->relationship(titleAttribute: 'name')
+                                        ->loadingMessage('Régiók betöltése betöltése...')
+                                        /*
+                                        ->suffixAction(function () {
+                                            return Action::make('remove_all')
+                                                ->icon('heroicon-s-x-circle')
+                                                ->tooltip('Összes törlése')
+                                                ->action(fn ($set) => $set('regions', null));
+                                        })
+                                        */
+                                        ->multiple()
+                                        ->preload(),
+                                    ])->columns(1),
                             /*
                             Forms\Components\Fieldset::make('Társított légijárművek')
                                 ->schema([
@@ -146,7 +166,7 @@ class TickettypeResource extends Resource
                                 'lg' => 6,
                                 'xl' => 2,
                                 '2xl' => 2,       
-                            ]),                     
+                            ]),
                     /*
                     Section::make() 
                     ->schema([
