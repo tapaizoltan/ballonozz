@@ -186,6 +186,23 @@ class PendingcouponResource extends Resource
         ->groupingSettingsHidden()
         ->recordClasses(fn (Model $record) => $record->expiration_at < now() ? 'opacity-[50%]' : null)
         */
+        /*
+        ->recordClasses(fn (Pendingcoupon $record) => match ($record->status) {
+            CouponStatus::UnderProcess => 'bg-yellow-300 text-gray-600 dark:bg-yellow-300 daryk:text-gray-600',
+            //CouponStatus::CanBeUsed => 'bg-orange dark:bg-orange',
+            //CouponStatus::Used => 'bg-green dark:bg-green',
+            default => null,
+        })
+        */
+        ->recordClasses(function(Pendingcoupon $record)
+        {
+            $diff_day_nums = Carbon::parse($record->expiration_at)->diffInDays('now', false);
+            if($diff_day_nums > 0 && $diff_day_nums < 31)
+            {
+                return 'bg-yellow-300 dark:bg-amber-600/30';
+            }
+            return;
+        })
         ->columns([
             TextColumn::make('coupon_code')
                 ->label('Kuponkód')
@@ -212,6 +229,15 @@ class PendingcouponResource extends Resource
                     return Carbon::parse($state)->translatedFormat('Y F d');
                 })
                 ->searchable()
+                ->color(function($state)
+                {
+                    $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                    if($diff_day_nums > 0 && $diff_day_nums < 31)
+                    {
+                        return 'primary';
+                    }
+                    return;
+                })
                 ->visibleFrom('md'),
             TextColumn::make('status')
                 ->label('Státusz')

@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Coupon;
 use App\Models\Aircraft;
 use Filament\Pages\Page;
+use Filament\Actions\Action;
 use Livewire\Attributes\Computed;
 use App\Models\AircraftLocationPilot;
 use App\Models\Checkin as CheckinModel;
@@ -17,11 +18,20 @@ class Checkin extends Page
     
     public $coupons;
     public $coupon_id;
-    protected static ?string $title = 'Időpontjaim';
-    protected ?string $heading = 'Kuponjaid';
-    protected static ?string $navigationLabel = 'Időpontjaim';
+    protected static ?string $title = 'Repüléseim';
+    protected ?string $heading = 'Repüléseid';
+    protected static ?string $navigationLabel = 'Repüléseim';
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static string $view = 'filament.pages.checkin';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('redirect-to-coupon')->label('Nincs még kuponom, regisztrálok')
+                ->color('info')
+                //->url(Coupon::getUrl()),
+        ];
+    }
 
     public function mount()
     {

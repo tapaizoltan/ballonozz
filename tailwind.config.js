@@ -2,7 +2,7 @@
 export default {
   content: [
     "./resources/**/*.blade.php",
-    './app/Filament/**/*.php'
+    './app/Filament/**/*.php',
   ],
   darkMode: 'class',
   theme: {
