@@ -8,15 +8,17 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Aircraft;
 use Filament\Forms\Form;
+use App\Models\Tickettype;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
 
 /* saját use-ok */
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -27,7 +29,6 @@ use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\AircraftResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AircraftResource\RelationManagers;
-use App\Models\Tickettype;
 
 class AircraftResource extends Resource
 {
@@ -48,7 +49,7 @@ class AircraftResource extends Resource
                 ->schema([
                     Section::make() 
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')*/
                             ->helperText('Adjon egy fantázianevet a légijárműnek. Érdemes olyan nevet választani, amivel könnyedén azonosítható lesz az adott légijármű.')
                             ->label('Megnevezés')
@@ -56,9 +57,14 @@ class AircraftResource extends Resource
                             ->required()
                             ->minLength(3)
                             ->maxLength(255),
-                            Forms\Components\Fieldset::make('Besorolás')
+                        Textarea::make('description')
+                            ->label('Leírás')
+                            ->helperText('Adjon egy rövid leírást a légijárműhöz. Az ide rögzített leírás megjeleník a Repülési tervek/Jeletkezők részben.')
+                            ->rows(4)
+                            ->cols(20),
+                        Fieldset::make('Besorolás')
                             ->schema([
-                                Forms\Components\ToggleButtons::make('type')
+                                ToggleButtons::make('type')
                                     /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Válassza ki a légijármű típusát.')*/
                                     ->helperText('Válassza ki a légijármű típusát.')
                                     ->label('Típus')
@@ -80,7 +86,7 @@ class AircraftResource extends Resource
                                         '1' => 'info',
                                     ])
                                     ->default(0),
-                                Forms\Components\TextInput::make('registration_number')
+                                TextInput::make('registration_number')
                                     /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
                                     ->helperText('Ide a légijármű lajstromjelét adja meg.')
                                     ->label('Lajstrom-jel')
@@ -106,9 +112,9 @@ class AircraftResource extends Resource
 
                     Section::make() 
                     ->schema([
-                        Forms\Components\Fieldset::make('Terhelhetőség')
+                        Fieldset::make('Terhelhetőség')
                         ->schema([
-                            Forms\Components\TextInput::make('number_of_person')
+                            TextInput::make('number_of_person')
                             ->helperText('Adja meg a MAXIMÁLISAN szállítható személyek számát.')
                             ->label('Szállítható személyek száma')
                             ->prefixIcon('fluentui-people-team-24-o')
@@ -119,7 +125,7 @@ class AircraftResource extends Resource
                             ->maxLength(10)
                             ->suffix(' fő'),
 
-                            Forms\Components\TextInput::make('payload_capacity')
+                            TextInput::make('payload_capacity')
                             ->helperText('Adja meg a légijármű a pilótával együttes MAXIMÁLIS terhetőségét kg-ban.')
                             ->label('Terhetőség')
                             ->prefixIcon('tabler-weight')
@@ -139,7 +145,7 @@ class AircraftResource extends Resource
                             '2xl' => 2,
                         ]),
                         /*
-                        Forms\Components\Fieldset::make('Extra beállítások')
+                        Fieldset::make('Extra beállítások')
                             ->schema([
                                 Toggle::make('unlimited')
                                     ->inline(false)
@@ -179,7 +185,7 @@ class AircraftResource extends Resource
 
                             ])->columns(3),*/
                         
-                            Forms\Components\Fieldset::make('Társított jegytípusok')
+                            Fieldset::make('Társított jegytípusok')
                             ->schema([
                                 Select::make('tickettypes')
                                 ->label('Jegytípusok')

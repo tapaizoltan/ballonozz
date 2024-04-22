@@ -81,7 +81,7 @@ class AircraftLocationPilotResource extends Resource
                                 ->native(false),
 
                             Select::make('period_of_time')
-                                ->label('Program időtartama')
+                                ->label('Program tervezett időtartama')
                                 ->options([
                                     '00:30:00' => 'fél óra',
                                     '01:00:00' => '1 óra',
