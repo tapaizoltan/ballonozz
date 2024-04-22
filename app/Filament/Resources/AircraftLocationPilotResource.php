@@ -21,6 +21,8 @@ use App\Models\AircraftLocationPilot;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
@@ -35,6 +37,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\AircraftLocationPilotStatus;
 use Filament\Forms\Components\ToggleButtons;
+use Illuminate\Database\Eloquent\Collection;
+use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\AircraftLocationPilotResource\Pages;
 use App\Filament\Resources\AircraftLocationPilotResource\RelationManagers;
 
@@ -202,6 +206,46 @@ class AircraftLocationPilotResource extends Resource
                                 'lg' => 12,
                                 'xl' => 4,
                                 '2xl' => 4,
+                            ]),
+
+                ]),
+
+                Grid::make(12)
+                ->schema([
+                    Section::make() 
+                    ->schema([
+                        Fieldset::make('Publikus leírás')
+                        ->schema([
+                            Textarea::make('public_description')
+                                ->label('')
+                                ->helperText('Adjon egy rövid leírást a légijárműhöz. Az ide rögzített leírás megjeleník a Repülési tervek/Jeletkezők részben.')
+                                ->rows(4)
+                                ->cols(20),
+                            ])->columns(1),
+                        ])->columnSpan([
+                            'sm' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                            'xl' => 6,
+                            '2xl' => 6,
+                        ]),
+
+                        Section::make() 
+                        ->schema([
+                            Fieldset::make('NEM publikus leírás')
+                            ->schema([
+                                Textarea::make('non_public_description')
+                                    ->label('')
+                                    ->helperText('Adjon egy rövid leírást a légijárműhöz. Az ide rögzített leírás megjeleník a Repülési tervek/Jeletkezők részben.')
+                                    ->rows(4)
+                                    ->cols(20),
+                                ])->columns(1),
+                            ])->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 6,
+                                '2xl' => 6,
                             ]),
 
                 ]),
@@ -384,8 +428,64 @@ class AircraftLocationPilotResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->label('Mind törlése'),
-                ]),
+                    DeleteBulkAction::make()
+                    ->label('Mind törlése')
+                    ->deselectRecordsAfterCompletion(),
+                ])->label('Csoportos bejegyzés műveletek'),
+                
+                Tables\Actions\BulkActionGroup::make([
+                    BulkAction::make('status_change_draft')
+                    ->label('Tervezett')
+                    ->icon('tabler-player-pause')
+                    ->color('warning')
+                    ->action(function (Collection $records): void {
+                        foreach ($records as $record) {
+                            $record->update(['status' => AircraftLocationPilotStatus::Draft]);
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('status_change_published')
+                    ->label('Publikált')
+                    ->icon('tabler-player-play')
+                    ->color('success')
+                    ->action(function (Collection $records): void {
+                        foreach ($records as $record) {
+                            $record->update(['status' => AircraftLocationPilotStatus::Published]);
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('status_change_finalized')
+                    ->label('Véglegesített')
+                    ->icon('tabler-flag-check')
+                    ->color('success')
+                    ->action(function (Collection $records): void {
+                        foreach ($records as $record) {
+                            $record->update(['status' => AircraftLocationPilotStatus::Finalized]);
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('status_change_executed')
+                    ->label('Végrehajtott')
+                    ->icon('tabler-player-stop')
+                    ->color('info')
+                    ->action(function (Collection $records): void {
+                        foreach ($records as $record) {
+                            $record->update(['status' => AircraftLocationPilotStatus::Executed]);
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('status_change_deleted')
+                    ->label('Törölt')
+                    ->icon('tabler-playstation-x')
+                    ->color('danger')
+                    ->action(function (Collection $records): void {
+                        foreach ($records as $record) {
+                            $record->update(['status' => AircraftLocationPilotStatus::Deleted]);
+                        }
+                    })
+                    ->deselectRecordsAfterCompletion(),
+                ])->label('Csoportos repülési státusz műveletek'),
+                
             ]);
     }
 
