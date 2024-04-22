@@ -23,6 +23,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ToggleButtons;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,6 +31,7 @@ use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
+use App\Models\Coupon;
 
 class PendingcouponResource extends Resource
 {
@@ -175,6 +177,13 @@ class PendingcouponResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultSort('source', 'asc')
+        ->defaultGroup(
+            Group::make('source')
+            ->getTitleFromRecordUsing(function($record){return 'Kibocsájtó: '.$record->source;})
+            ->titlePrefixedWithLabel(false)
+            ->collapsible(),
+        )
         /*
         ->defaultSort('expiration_at', 'desc')
         ->defaultGroup('status')
@@ -213,7 +222,22 @@ class PendingcouponResource extends Resource
             TextColumn::make('adult')
                 ->label('Utasok')
                 ->formatStateUsing(function ($state, Pendingcoupon $payload) {
+                    /*
                     return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
+                    */
+                    if (!empty($payload?->adult) && !empty($payload?->childre))
+                    {
+                        $passenger_nums = $payload?->adult.'+'.$payload?->childre;
+                    }
+                    if (empty($payload?->adult) && !empty($payload?->childre))
+                    {
+                        $passenger_nums = '0+'.$payload?->childre;
+                    }
+                    if (!empty($payload?->adult) && empty($payload?->childre))
+                    {
+                        $passenger_nums = $payload?->adult.'+0';
+                    }
+                    return $passenger_nums;
                 })->html()
                 ->searchable()
                 ->visibleFrom('md'),
@@ -302,6 +326,14 @@ class PendingcouponResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
+                SelectFilter::make('source')
+                    ->label('Kupon kibocsájtó')
+                    ->options([
+                        'Ballonozz' => 'Ballonozz.hu',
+                        'Meglepkék' => 'Meglepkék',
+                        'Egyéb' => 'Egyéb',
+                    ])
+                    ->native(false),
                 /*    
                 Filter::make('expiration_at')
                     ->form([
