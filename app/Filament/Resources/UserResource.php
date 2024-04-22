@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use App\Models\User;
-use Filament\Forms\Components\Group;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Group;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
@@ -85,11 +86,30 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Név')
+                TextColumn::make('name')->label('Név')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                 ->visibleFrom('md'),
-                Tables\Columns\TextColumn::make('roles.name')->label('Jogosultságok')
+                TextColumn::make('created_at')
+                ->label('Regisztrált')
+                ->formatStateUsing(function ($state){
+                    return Carbon::parse($state)->translatedFormat('Y F d');
+                }),
+                TextColumn::make('last_login_at')
+                ->label('Utoljára itt')
+                ->formatStateUsing(function ($state){
+                    return Carbon::parse($state)->translatedFormat('Y F d');
+                })
+                ->description(function($state)
+                    {
+                        $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                        if ($diff_day_nums == 0){return 'mai napon';}
+                        if ($diff_day_nums != 0)
+                        {
+                            return abs($diff_day_nums).($diff_day_nums < 0 ? : ' napja');
+                        }
+                    }),
+                TextColumn::make('roles.name')->label('Jogosultságok')
                     ->badge()
                     ->label(__('Role'))
                     ->colors(['primary'])
