@@ -58,10 +58,11 @@ class Calendar extends Page
                 return 0;
             })->toArray());
 
+            $exploded_time = explode(':', $event->period_of_time);
             $this->events[] = [
                 'title' => $event->region->name . ' '  . $classified . '/' . $signed,
                 'start' => Carbon::parse($event->date . ' ' . $event->time)->format('Y-m-d H:i:s'),
-                'end'   => Carbon::parse($event->date . ' ' . $event->time)->addHours($event->period_of_time)->format('Y-m-d H:i:s'),
+                'end'   => Carbon::parse($event->date . ' ' . $event->time)->addHours($exploded_time[0])->addMinutes($exploded_time[1])->format('Y-m-d H:i:s'),
                 'description' => '<div>Helyszín: ' . ($event->location?->name ?? 'Ismeretlen') . '</div><div>Össz. tömeg: '. $classifiedWeight .'/' . $event->aircraft->payload_capacity . ' kg</div>',
                 'color' => $color
             ];

@@ -80,18 +80,20 @@ class AircraftLocationPilotResource extends Resource
                                 ->native(false),
 
                             Select::make('period_of_time')
-                                ->label('Tervezett repülési idő')
+                                ->label('Program időtartama')
                                 ->options([
-                                    '1' => '1 óra',
-                                    '2' => '2 óra',
-                                    '3' => '3 óra',
-                                    '4' => '4 óra',
-                                    '5' => '5 óra',
-                                    '6' => '6 óra',
-                                    '7' => '7 óra',
-                                    '8' => '8 óra',
-                                    '9' => '9 óra',
-                                    '10' => '10 óra',
+                                    '00:30:00' => 'fél óra',
+                                    '01:00:00' => '1 óra',
+                                    '01:30:00' => '1 és fél óra',
+                                    '02:00:00' => '2 óra',
+                                    '02:30:00' => '2 és fél óra',
+                                    '03:00:00' => '3 óra',
+                                    '03:30:00' => '3 és fél óra',
+                                    '04:00:00' => '4 óra',
+                                    '04:30:00' => '4 és fél óra',
+                                    '05:00:00' => '5 óra',
+                                    '05:30:00' => '5 és fél óra',
+                                    '06:00:00' => '6 óra',
                                 ])
                                 ->prefixIcon('tabler-device-watch-check')
                                 ->preload()
