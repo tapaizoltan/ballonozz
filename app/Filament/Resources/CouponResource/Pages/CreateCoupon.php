@@ -48,6 +48,7 @@ class CreateCoupon extends CreateRecord
             if ($response_coupon->successful())
             {
                 $coupons_data = $response_coupon->json();
+                $payment_total_price = ($coupons_data['total']);
                 //vásárlás dátumának lekérése
                 $payment_datetime_completed = ($coupons_data['date_completed']);
                 $payment_date_completed = substr($payment_datetime_completed, 0, 10);
@@ -74,6 +75,7 @@ class CreateCoupon extends CreateRecord
                             $data['children'] = ($product_attributes['attributes'][2]['options'][0])*$response_item_nums;
                             $data['status'] = CouponStatus::CanBeUsed;
                             $data['expiration_at'] = $coupon_expiration_date;
+                            $data['total_price'] = $payment_total_price ;
                         }
                     }
                 }
