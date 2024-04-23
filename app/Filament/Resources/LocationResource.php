@@ -20,8 +20,12 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\LocationResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LocationResource\RelationManagers;
@@ -153,12 +157,30 @@ class LocationResource extends Resource
                     ->schema([
                         Fieldset::make('Helyszín')
                         ->schema([
-                            TextInput::make('parcel_number')
-                                /*->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Ide a légijármű lajstromjelét adja meg.')*/
-                                ->helperText('Amennyiben az adott helyszínnek nincs címe, helyrajzi számmal is rögzítheti azt.')
-                                ->label('Helyrajzi szám')
-                                ->prefixIcon('tabler-map-route')
-                                ->placeholder('0296/8/A'),
+                            TextInput::make('coordinates')
+                            ->helperText('Megadhatja a helyszín szélességi és hosszúsági koordinátáit.')
+                            ->label('Koordináták')
+                            ->prefixIcon('tabler-compass')
+                            ->placeholder('47.6458345, 19.9761906'),
+                            TextInput::make('online_map_link')
+                            ->helperText('Megadhat térkép linket a könnyebb útvonaltervezés céljából.')
+                            ->label('Online térkép link')
+                            ->prefixIcon('tabler-map-route')
+                            ->placeholder('https://www.google.com/maps/@47.6458345,19.9761906,19.5z?entry=ttu')
+                            ->live()
+                            ->suffixAction(
+                                Action::make('redirect')
+                                    ->icon('tabler-world-www')
+                                    ->tooltip('Ide kattintva megnézhet egy új ablakban a behelyezett linket.')
+                                    ->url(function($state){return $state;})
+                                    ->openUrlInNewTab(),
+                            ),
+                            FileUpload::make('image_path')
+                            ->label('Kép feltöltése')
+                            ->helperText('Feltölthet fényképet a helyszínről, hogy az könnyebben beazonosítható legyen.')
+                            ->directory('form-attachments')
+                            ->image()
+                            ->maxSize(10000),
                             ])->columns([
                                 'sm' => 2,
                                 'md' => 2,
@@ -171,7 +193,7 @@ class LocationResource extends Resource
                         'md' => 6,
                         'lg' => 5,
                         'xl' => 4,
-                        '2xl' => 3,
+                        '2xl' => 5,
                     ]),
                 ]),
             ]);
@@ -182,21 +204,40 @@ class LocationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->label('Elnevezés')->searchable()
-                    ->description(function ($state, Location $region) {
-                        $region_name = Region::find($region->region_id);
-                        return $region_name->name;
-                    })
-                    ,
+                ->description(function ($state, Location $region) {
+                    $region_name = Region::find($region->region_id);
+                    return $region_name->name;
+                }),
                 TextColumn::make('region.name')
                 ->label('Régió'),
                 
                 TextColumn::make('address')
-                    ->label('Cím')
-                    ->formatStateUsing(function ($state, Location $location) {
-                        $areatype_name = AreaType::find($location->area_type_id);
-                        return $location->zip_code . ' ' . $location->settlement . ', '. $location->address . ' ' . $areatype_name->name . ' ' . $location->address_number .'.';
-                    })->visibleFrom('md'),
-                    TextColumn::make('parcel_number')->label('Helyrajzi szám')->searchable()->visibleFrom('md'),
+                ->label('Cím')
+                ->formatStateUsing(function ($state, Location $location) {
+                    $areatype_name = AreaType::find($location->area_type_id);
+                    return $location->zip_code . ' ' . $location->settlement . ', '. $location->address . ' ' . $areatype_name->name . ' ' . $location->address_number .'.';
+                })->visibleFrom('md'),
+                
+                TextColumn::make('coordinates')
+                ->label('Navigáció')
+                ->icon('tabler-compass'),
+                TextColumn::make('online_map_link')
+                ->icon('tabler-map-route')
+                ->formatStateUsing(function($state)
+                {
+                    $wrapText='...';
+                    $count = 40;
+                    if(strlen($state)>$count){
+                        preg_match('/^.{0,' . $count . '}(?:.*?)\b/siu', $state, $matches);
+                        $text = $matches[0];
+                    }else{
+                        $wrapText = '';
+                    }
+                    return $text . $wrapText;
+                }),
+                ImageColumn::make('image_path')
+                ->label('Kép')
+                ->square(),
             ])
             ->filters([
                 TrashedFilter::make()->native(false),
