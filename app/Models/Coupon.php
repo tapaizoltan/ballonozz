@@ -29,6 +29,11 @@ class Coupon extends Model
         return $this->hasMany(Passenger::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function aircraftLocationPilots()
     {
         return $this->belongsToMany(AircraftLocationPilot::class, 'checkins', 'coupon_id', 'aircraft_location_pilot_id')->withPivot('status');

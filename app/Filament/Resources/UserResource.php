@@ -20,6 +20,7 @@ use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\Coupon;
 
 class UserResource extends Resource
 {
@@ -101,14 +102,31 @@ class UserResource extends Resource
                     return Carbon::parse($state)->translatedFormat('Y F d');
                 })
                 ->description(function($state)
+                {
+                    $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                    if ($diff_day_nums == 0){return 'mai napon';}
+                    if ($diff_day_nums != 0)
                     {
-                        $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
-                        if ($diff_day_nums == 0){return 'mai napon';}
-                        if ($diff_day_nums != 0)
-                        {
-                            return abs($diff_day_nums).($diff_day_nums < 0 ? : ' napja');
-                        }
-                    }),
+                        return abs($diff_day_nums).($diff_day_nums < 0 ? : ' napja');
+                    }
+                }),
+                TextColumn::make('coupons')
+                ->formatStateUsing(function($record)
+                {
+                    $coupoAllNums = Coupon::where('user_id', $record->id)->get()->count();
+                    $couponStatusUnderProcess = Coupon::where('user_id', $record->id)->where('status', 0)->get()->count();
+                    $couponStatusCanBeUsed = Coupon::where('user_id', $record->id)->where('status', 1)->orwhere('status', 2)->get()->count();
+                    $couponStatusUsed = Coupon::where('user_id', $record->id)->where('status', 3)->get()->count();
+                    $couponStatusExpired = Coupon::where('user_id', $record->id)->where('status', 4)->get()->count();
+                    return '<p class="text-xs text-gray-500 dark: text-xs text-gray-400"><b>Összesen:</b> '.$coupoAllNums.' kupon, ebből:</p>
+                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400"><b>Feldolgozás alatt:</b> '.$couponStatusUnderProcess.' kupon</p>
+                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400"><b>Felhasználható:</b> '.$couponStatusCanBeUsed.' kupon</p>
+                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400"><b>Felhasznált:</b> '.$couponStatusUsed.' kupon</p>
+                    <p class="text-xs text-gray-500 dark: text-xs text-gray-400"><b>Lejárt:</b> '.$couponStatusExpired.' kupon</p>
+                    ';
+                })
+                ->html()
+                ->label('Kuponok'),
                 TextColumn::make('roles.name')->label('Jogosultságok')
                     ->badge()
                     ->label(__('Role'))
