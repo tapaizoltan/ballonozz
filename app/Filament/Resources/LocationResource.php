@@ -170,7 +170,7 @@ class LocationResource extends Resource
                             ->live()
                             ->suffixAction(
                                 Action::make('redirect')
-                                    ->icon('tabler-world-www')
+                                    ->icon('tabler-arrow-loop-right')
                                     ->tooltip('Ide kattintva megnézhet egy új ablakban a behelyezett linket.')
                                     ->url(function($state){return $state;})
                                     ->openUrlInNewTab(),
