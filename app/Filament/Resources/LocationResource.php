@@ -209,7 +209,7 @@ class LocationResource extends Resource
                 */
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
                 Tables\Actions\ForceDeleteAction::make()->label(false)->tooltip('Végleges törlés'),
-                Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyteállítás'),
+                Tables\Actions\RestoreAction::make()->label(false)->tooltip('Helyreállítás'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
