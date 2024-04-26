@@ -7,6 +7,7 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Auth\Login;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
@@ -28,6 +29,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
+            ->userMenuItems([
+                MenuItem::make()
+                ->label('Vissza a kezőoldalra')
+                ->icon('iconoir-hot-air-balloon')
+                ->url('/')
+                //->openUrlInNewTab()
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -61,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->passwordReset()
             ->emailVerification()
-            ->profile();
+            ->profile()
+            ->sidebarCollapsibleOnDesktop();
     }
 }
