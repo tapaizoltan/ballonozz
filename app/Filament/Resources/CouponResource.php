@@ -331,7 +331,6 @@ class CouponResource extends Resource
                                             ->label('Keresztnév')
                                             ->prefixIcon('tabler-writing-sign')
                                             ->placeholder('Jakab')
-                                            ->required()
                                             ->minLength(3)
                                             ->maxLength(255),
                                         DatePicker::make('date_of_birth')
@@ -339,19 +338,16 @@ class CouponResource extends Resource
                                             ->prefixIcon('tabler-calendar')
                                             ->weekStartsOnMonday()
                                             ->displayFormat('Y-m-d')
-                                            ->required()
                                             ->native(false),
                                         TextInput::make('id_card_number')
                                             ->label('Igazolvány szám')
                                             ->prefixIcon('tabler-id')
                                             ->placeholder('432654XX')
-                                            ->required()
                                             ->minLength(3)
                                             ->maxLength(10),
                                         TextInput::make('body_weight')
                                             ->label('Testsúly')
                                             ->prefixIcon('iconoir-weight-alt')
-                                            ->required()
                                             ->numeric()
                                             ->minLength(1)
                                             ->maxLength(10)

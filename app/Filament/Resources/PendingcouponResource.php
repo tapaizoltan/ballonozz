@@ -32,6 +32,7 @@ use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
 use App\Models\Coupon;
+use Filament\Support\Enums\MaxWidth;
 
 class PendingcouponResource extends Resource
 {
@@ -218,6 +219,12 @@ class PendingcouponResource extends Resource
                 ->description(fn (Pendingcoupon $record): string => $record->source)
                 ->wrap()
                 ->color('Amber')
+                ->searchable(['coupon_code','source']),
+            TextColumn::make('user.name')
+                ->label('Kapcsolattartó')
+                ->description(fn ($record): string => $record->user->email)
+                ->wrap()
+                ->color('Amber')
                 ->searchable(),
             TextColumn::make('adult')
                 ->label('Utasok')
@@ -241,6 +248,12 @@ class PendingcouponResource extends Resource
                 })->html()
                 ->searchable()
                 ->visibleFrom('md'),
+            TextColumn::make('created_at')
+                ->label('Rögzítve')
+                ->formatStateUsing(fn($state)=>Carbon::parse($state)->translatedFormat('Y F d'))
+                ->wrap()
+                ->color('Amber')
+                ->searchable(),
             TextColumn::make('expiration_at')
                 ->label('Lejárat')
                 ->formatStateUsing(function($state)
@@ -353,27 +366,12 @@ class PendingcouponResource extends Resource
                     })*/
             ])
             ->actions([
-                //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()->modalWidth(MaxWidth::ScreenExtraLarge),
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
             ])
-            ->recordUrl(
-                /* így is lehet
-                fn (Coupon $record): string => ($record->status==CouponStatus::Used) ?false: route('filament.admin.resources.coupons.edit', ['record' => $record]),
-                vagy úgy ahogy ez alatt van */
-                function($record)
-                {
-                    if ($record->status == CouponStatus::Used)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return route('filament.admin.resources.pendingcoupons.edit', ['record' => $record]);
-                    }
-                },
-            )
+            
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -401,7 +399,7 @@ class PendingcouponResource extends Resource
         return [
             'index' => Pages\ListPendingcoupons::route('/'),
             'create' => Pages\CreatePendingcoupon::route('/create'),
-            'edit' => Pages\EditPendingcoupon::route('/{record}/edit'),
+            //'edit' => Pages\EditPendingcoupon::route('/{record}/edit'),
         ];
     }
 }

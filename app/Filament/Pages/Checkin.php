@@ -10,6 +10,7 @@ use Livewire\Attributes\Computed;
 use App\Models\AircraftLocationPilot;
 use App\Models\Checkin as CheckinModel;
 use App\Enums\AircraftLocationPilotStatus;
+use App\Filament\Resources\CouponResource;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Checkin extends Page
@@ -29,7 +30,7 @@ class Checkin extends Page
         return [
             Action::make('redirect-to-coupon')->label('Nincs még kuponom, regisztrálok')
                 ->color('info')
-                //->url(Coupon::getUrl()),
+                ->url(CouponResource::getUrl()),
         ];
     }
 
