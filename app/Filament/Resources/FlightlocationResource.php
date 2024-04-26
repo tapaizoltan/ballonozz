@@ -29,7 +29,7 @@ class FlightlocationResource extends Resource
     protected static ?string $navigationLabel = 'Repülési Helyszínek';
     protected static ?string $pluralModelLabel = 'Várható repülési helyszínek';
 
-    
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

@@ -4,14 +4,18 @@ namespace App\Providers;
 
 use App\Models\Coupon;
 use App\Enums\CouponStatus;
+use Filament\Facades\Filament;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+use Filament\Navigation\NavigationItem;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\ServiceProvider;
+use Filament\Notifications\Notification;
 use App\Filament\Resources\CouponResource;
 use Filament\Notifications\Actions\Action;
-use Filament\View\PanelsRenderHook;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Blade;
-use Filament\Notifications\Notification;
-use Illuminate\Support\ServiceProvider;
 use Filament\Support\Facades\FilamentView;
+use App\Http\Responses\LogoutResponse;
+use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
     }
 
     /**
@@ -74,5 +78,17 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::HEAD_START,
             fn (): string => Blade::render('@vite([\'resources/css/checking.css\', \'resources/css/list-checkins.css\'])'),
         );
+
+        Filament::serving(function () {
+            Filament::registerNavigationItems([
+                NavigationItem::make('go_home')
+                    ->label('Vissza a kezdőlapra')
+                    //->url('/', shouldOpenInNewTab: true)
+                    ->url('/')
+                    ->icon('iconoir-hot-air-balloon')
+                    ->activeIcon('iconoir-hot-air-balloon')
+                    ->sort(1),
+            ]);
+        });
     }
 }

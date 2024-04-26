@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', Home::class);
+Route::get('/', Home::class)->name('home');
 
 Route::get('/test', function(){
     //dump(env('AIRCRAFT_PASSENGER_LIMIT', 30));

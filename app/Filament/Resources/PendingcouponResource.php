@@ -42,6 +42,8 @@ class PendingcouponResource extends Resource
     protected static ?string $modelLabel = 'kupon';
     protected static ?string $pluralModelLabel = 'kuponok';
 
+    protected static ?int $navigationSort = 5;
+
     public static function form(Form $form): Form
     {
         return $form

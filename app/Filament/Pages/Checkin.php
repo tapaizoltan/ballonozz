@@ -24,6 +24,7 @@ class Checkin extends Page
     protected static ?string $navigationLabel = 'Repüléseim';
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static string $view = 'filament.pages.checkin';
+    protected static ?int $navigationSort = 2;
 
     protected function getHeaderActions(): array
     {
