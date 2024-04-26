@@ -103,7 +103,14 @@ class FlightlocationResource extends Resource
                 ->hiddenLabel()
                 ->tooltip('Ide kattintva megtekintheti egy új ablakban a helyszínt a térképen.')
                 ->url(function($record){return $record->online_map_link;})
-                ->openUrlInNewTab(),
+                ->openUrlInNewTab()
+                ->visible(function($record)
+                {
+                    if (!empty($record->online_map_link))
+                    {
+                        return true;
+                    }
+                }),
             ])
             ->bulkActions([
                 
