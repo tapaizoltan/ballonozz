@@ -24,6 +24,11 @@ class Pendingcoupon extends Model
     {
         return $this->belongsTo(Tickettype::class);
     }
+    
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /*
     //ez a scope amit ráhúzunk a resource-re

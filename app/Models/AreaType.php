@@ -12,4 +12,9 @@ class AreaType extends Model
     {
         return $this->hasMany(Location::class); // itt azt definiáltuk, hogy egy cikkhez több azaz 'hasMany' comment is tartozhat.
     }
+
+    public function flightlocations()
+    {
+        return $this->hasMany(Flightlocation::class); // itt azt definiáltuk, hogy egy cikkhez több azaz 'hasMany' comment is tartozhat.
+    }
 }

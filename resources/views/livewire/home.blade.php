@@ -36,7 +36,10 @@
         </div>
     </div>
 
-
+    @auth
+    Kijelentkezés
+    @else
+    
     <div class="section">
         <div class="flex flex-wrap">
             <h2 class="card accent font-bold"><span class="text-shadow">Van kuponod?</span></h2>
@@ -51,4 +54,6 @@
         </div>
         @livewire('registration')
     </div>
+    
+    @endauth
 </div>
