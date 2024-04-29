@@ -43,10 +43,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\CouponResource\Pages;
+use AnourValar\EloquentSerialize\Tests\Models\Post;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CouponResource\RelationManagers;
+use Laravel\SerializableClosure\Serializers\Native;
 
 class CouponResource extends Resource
 {
@@ -61,9 +64,156 @@ class CouponResource extends Resource
     {
         return $form
             ->schema([
+
                 Grid::make(12)
+                    ->hiddenOn('create')
                     ->schema([
                         Section::make()
+                            ->schema([
+                                Grid::make(12)
+                                ->schema([
+                                    Fieldset::make()
+                                    ->label('Kuponja adatai')
+                                    ->schema([
+                                        Placeholder::make('coupon_code')
+                                        ->hiddenLabel()
+                                        ->content(function($record): HtmlString {
+                                            return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="gray" aria-hidden="true" data-slot="icon">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"/>
+                                        </svg>
+                                        </svg></div><div style="float:left; position:relative;">'. $record->coupon_code.'</div>');
+                                        }),
+                                        Placeholder::make('source')
+                                        ->hiddenLabel()
+                                        ->content(function($record){
+                                            if($record->source == 'Ballonozz')
+                                            {
+                                                return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke="gray">
+                                                <path d="M4 9.5C4 14.0714 9.71429 17.5 9.71429 17.5H14.2857C14.2857 17.5 20 14.0714 20 9.5C20 4.92857 16.4183 1.5 12 1.5C7.58172 1.5 4 4.92857 4 9.5Z" stroke="currentColor" stroke-miterlimit="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8.99999 2C5.99996 8 10 17.5 10 17.5" stroke="currentColor" stroke-linejoin="round"/>
+                                                <path d="M14.8843 2C17.8843 8 13.8843 17.5 13.8843 17.5" stroke="currentColor" stroke-linejoin="round"/>
+                                                <path d="M13.4 23H10.6C10.2686 23 10 22.7314 10 22.4V20.6C10 20.2686 10.2686 20 10.6 20H13.4C13.7314 20 14 20.2686 14 20.6V22.4C14 22.7314 13.7314 23 13.4 23Z" stroke="currentColor" stroke-linecap="round"/>
+                                                </svg></div><div style="float:left; position:relative;">'.$record->source.'.hu</div>');
+                                            }
+                                            if($record->source == 'Egyéb')
+                                            {
+                                                return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="gray" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 16v.01" />
+                                                <path d="M12 13a2 2 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483" />
+                                                <path d="M10 20.777a8.942 8.942 0 0 1 -2.48 -.969" />
+                                                <path d="M14 3.223a9.003 9.003 0 0 1 0 17.554" />
+                                                <path d="M4.579 17.093a8.961 8.961 0 0 1 -1.227 -2.592" />
+                                                <path d="M3.124 10.5c.16 -.95 .468 -1.85 .9 -2.675l.169 -.305" />
+                                                <path d="M6.907 4.579a8.954 8.954 0 0 1 3.093 -1.356" />
+                                            </svg></div><div style="float:left; position:relative;">'.$record->source.'</div>');
+                                            }
+                                            
+                                        }),
+                                        Placeholder::make('adult')
+                                        ->hiddenLabel()
+                                        ->content(function($record): HtmlString {
+                                            return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="gray" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M7 5m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <path d="M5 22v-5l-1 -1v-4a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4l-1 1v5" />
+                                            <path d="M17 5m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                                            <path d="M15 22v-4h-2l2 -6a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1l2 6h-2v4" />
+                                        </svg></div><div style="float:left; position:relative;">'.$record->adult.' fő</div>');
+                                        }),
+                                        Placeholder::make('children')
+                                        ->hiddenLabel()
+                                        ->content(function($record): HtmlString {
+                                            return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="gray" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3.5 17.5c5.667 4.667 11.333 4.667 17 0" />
+                                            <path d="M19 18.5l-2 -8.5l1 -2l2 1l1.5 -1.5l-2.5 -4.5c-5.052 .218 -5.99 3.133 -7 6h-6a3 3 0 0 0 -3 3" />
+                                            <path d="M5 18.5l2 -9.5" />
+                                            <path d="M8 20l2 -5h4l2 5" />
+                                        </svg></div><div style="float:left; position:relative;">'.$record->children.' fő</div>');
+                                        }),
+                                        Placeholder::make('expiration_at')
+                                        ->hiddenLabel()
+                                        ->content(function($record): HtmlString {
+                                            return new HtmlString('<div style="float:left; position:relative; margin-right: 6px;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="gray" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                                            <path d="M16 3v4" />
+                                            <path d="M8 3v4" />
+                                            <path d="M4 11h16" />
+                                            <path d="M11 15h1" />
+                                            <path d="M12 15v3" />
+                                            </svg></div><div style="float:left; position:relative;">'. Carbon::parse($record->expiration_at)->translatedFormat('Y F d').'</div>');
+                                        }),
+                                    ])
+                                    ->columns([
+                                        'sm' => 5,
+                                        'md' => 5,
+                                        'lg' => 5,
+                                        'xl' => 5,
+                                        '2xl' => 5,
+                                    ]),
+                                    
+                                ]),
+                            ])
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 7,
+                                '2xl' => 7,
+                            ]),
+                            Section::make()
+                            ->schema([
+                                Grid::make(12)
+                                ->schema([
+                                    Fieldset::make()
+                                    ->label('Kuponok öszvonása')
+                                    ->schema([
+                                        Select::make('parent_coupon')
+                                        ->label('Válasszon kuponjai közül')
+                                        ->options(function($record){
+                                            $coupons = Coupon::whereIn('status', [1, 2])->where('coupon_code', '!=', $record->coupon_code)->get();
+                                            foreach ($coupons as $coupon) {
+                                                    $filteredcoupons[$coupon->id] = 'Kuponkód: '.$coupon->coupon_code.' -> (felnőtt: '.$coupon->adult.' fő, gyermek: '.$coupon->children.' fő)';
+                                            }
+                                            return $filteredcoupons;
+                                        })
+                                        ->preload()
+                                        ->native(false),
+                                        Actions::make([Forms\Components\Actions\Action::make('Összevonás ezzel a kuponnal')
+                                        //->hiddenOn('edit')
+                                        ->extraAttributes(['type'=>'submit'])
+                                        ->action(
+                                            function(Get $get, $livewire)
+                                            {
+                                                $data = $livewire->form->getState();
+                                                //dump($data['parent_coupon']);
+                                            })
+                                        ])
+                                    ])
+                                    ->columns([
+                                        'sm' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                        'xl' => 1,
+                                        '2xl' => 1,
+                                    ]),
+                                    
+                                ]),
+                            ])
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 12,
+                                'lg' => 12,
+                                'xl' => 5,
+                                '2xl' => 5  ,
+                            ])
+                        ->columns(6),
+                    ])->columns(12),
+
+                Grid::make(12)
+                    ->hiddenOn('edit')
+                    ->schema([
+                        Section::make()
+                        ->hiddenOn('edit')
                             ->schema([
                                 Grid::make(12)
                                 ->schema([
@@ -263,7 +413,8 @@ class CouponResource extends Resource
                                             ->native(false)
                                             ->format('Y-m-d')
                                             ->displayFormat('Y-m-d')
-                                            ->default(now()),
+                                            ->default(now())
+                                            ->disabledOn('edit'),
                                     ])->columns([
                                         'sm' => 1,
                                         'md' => 2,
@@ -305,7 +456,7 @@ class CouponResource extends Resource
                             ]),
                         //Hidden::make('status')->default('0'),
                     ])->columns(12),
-                    
+
                 Grid::make(12)
                     //->hiddenOn('create')
                     ->visible(fn (GET $get, $operation) => (($get('adult') + $get('children')) > 0) && $operation == 'edit')

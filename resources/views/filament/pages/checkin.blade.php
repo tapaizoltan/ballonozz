@@ -27,14 +27,12 @@
             </div>
         @empty
             <div class="card w-full">
-                <div class="grid justify-center p-10">
-                    <div class="fi-ta-empty-state-icon-ctn mb-4 rounded-full bg-gray-100 p-3 dark:bg-gray-500/20 max-w-min justify-self-center">
-                        <svg class="fi-ta-empty-state-icon h-6 w-6 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
-                        </svg>
-                    </div>
-                    <span class="fi-ta-empty-state-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">Nincs megjeleníthető kupon. Nézz vissza később!</span>
-                </div>
+                <x-filament-tables::empty-state
+                :actions="[]"
+                :description="null"
+                :heading="__('filament-tables::table.empty.heading')"
+                :icon="'heroicon-o-x-mark'"
+                />
             </div>
         @endforelse
     </div>
@@ -107,14 +105,12 @@
         
             @if (!$this->events->count())
                 <div class="card w-full">
-                    <div class="grid justify-center p-10">
-                        <div class="fi-ta-empty-state-icon-ctn mb-4 rounded-full bg-gray-100 p-3 dark:bg-gray-500/20 max-w-min justify-self-center">
-                            <svg class="fi-ta-empty-state-icon h-6 w-6 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
-                              </svg>
-                        </div>
-                        <span class="fi-ta-empty-state-heading text-base font-semibold leading-6 text-gray-950 dark:text-white">Nincs megjeleníthető esemény. Nézz vissza később!</span>
-                    </div>
+                    <x-filament-tables::empty-state
+                    :actions="[]"
+                    :description="null"
+                    :heading="__('filament-tables::table.empty.heading')"
+                    :icon="'heroicon-o-x-mark'"
+                    />
                 </div>    
             @else
                 </div>
