@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\AircraftLocationPilotResource\Pages;
 
-use App\Enums\AircraftLocationPilotStatus;
-use App\Filament\Resources\AircraftLocationPilotResource;
-use App\Models\AircraftLocationPilot;
 use Carbon\Carbon;
+use App\Models\Event;
 use Filament\Resources\Pages\Page;
 use Illuminate\Support\HtmlString;
+use App\Models\AircraftLocationPilot;
+use App\Enums\AircraftLocationPilotStatus;
+use App\Filament\Resources\AircraftLocationPilotResource;
 
 class Calendar extends Page
 {
@@ -19,6 +20,21 @@ class Calendar extends Page
 
     public function mount()
     {
+        $extraevents = Event::all();
+        foreach ($extraevents as $extraevent) {
+            $extraeventcolor = 'rgb(255, 30, 220)';
+            if ($extraevent->status == 1)
+            {
+                $this->events[] = [
+                    'title' => $extraevent->name,
+                    'start' => Carbon::parse($extraevent->start_date . ' 00:00:00')->format('Y-m-d H:i:s'),
+                    'end'   => Carbon::parse($extraevent->end_date . ' 23:59:59')->format('Y-m-d H:i:s'),
+                    'description' => '<div>Esemény: ' . ($extraevent->name ?? 'Ismeretlen') . '</div><div>'.($extraevent->description ?? 'Nincs leírás').'</div>',
+                    'color' => $extraeventcolor
+                ];
+            }
+        }
+
         $events = AircraftLocationPilot::all();
         foreach ($events as $event) {
             switch ($event->status) {
