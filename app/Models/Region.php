@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Region extends Model
 {
+    protected $guarded = [];
     public function locations()
     {
         return $this->hasMany(Location::class);

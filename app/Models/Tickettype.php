@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tickettype extends Model
 {
+    protected $guarded = [];
     protected $casts = [
         'aircrafttype' => AircraftType::class,
     ];

@@ -51,6 +51,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CouponResource\RelationManagers;
 use Laravel\SerializableClosure\Serializers\Native;
 
+use function PHPUnit\Framework\isNull;
+
 class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
@@ -167,7 +169,7 @@ class CouponResource extends Resource
                                     Fieldset::make()
                                     ->label('Kuponok öszvonása')
                                     ->schema([
-                                        Select::make('parent_coupon')
+                                        Select::make('children_coupon')
                                         ->label('Válasszon kuponjai közül')
                                         ->options(function($record){
                                             $coupons = Coupon::whereIn('status', [1, 2])->where('coupon_code', '!=', $record->coupon_code)->get();
@@ -176,18 +178,35 @@ class CouponResource extends Resource
                                             }
                                             return $filteredcoupons;
                                         })
+                                        ->helperText('Válassza ki azt a kupont a kuponja közül amelyiket össze kívánja vonni ezzel a kuponnal.')
                                         ->preload()
                                         ->native(false),
-                                        Actions::make([Forms\Components\Actions\Action::make('Összevonás ezzel a kuponnal')
+                                        Actions::make([Forms\Components\Actions\Action::make('merge_coupons')
                                         //->hiddenOn('edit')
+                                        ->label('Kupon összevonása ezzel a kuponnal')
                                         ->extraAttributes(['type'=>'submit'])
                                         ->action(
-                                            function(Get $get, $livewire)
+                                            function($livewire, $record)
                                             {
                                                 $data = $livewire->form->getState();
-                                                //dump($data['parent_coupon']);
+                                                //Coupon::where('coupon_code', $data['children_coupon'])->update(['parent_coupon'=>$record->coupon_code]);
+                                                $record->childrenCoupons()->save(Coupon::find($data['children_coupon']));
                                             })
                                         ])
+                                    ])
+                                    ->columns([
+                                        'sm' => 1,
+                                        'md' => 1,
+                                        'lg' => 1,
+                                        'xl' => 1,
+                                        '2xl' => 1,
+                                    ]),
+
+                                    Fieldset::make()
+                                    ->hidden(function($record){})
+                                    ->label('Ezzel a kuponnal összevont kuponok')
+                                    ->schema([
+                                        
                                     ])
                                     ->columns([
                                         'sm' => 1,
@@ -571,44 +590,53 @@ class CouponResource extends Resource
             */
             ->columns([
                 IconColumn::make('missing_data')
-                    ->label('')
-                    ->width(0)
-                    ->boolean()
-                    ->trueIcon('tabler-alert-triangle')
-                    ->size(IconColumn\IconColumnSize::Medium)
-                    ->trueColor('danger')
-                    ->falseIcon('')
-                    ->tooltip(fn($state) => $state ? 'Hiányzó utasadatok!':''),
+                ->label('')
+                ->width(0)
+                ->boolean()
+                ->trueIcon('tabler-alert-triangle')
+                ->size(IconColumn\IconColumnSize::Medium)
+                ->trueColor('danger')
+                ->falseIcon('')
+                ->tooltip(fn($state) => $state ? 'Hiányzó utasadatok!':''),
+                IconColumn::make('childrenCoupons')
+                ->label('')
+                ->width(0)
+                ->boolean()
+                ->trueIcon('tabler-ticket')
+                ->size(IconColumn\IconColumnSize::Large)
+                ->trueColor('warning')
+                ->falseIcon('')
+                ->tooltip(fn($state, $record) => $state ? 'Összevonva ezzel a kuponnal: '.implode(', ', $state->pluck('coupon_code')->toArray()):''),
                 TextColumn::make('coupon_code')
-                    ->label('Kuponkód')
-                    ->description(fn (Coupon $record): string => $record->source)
-                    ->wrap()
-                    ->color('Amber')
-                    ->searchable(),
+                ->label('Kuponkód')
+                ->description(fn (Coupon $record): string => $record->source)
+                ->wrap()
+                ->color('Amber')
+                ->searchable(),
                 TextColumn::make('adult')
-                    ->label('Utasok')
-                    ->formatStateUsing(function ($state, Coupon $payload) {
-                        return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p>
-                        <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
-                    })->html()
-                    ->searchable()
-                    ->visibleFrom('md'),
+                ->label('Utasok')
+                ->formatStateUsing(function ($state, Coupon $payload) {
+                    return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p>
+                    <p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
+                })->html()
+                ->searchable()
+                ->visibleFrom('md'),
                 TextColumn::make('expiration_at')
-                    ->label('Lejárat')
-                    ->formatStateUsing(function($state)
-                    {
-                        $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
-                        return abs($diff_day_nums).($diff_day_nums < 0 ? ' nap múlva lejár' : ' napja lejárt');
-                    })
-                    ->description(function($state)
-                    {
-                        return Carbon::parse($state)->translatedFormat('Y F d');
-                    })
-                    ->searchable(),
+                ->label('Lejárat')
+                ->formatStateUsing(function($state)
+                {
+                    $diff_day_nums = Carbon::parse($state)->diffInDays('now', false);
+                    return abs($diff_day_nums).($diff_day_nums < 0 ? ' nap múlva lejár' : ' napja lejárt');
+                })
+                ->description(function($state)
+                {
+                    return Carbon::parse($state)->translatedFormat('Y F d');
+                })
+                ->searchable(),
                 TextColumn::make('status')
-                    ->label('Státusz')
-                    ->badge()
-                    ->size('md'),
+                ->label('Státusz')
+                ->badge()
+                ->size('md'),
             ])
             ->filters([
                 //

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 class Coupon extends Model
 {
     //use HasFactory;
-    protected $guarded = [];
+    protected $guarded = ['children_coupon'];
 
     protected $casts = [
         'status' => CouponStatus::class,
@@ -87,5 +87,15 @@ class Coupon extends Model
         return Attribute::make(
             get: fn() => $this->adult + $this->children,
         );
+    }
+
+    public function parentCoupon()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function childrenCoupons()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id');
     }
 }

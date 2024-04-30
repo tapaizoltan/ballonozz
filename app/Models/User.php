@@ -19,6 +19,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
+    protected $guarded = [];
     /**
      * The attributes that are mass assignable.
      *

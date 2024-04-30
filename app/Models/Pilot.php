@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Pilot extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
     protected function fullname(): Attribute
     {

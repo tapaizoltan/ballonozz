@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Passenger extends Model
 {
     //use HasFactory;
+    protected $guarded = [];
 
     protected function fullname(): Attribute
     {

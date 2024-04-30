@@ -14,6 +14,8 @@ class Pendingcoupon extends Model
 {
     use HasFactory;
     protected $table = 'coupons';
+    protected $guarded = ['children_coupon'];
+
 
     protected $casts = [
         'aircrafttype' => AircraftType::class,
@@ -37,5 +39,15 @@ class Pendingcoupon extends Model
         $query->where('source', '=', 'Egyéb');
     }
     */
+
+    public function parentCoupon()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function childrenCoupons()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id');
+    }
 }
 

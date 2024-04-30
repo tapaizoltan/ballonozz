@@ -12,6 +12,8 @@ class AircraftLocationPilot extends Model
 {
     //use HasFactory;
 
+    protected $guarded = [];
+
     protected $with = ['coupons'];
     protected $casts = [
         'status' => AircraftLocationPilotStatus::class,

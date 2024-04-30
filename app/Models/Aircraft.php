@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Aircraft extends Model
 {
+    protected $guarded = [];
+    
     protected $casts = [
         'type' => AircraftType::class,
     ];
