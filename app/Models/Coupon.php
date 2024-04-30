@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 class Coupon extends Model
 {
     //use HasFactory;
-    protected $guarded = ['children_coupon'];
+    protected $guarded = ['parent_id'];
 
     protected $casts = [
         'status' => CouponStatus::class,
@@ -65,11 +65,13 @@ class Coupon extends Model
         );
     }
 
+    /*
     public function scopeMissingData(Builder $query): void
     {
         $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
     }
-
+    */
+    
     protected function isUsed(): Attribute
     {
         return Attribute::make(
