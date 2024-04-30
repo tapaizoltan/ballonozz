@@ -169,6 +169,18 @@ class CouponResource extends Resource
                                     Fieldset::make()
                                     ->label('Kuponok öszvonása')
                                     ->schema([
+                                        /*
+                                        Select::make('children_coupon')
+                                        ->multiple()
+                            ->relationship(titleAttribute: 'name')
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()->unique(),]),
+*/
+
+
+
                                         Select::make('children_coupon')
                                         ->label('Válasszon kuponjai közül')
                                         ->options(function($record){
