@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AircraftLocationPilotResource\Pages;
 
+use App\Filament\CustomActions;
 use App\Filament\Resources\AircraftLocationPilotResource;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
@@ -14,9 +15,7 @@ class ListAircraftLocationPilots extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('calendar-view')->label('Naptár nézet')
-                ->color('info')
-                ->url(route('filament.admin.resources.aircraft-location-pilots.calendar') . '?view=' . env('DEFAULT_CALENDAR_VIEW', 'havi')),
+            CustomActions\CalendarAction::make(),
             Actions\CreateAction::make(),
         ];
     }
