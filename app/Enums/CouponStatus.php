@@ -13,6 +13,7 @@ enum CouponStatus: int implements HasColor, HasIcon, HasLabel
     case Gift = 2; //ajándék
     case Used = 3; //felhasznált
     case Expired = 4; //lejárt
+    case Applicant = 5; //repülésre jelölt
     
     public function getLabel(): string
     {
@@ -22,6 +23,7 @@ enum CouponStatus: int implements HasColor, HasIcon, HasLabel
             self::Gift => 'Ajándék',
             self::Used => 'Felhasznált',
             self::Expired => 'Lejárt',
+            self::Applicant => 'Jelölt',
         };
     }
 
@@ -41,6 +43,7 @@ enum CouponStatus: int implements HasColor, HasIcon, HasLabel
             self::Gift => 'info',
             self::Used => 'danger',
             self::Expired => 'warning',
+            self::Applicant => 'success',
         };
     }
 
@@ -52,6 +55,7 @@ enum CouponStatus: int implements HasColor, HasIcon, HasLabel
             self::Gift => 'tabler-gift',   
             self::Used => 'tabler-circle-x',
             self::Expired => 'tabler-soup',
+            self::Applicant => 'tabler-plane-departure',
         };
     }
 }
