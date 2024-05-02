@@ -29,7 +29,7 @@ class Calendar extends Page
                     'title' => $extraevent->name,
                     'start' => Carbon::parse($extraevent->start_date . ' 00:00:00')->format('Y-m-d H:i:s'),
                     'end'   => Carbon::parse($extraevent->end_date . ' 23:59:59')->format('Y-m-d H:i:s'),
-                    'description' => '<div>Esemény: ' . ($extraevent->name ?? 'Ismeretlen') . '</div><div>'.($extraevent->description ?? 'Nincs leírás').'</div>',
+                    'description' => '<div class="dark:text-black">Esemény: ' . ($extraevent->name ?? 'Ismeretlen') . '</div><div class="dark:text-black">'.($extraevent->description ?? 'Nincs leírás').'</div>',
                     'color' => $extraeventcolor
                 ];
             }
@@ -69,7 +69,7 @@ class Calendar extends Page
 
             $classifiedWeight = array_sum($event->coupons->map(function ($coupon) {
                 if ($coupon->pivot->status == 1) {
-                    return $coupon->passengers->sum('body_weight');
+                    return $coupon->membersBodyWeight;
                 }
                 return 0;
             })->toArray());
@@ -79,7 +79,7 @@ class Calendar extends Page
                 'title' => $event->region->name . ' '  . $classified . '/' . $signed,
                 'start' => Carbon::parse($event->date . ' ' . $event->time)->format('Y-m-d H:i:s'),
                 'end'   => Carbon::parse($event->date . ' ' . $event->time)->addHours($exploded_time[0])->addMinutes($exploded_time[1])->format('Y-m-d H:i:s'),
-                'description' => '<div>Helyszín: ' . ($event->location?->name ?? 'Ismeretlen') . '</div><div>Össz. tömeg: '. $classifiedWeight .'/' . $event->aircraft->payload_capacity . ' kg</div>',
+                'description' => '<div class="dark:text-black">Helyszín: ' . ($event->location?->name ?? 'Ismeretlen') . '</div><div class="dark:text-black">Össz. tömeg: '. $classifiedWeight .'/' . $event->aircraft->payload_capacity . ' kg</div>',
                 'color' => $color
             ];
         }

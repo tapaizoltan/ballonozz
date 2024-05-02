@@ -18,7 +18,7 @@ class Coupon extends Model
 {
     //use HasFactory;
     protected $guarded = ['children_coupon'];
-
+    private $checkList = [];
     protected $casts = [
         'status' => CouponStatus::class,
         'aircraft_type' => AircraftType::class,
@@ -44,13 +44,44 @@ class Coupon extends Model
         return $this->hasOne(Tickettype::class, 'id', 'tickettype_id');
     }
 
+    private function validatePassengersData(self $coupon): void
+    {
+        foreach ($coupon->passengers as $p) {
+            if ($p->firstname && $p->lastname && $p->date_of_birth && $p->id_card_number && $p->body_weight) {
+                $this->checkList[] = true;
+            } else {
+                $this->checkList[] = false;
+            }
+        }
+    }
+
+    protected function isValid(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $noOneMissing = $this->membersCount == ($this->passengers->count() + $this->childrenCoupons?->map(fn ($coupon) => $coupon->passengers->count())->sum() ?? 0);
+                
+                $this->validatePassengersData($this);
+                if ($this->childrenCoupons) {
+                    $this->childrenCoupons->map(fn ($coupon) => $this->validatePassengersData($coupon));
+                }
+
+                return count(array_unique($this->checkList)) === 1 && $noOneMissing;
+            },
+        );
+    }
+
     protected function isActive(): Attribute
     {
         return Attribute::make(
             get: function () {
-                if ($this->expiration_at > now() && in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children == $this->passengers->count())) {
+                
+                $isParent = $this->parent_id === null;
+
+                if ($this->expiration_at > now() && in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && $isParent && $this->isValid) {
                     return true;
                 }
+
                 return false;
             },
         );
@@ -59,15 +90,8 @@ class Coupon extends Model
     protected function missingData(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                return in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && ($this->adult + $this->children != $this->passengers->count());
-            },
+            get: fn () => in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && !$this->isValid,
         );
-    }
-
-    public function scopeMissingData(Builder $query): void
-    {
-        $query->whereIn('status', [CouponStatus::CanBeUsed, CouponStatus::Gift])->has('passengers', '<', DB::raw('coupons.adult+coupons.children'));
     }
 
     protected function isUsed(): Attribute
@@ -85,7 +109,32 @@ class Coupon extends Model
     protected function membersCount(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->adult + $this->children,
+            get: function () {
+
+                $membersCount = $this->adult + $this->children;
+
+                if ($this->childrenCoupons) {
+                    return $membersCount + $this->childrenCoupons->map(fn ($coupon) => $coupon->adult + $coupon->children)->sum();
+                }
+
+                return $membersCount;
+            },
+        );
+    }
+
+    protected function membersBodyWeight(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+
+                $bodyWeight = $this->passengers->sum('body_weight');
+
+                if ($this->childrenCoupons) {
+                    return $bodyWeight + $this->childrenCoupons->map(fn ($coupon) => $coupon->passengers->sum('body_weight'))->sum();
+                }
+
+                return $bodyWeight;
+            },
         );
     }
 

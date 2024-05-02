@@ -16,10 +16,9 @@
                 @php
                     $bodiesWeight = 0;
                     $membersCount = 0;
-
-                    foreach ($record->coupons()->withSum('passengers', 'body_weight')->whereIn('coupon_id', $selectedCoupons)->get() as $coupon) {
+                    foreach ($record->coupons->whereIn('id', $selectedCoupons) as $coupon) {
         
-                        $bodiesWeight += $coupon->passengers_sum_body_weight;
+                        $bodiesWeight += $coupon->membersBodyWeight;
                         $membersCount += $coupon->membersCount;
                     }
                 @endphp
@@ -44,7 +43,7 @@
             <div class="thead">Fő</div>
             <div class="thead">Súly</div>
 
-            @foreach ($record->coupons()->withSum('passengers', 'body_weight')->get() as $coupon)
+            @foreach ($record->coupons as $coupon)
                 @php
                     $isCheckedAlready = in_array($coupon->id, $alreadyCheckedCoupons);
 
@@ -56,15 +55,15 @@
                         $textColor = 'white';
                     }
                 @endphp
-                <label id="checkbox" class="tbody @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif>
-                    <input id="coupon-{{ $coupon->id }}" class="checkbox ms-2" type="checkbox" @disabled($isCheckedAlready) wire:model.live="selectedCoupons" value="{{ $coupon->id }}">
+                <label id="checkbox" class="tbody @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif>
+                    <input id="coupon-{{ $coupon->id }}" class="checkbox ms-2" type="checkbox" @disabled($isCheckedAlready || $coupon->missingData) wire:model.live="selectedCoupons" value="{{ $coupon->id }}">
                 </label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->coupon_code }}</span></label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->user->name }}</span></label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ Carbon\Carbon::parse($coupon->pivot->created_at)->translatedFormat('Y F d. H:i') }}</span></label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->tickettype->name }}</span></label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersCount }}</span></label>
-                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->passengers_sum_body_weight }} kg</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->coupon_code }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->user->name }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ Carbon\Carbon::parse($coupon->pivot->created_at)->translatedFormat('Y F d. H:i') }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->tickettype->name }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersCount }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersBodyWeight }} kg</span></label>
             @endforeach
         </div>
 
