@@ -85,7 +85,7 @@
                     <div class="flex justify-between gap-2">
                         <div class="flex text-zinc-400 justify-self-center">
                             <x-heroicon-m-users class="w-5"/>
-                            <span class="ps-1 py-2 text-sm font-semibold">{{ $event->coupons->sum('adult') + $event->coupons->sum('children') }}</span>
+                            <span class="ps-1 py-2 text-sm font-semibold">{{ $event->coupons->map(fn ($coupon) => $coupon->membersBodyWeight)->sum() }}</span>
                         </div>
                         <div>
                             @if($selected && $finalized && $checked) 

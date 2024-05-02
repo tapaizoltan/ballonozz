@@ -412,7 +412,7 @@ class AircraftLocationPilotResource extends Resource
                     
                     ->badge(function ($record) {
                         if ($record->coupons->count()) {
-                            return $record->coupons->sum('adult') + $record->coupons->sum('children');
+                            return $record->coupons->map(fn ($coupon) => $coupon->membersCount)->sum();
                         }
 
                         return null;
