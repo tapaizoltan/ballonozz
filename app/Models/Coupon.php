@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 class Coupon extends Model
 {
     //use HasFactory;
-    protected $guarded = ['children_coupon'];
+    protected $guarded = ['parent_id'];
     private $checkList = [];
     protected $casts = [
         'status' => CouponStatus::class,
