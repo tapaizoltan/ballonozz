@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Coupon;
 use Filament\Forms\Form;
 use App\Models\Tickettype;
 use Filament\Tables\Table;
@@ -14,7 +15,9 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Grouping\Group;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
@@ -31,8 +34,6 @@ use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
-use App\Models\Coupon;
-use Filament\Support\Enums\MaxWidth;
 
 class PendingcouponResource extends Resource
 {
@@ -171,7 +172,9 @@ class PendingcouponResource extends Resource
                                         'lg' => 12,
                                         'xl' => 12,
                                         '2xl' => 6,
-                                    ]),
+                                ]),
+                                Actions::make([Forms\Components\Actions\Action::make('Kiegészítő jegy')]),
+                                Actions::make([Forms\Components\Actions\Action::make('Ajándék jegy')]),
 
                         ]),
                     ]);
