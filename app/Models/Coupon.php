@@ -36,7 +36,7 @@ class Coupon extends Model
 
     public function aircraftLocationPilots()
     {
-        return $this->belongsToMany(AircraftLocationPilot::class, 'checkins', 'coupon_id', 'aircraft_location_pilot_id')->withPivot('status');
+        return $this->belongsToMany(AircraftLocationPilot::class, 'checkins', 'coupon_id', 'aircraft_location_pilot_id');
     }
 
     public function tickettype()
@@ -93,18 +93,6 @@ class Coupon extends Model
             get: fn () => in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && !$this->isValid,
         );
     }
-
-    protected function isUsed(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                if (count($this->aircraftLocationPilots->where('pivot.status', 1))) {
-                    return true;
-                }
-                return false;
-            },
-        );
-    }    
 
     protected function membersCount(): Attribute
     {
