@@ -28,11 +28,7 @@
                 </div>
             </div>
         </header>
-        <div class="flex gap-5 justify-end">
-    
-            
-            {{-- <x-filament::button class="justify-self-end" wire:click="save()">Véglegesít</x-filament::button> --}}
-        </div>
+
         <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
 
             <div class="thead"></div>
