@@ -12,6 +12,7 @@ use App\Enums\CouponStatus;
 use App\Models\Pendingcoupon;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Grouping\Group;
@@ -29,6 +30,8 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
@@ -49,6 +52,7 @@ class PendingcouponResource extends Resource
     {
         return $form
             ->schema([
+                
                 Grid::make(12)
                     ->schema([
                         Section::make()
@@ -173,11 +177,10 @@ class PendingcouponResource extends Resource
                                         'xl' => 12,
                                         '2xl' => 6,
                                 ]),
-                                Actions::make([Forms\Components\Actions\Action::make('Kiegészítő jegy')]),
-                                Actions::make([Forms\Components\Actions\Action::make('Ajándék jegy')]),
-
                         ]),
+                        
                     ]);
+                    
     }
 
     public static function table(Table $table): Table
@@ -371,10 +374,133 @@ class PendingcouponResource extends Resource
                     })*/
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()->modalWidth(MaxWidth::ScreenExtraLarge),
+                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()->modalWidth(MaxWidth::ScreenExtraLarge)
+                ->extraModalFooterActions([
+                    TableAction::make('Kiegészítő jegy')
+                    ->form([
+                        Fieldset::make('Kiegészítő jegy részletei')
+                        ->schema([
+                            TextInput::make('adult')
+                            ->helperText('Adja meg a kuponhoz tartozó felnőtt utasok számát.')
+                            ->label('Felnőtt')
+                            ->prefixIcon('tabler-friends')
+                            ->required()
+                            //->disabledOn('edit')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(1)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' fő'),  
+                            TextInput::make('children')
+                            ->helperText('Adja meg a kuponhoz tartozó gyermek utasok számát.')
+                            ->label('Gyermek')
+                            ->prefixIcon('tabler-horse-toy')
+                            ->required()
+                            //->disabledOn('edit')
+                            ->numeric()
+                            ->default(0)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' fő'),
+                            DatePicker::make('expiration_at')
+                            ->label('Felhasználható')
+                            ->helperText('Itt módosíthatja az adott kupon érvényességi idejét.')
+                            ->prefixIcon('tabler-calendar')
+                            ->weekStartsOnMonday()
+                            ->native(false)
+                            ->format('Y-m-d')
+                            ->displayFormat('Y-m-d')
+                            ->default(now()),
+                        ])->columns(3),
+                                
+                    ])
+                    ->action(function (array $data, Pendingcoupon $record): void {
+                        DB::table('coupons')->insert([
+                            'parent_id' => $record->id,
+                            'user_id' => $record->user_id,
+                            'coupon_code' => 'virtual'.random_int(10000, 99999),
+                            'source' => 'Kiegészítő',
+                            'adult' => $data['adult'],
+                            'children' => $data['children'],
+                            'tickettype_id' => $record->tickettype_id,
+                            'status' => CouponStatus::CanBeUsed,
+                            'expiration_at' => $data['expiration_at'],
+                            'created_at' => Carbon::now()->toDateTimeString(),
+                        ]);
+                    }),
+
+                    TableAction::make('Ajándék jegy')
+                    ->form([
+                        Fieldset::make('Ajándék jegy részletei')
+                        ->schema([
+                            TextInput::make('adult')
+                            ->helperText('Adja meg a kuponhoz tartozó felnőtt utasok számát.')
+                            ->label('Felnőtt')
+                            ->prefixIcon('tabler-friends')
+                            ->required()
+                            //->disabledOn('edit')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(1)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' fő'),  
+                            TextInput::make('children')
+                            ->helperText('Adja meg a kuponhoz tartozó gyermek utasok számát.')
+                            ->label('Gyermek')
+                            ->prefixIcon('tabler-horse-toy')
+                            ->required()
+                            //->disabledOn('edit')
+                            ->numeric()
+                            ->default(0)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' fő'),
+                            Select::make('tickettype_id')
+                            ->helperText('Válassza ki a kívánt jegytípust.')
+                            ->label('Jegytípus')
+                            ->prefixIcon('heroicon-o-ticket')
+                            ->required()
+                            //->disabledOn('edit')
+                            //->options(Tickettype::all()->pluck('name', 'id'))
+                            ->native(false)
+                            //->relationship('tickettype')
+                            ->relationship(
+                                name: 'tickettype',
+                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('aircrafttype')->orderBy('default', 'desc')->orderBy('name'),
+                            )
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->aircrafttype->getLabel()} - {$record->name}"),
+                            DatePicker::make('expiration_at')
+                            ->label('Felhasználható')
+                            ->helperText('Itt módosíthatja az adott kupon érvényességi idejét.')
+                            ->prefixIcon('tabler-calendar')
+                            ->weekStartsOnMonday()
+                            ->native(false)
+                            ->format('Y-m-d')
+                            ->displayFormat('Y-m-d')
+                            ->default(now()),
+                        ])->columns(2),
+                                
+                    ])
+                    ->action(function (array $data, Pendingcoupon $record): void {
+                        DB::table('coupons')->insert([
+                            'user_id' => $record->user_id,
+                            'coupon_code' => 'gift'.random_int(10000, 99999),
+                            'source' => 'Ajándék',
+                            'adult' => $data['adult'],
+                            'children' => $data['children'],
+                            'tickettype_id' => $data['tickettype_id'],
+                            'status' => CouponStatus::CanBeUsed,
+                            'expiration_at' => $data['expiration_at'],
+                            'created_at' => Carbon::now()->toDateTimeString(),
+                        ]);
+                    })
+                ]),
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
-                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
+                Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés'),
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
+                
             ])
             
             ->bulkActions([
