@@ -96,7 +96,6 @@ class Checkin extends Page
         CheckinModel::create([
             'aircraft_location_pilot_id' => $aircraftLocationPilotId,
             'coupon_id'  => $this->coupon->id,
-            'status'     => 0,
             'created_at' => now()->format('Y-m-d H:i:s')
         ]);
     }

@@ -649,7 +649,7 @@ class CouponResource extends Resource
                 //Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Szerkesztés')->link()
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
                 Tables\Actions\DeleteAction::make()->label(false)->tooltip('Törlés')
-                ->hidden(fn ($record) => ($record->status==CouponStatus::Used || $record->status==CouponStatus::Expired || $record->parent_id != null)),
+                ->hidden(fn ($record) => ($record->status==CouponStatus::Used || $record->status==CouponStatus::Expired || $record->status==CouponStatus::Applicant || $record->parent_id != null)),
             ])
             ->headerActions([
                 /*
@@ -662,7 +662,7 @@ class CouponResource extends Resource
                 vagy úgy ahogy ez alatt van */
                 function($record)
                 {
-                    if ($record->status == CouponStatus::Used || $record->status == CouponStatus::Expired || $record->parent_id != null)
+                    if ($record->status==CouponStatus::Used || $record->status==CouponStatus::Expired || $record->status==CouponStatus::Applicant || $record->parent_id != null)
                     {
                         return false;
                     }
