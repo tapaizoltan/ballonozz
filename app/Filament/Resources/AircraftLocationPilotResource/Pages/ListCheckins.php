@@ -37,6 +37,8 @@ class ListCheckins extends Page
 
                     $deselectedCoupons = $this->record->coupons()->wherePivotNotIn('coupon_id', $this->selectedCoupons)->pluck('coupon_id')->toArray();
 
+                    $this->record->coupons()->updateExistingPivot($this->selectedCoupons, ['status' => 1]);
+                    $this->record->coupons()->updateExistingPivot($deselectedCoupons, ['status' => 0]);
                     Coupon::whereIn('id', $this->selectedCoupons)->update(['status' => CouponStatus::Applicant]);
                     Coupon::whereIn('id', $deselectedCoupons)->update(['status' => CouponStatus::CanBeUsed]);
                     
@@ -56,12 +58,12 @@ class ListCheckins extends Page
         $this->record = $this->resolveRecord($record);
 
         $this->selectedCoupons = $this->record->coupons
-            ->where('status', CouponStatus::Applicant)
+            ->where('pivot.status', 1)
             ->map(fn ($coupon) => $coupon->id)
             ->toArray();
 
         $this->alreadyCheckedCoupons = array_filter(Coupon::with('aircraftLocationPilots')->where('status', CouponStatus::Applicant)->get()->map(function ($coupon) {
-            if (count($coupon->aircraftLocationPilots->where('pivot.aircraft_location_pilot_id', '!=', $this->record->id))) {
+            if (count($coupon->aircraftLocationPilots->where('pivot.aircraft_location_pilot_id', '!=', $this->record->id)->where('pivot.status', 1))) {
                 return $coupon->id;
             }
         })->toArray());
