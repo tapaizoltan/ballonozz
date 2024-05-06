@@ -194,13 +194,36 @@ class CouponResource extends Resource
                                         //Coupon::where('coupon_code', $data['children_coupon'])->update(['parent_coupon'=>$record->coupon_code]);
                                         //$record->childrenCoupons()->save(Coupon::find($data['children_coupon']));
                                         $datas = $livewire->form->getState();
-                                        Coupon::where('parent_id', $record->id)->update(['parent_id' => null]);
+                                        Coupon::where('parent_id', $record->id)->where('source', '!=', 'Kiegészítő')->update(['parent_id' => null]);
                                         foreach ($datas['custom_children_ids'] as $id) {
                                             $record->childrenCoupons()->save(Coupon::find($id));
                                         }
                                     }),
                                 ]),
                                 
+                            ])
+                            ->columns([
+                                'sm' => 1,
+                                'md' => 1,
+                                'lg' => 1,
+                                'xl' => 1,
+                                '2xl' => 1,
+                            ]),
+
+                            Fieldset::make()
+                            ->label('Kiegészítő jegy(ek)')
+                            ->schema([
+                                Placeholder::make('coupon_code')
+                                ->hiddenLabel()
+                                ->content(function($record){
+                                    $virtualcoupons = Coupon::where('parent_id', '=', $record->id)->where('source', '=', 'Kiegészítő')->get();
+                                    foreach ($virtualcoupons as $virtualcoupon)
+                                    {
+                                        $filteredvirtualcoupons[$virtualcoupon->id] = 'Kuponkód: '.$virtualcoupon->coupon_code.' -> (felnőtt: '.$virtualcoupon->adult.' fő, gyermek: '.$virtualcoupon->children.' fő)';
+                                    }
+                                    return new HtmlString(implode(',<br>', $filteredvirtualcoupons));
+                                }),
+
                             ])
                             ->columns([
                                 'sm' => 1,
