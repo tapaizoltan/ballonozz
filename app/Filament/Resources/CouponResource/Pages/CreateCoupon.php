@@ -18,9 +18,8 @@ class CreateCoupon extends CreateRecord
     protected function getFormActions(): array
     {
         return [
-            //Actions\Action::make('teszt'),
             parent::getCreateFormAction()->label(fn() => $this->data['source'] == 'Egyéb' ? 'Létrehozás' : 'Ellenőrzés'),
-            parent::getCancelFormAction()
+            parent::getCancelFormAction(),
         ];
     }
 
