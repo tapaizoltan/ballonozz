@@ -12,13 +12,6 @@
         <p>Ez a jelszó helyreállító hivatkozás 60 perc múlva le fog járni.</p>
         <p>Ha nem kezdeményzett jelszó helyreállítást, nincs további teendője.</p>
     </div>
-    <h4 class="farewell">
-        <p>
-            Üdvözlettel,
-            <br/>
-            Ballon App
-        </p>
-    </h4>
     <hr>
     <div class="description">
         <p>

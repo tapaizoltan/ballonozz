@@ -9,13 +9,6 @@
         </div>
         <p>Ha nem Ön hozta létre ezt a fiókot, akkor nincs további teendője.</p>
     </div>
-    <h4 class="farewell">
-        <p>
-            Üdvözlettel,
-            <br/>
-            Ballon App
-        </p>
-    </h4>
     <hr>
     <div class="description">
         <p>

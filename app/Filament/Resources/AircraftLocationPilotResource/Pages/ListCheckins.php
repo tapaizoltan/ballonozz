@@ -3,13 +3,17 @@
 namespace App\Filament\Resources\AircraftLocationPilotResource\Pages;
 
 use App\Models\Coupon;
-use App\Models\Checkin;
+use App\Enums\CouponStatus;
+use App\Mail\EventFinalized;
 use Filament\Actions\Action;
+use App\Mail\KickedFromEvent;
 use Filament\Resources\Pages\Page;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use App\Enums\AircraftLocationPilotStatus;
-use App\Enums\CouponStatus;
+use Illuminate\Contracts\Support\Arrayable;
 use App\Filament\Resources\AircraftLocationPilotResource;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 
@@ -21,6 +25,18 @@ class ListCheckins extends Page
     protected static ?string $title = 'Jelentkezők';
     public $selectedCoupons = [];
     public $alreadyCheckedCoupons;
+
+    private function queueMail(Collection $informations): void
+    {
+        dd($informations);
+        foreach ($informations as $info) {
+            Mail::to($info['user'])->queue(new EventFinalized(
+                user:   $info['user'], 
+                coupon: $info['coupon'],
+                event:  $this->record
+            ));
+        }
+    }
 
     protected function getHeaderActions(): array
     {
@@ -35,12 +51,41 @@ class ListCheckins extends Page
                 ])
                 ->action(function (array $data): void {
 
-                    $deselectedCoupons = $this->record->coupons()->wherePivotNotIn('coupon_id', $this->selectedCoupons)->pluck('coupon_id')->toArray();
+                    $unselectedCoupons = $this->record->coupons()->wherePivotNotIn('coupon_id', $this->selectedCoupons)->pluck('coupon_id')->toArray();
 
+                    $informations = $this->record->coupons->map(function ($coupon) {
+                        if (in_array($coupon->id, $this->selectedCoupons) && $coupon->status != CouponStatus::Applicant) {
+                            return ['user' => $coupon->user, 'coupon' => $coupon];
+                        }
+                    })->filter();
+
+                    $kickedInformations = $this->record->coupons->where('pivot.status', 1)->map(function ($coupon) use ($unselectedCoupons) {
+                        if (in_array($coupon->id, $unselectedCoupons) && $coupon->status === CouponStatus::Applicant) {
+                            return ['user' => $coupon->user, 'coupon' => $coupon];
+                        }
+                    })->filter();
+
+                    foreach ($informations as $info) {
+                        Mail::to($info['user'])->queue(new EventFinalized(
+                            user:   $info['user'], 
+                            coupon: $info['coupon'],
+                            event:  $this->record
+                        ));
+                    }
+
+                    foreach ($kickedInformations as $info) {
+                        Mail::to($info['user'])->queue(new KickedFromEvent(
+                            user:   $info['user'], 
+                            coupon: $info['coupon'],
+                            event:  $this->record
+                        ));
+                    }
+                    
                     $this->record->coupons()->updateExistingPivot($this->selectedCoupons, ['status' => 1]);
-                    $this->record->coupons()->updateExistingPivot($deselectedCoupons, ['status' => 0]);
+                    $this->record->coupons()->updateExistingPivot($unselectedCoupons, ['status' => 0]);
+
                     Coupon::whereIn('id', $this->selectedCoupons)->update(['status' => CouponStatus::Applicant]);
-                    Coupon::whereIn('id', $deselectedCoupons)->update(['status' => CouponStatus::CanBeUsed]);
+                    Coupon::whereIn('id', $unselectedCoupons)->update(['status' => CouponStatus::CanBeUsed]);
                     
                     $data['status'] = AircraftLocationPilotStatus::Finalized;
 

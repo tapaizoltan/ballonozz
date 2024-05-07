@@ -5,12 +5,16 @@ namespace App\Filament\Pages;
 use App\Models\Coupon;
 use App\Models\Aircraft;
 use Filament\Pages\Page;
+use App\Mail\JoinToEvent;
 use Filament\Actions\Action;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\AircraftLocationPilot;
 use App\Models\Checkin as CheckinModel;
 use App\Enums\AircraftLocationPilotStatus;
 use App\Filament\Resources\CouponResource;
+use App\Mail\LeaveFromEvent;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Checkin extends Page
@@ -93,17 +97,31 @@ class Checkin extends Page
 
     public function checkIn($aircraftLocationPilotId)
     {
+        $event = AircraftLocationPilot::find($aircraftLocationPilotId);
         CheckinModel::create([
-            'aircraft_location_pilot_id' => $aircraftLocationPilotId,
+            'aircraft_location_pilot_id' => $event->id,
             'coupon_id'  => $this->coupon->id,
             'created_at' => now()->format('Y-m-d H:i:s')
         ]);
+
+        Mail::to(Auth::user())->queue(new JoinToEvent(
+            user:     Auth::user(),
+            coupon:   $this->coupon,
+            event:    $event
+        ));
     }
 
     public function checkOut($aircraftLocationPilotId)
     {
-        CheckinModel::where('aircraft_location_pilot_id', $aircraftLocationPilotId)
+        $event = AircraftLocationPilot::find($aircraftLocationPilotId);
+        CheckinModel::where('aircraft_location_pilot_id', $event->id)
             ->where('coupon_id', $this->coupon->id)
             ->delete();
+
+        Mail::to(Auth::user())->queue(new LeaveFromEvent(
+            user:     Auth::user(),
+            coupon:   $this->coupon,
+            event:    $event
+        ));
     }
 }

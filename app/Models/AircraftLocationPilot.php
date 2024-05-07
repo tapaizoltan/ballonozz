@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use App\Mail\EventDeleted;
 use App\Enums\CouponStatus;
+use App\Mail\EventExecuted;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\AircraftLocationPilotStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AircraftLocationPilot extends Model
@@ -36,12 +41,35 @@ class AircraftLocationPilot extends Model
                 })->toArray());
 
                 switch ($event->status) {
+
+                    # case AircraftLocationPilotStatus::Finalized: --> mail: App\Filament\Resources\AircraftLocationPilotResource\Pages\ListCheckins.php
+
                     case AircraftLocationPilotStatus::Executed:
-                        Coupon::whereIn('id', $checkedCoupons)->update(['status' => CouponStatus::Used]);
+
+                        Coupon::whereIn('id', $checkedCoupons)->whereNot('status', CouponStatus::Expired)->update(['status' => CouponStatus::Used]);
+                        
+                        foreach ($event->coupons as $coupon) {
+                            Mail::to($coupon->user)->queue(new EventExecuted(
+                                user:   $coupon->user,
+                                coupon: $coupon,
+                                event:  $event
+                            ));
+                        }
                         break;
 
                     case AircraftLocationPilotStatus::Deleted:
+                        
                         Checkin::where('aircraft_location_pilot_id', $event->id)->whereIn('coupon_id', $checkedCoupons)->update(['status' => 0]);
+                        
+                        if ($event->getOriginal('status') !== AircraftLocationPilotStatus::Executed) {
+                            foreach ($event->coupons as $coupon) {
+                                Mail::to($coupon->user)->queue(new EventDeleted(
+                                    user:   $coupon->user,
+                                    coupon: $coupon,
+                                    event:  $event
+                                ));
+                            }
+                        }
                         break;
                 }
             }
@@ -85,5 +113,15 @@ class AircraftLocationPilot extends Model
     public function region()
     {
         return $this->belongsTo(Region::class);
+    }
+
+    protected function dateTime(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $dateTime = $this->date . ' ' . $this->time;
+                return Carbon::parse($dateTime)->translatedFormat('Y F d. H:i');
+            },
+        );
     }
 }

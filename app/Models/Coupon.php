@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use App\Mail\CouponExpired;
 use App\Enums\AircraftType;
 use App\Enums\CouponStatus;
+use App\Mail\CouponApproved;
 use App\Models\Scopes\ClientScope;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Support\Facades\Mail;
 
 #[ScopedBy([ClientScope::class])]
 
@@ -24,6 +24,35 @@ class Coupon extends Model
         'aircraft_type' => AircraftType::class,
     ];
 
+    protected static function booted(): void
+    {
+        static::updated(function (self $coupon) {
+            
+            switch ($coupon->status) {
+                case CouponStatus::CanBeUsed:
+                    switch ($coupon->getOriginal('status')) {
+                        case CouponStatus::UnderProcess:
+                            Mail::to($coupon->user)->queue(new CouponApproved(
+                                user:   $coupon->user,
+                                coupon: $coupon
+                            ));
+                            break;
+                    }
+                    break;
+
+                # case CouponStatus::Applicant: --> mail: App\Filament\Resources\AircraftLocationPilotResource\Pages\ListCheckins.php
+
+                # case CouponStatus::Used: --> mail: App\Models\AircraftLocationPilot.php
+
+                case CouponStatus::Expired:
+                    Mail::to($coupon->user)->queue(new CouponExpired(
+                        user:   $coupon->user,
+                        coupon: $coupon
+                    ));
+                    break;
+            }
+        });
+    }
     public function passengers()
     {
         return $this->hasMany(Passenger::class);
