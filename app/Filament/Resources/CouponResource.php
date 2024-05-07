@@ -221,7 +221,7 @@ class CouponResource extends Resource
                                     {
                                         $filteredvirtualcoupons[$virtualcoupon->id] = 'Kuponkód: '.$virtualcoupon->coupon_code.' -> (felnőtt: '.$virtualcoupon->adult.' fő, gyermek: '.$virtualcoupon->children.' fő)';
                                     }
-                                    return new HtmlString(implode(',<br>', $filteredvirtualcoupons));
+                                    return new HtmlString(implode(',<br>', $filteredvirtualcoupons ??= []));
                                 }),
 
                             ])
