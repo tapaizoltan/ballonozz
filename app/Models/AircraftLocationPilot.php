@@ -37,7 +37,7 @@ class AircraftLocationPilot extends Model
 
                 switch ($event->status) {
                     case AircraftLocationPilotStatus::Executed:
-                        Coupon::whereIn('id', $checkedCoupons)->withoutGlobalScopes()->update(['status' => CouponStatus::Used]);
+                        Coupon::whereIn('id', $checkedCoupons)->update(['status' => CouponStatus::Used]);
                         break;
 
                     case AircraftLocationPilotStatus::Deleted:
@@ -70,7 +70,7 @@ class AircraftLocationPilot extends Model
 
     public function coupons()
     {
-        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at')->withoutGlobalScopes();
+        return $this->belongsToMany(Coupon::class, 'checkins', 'aircraft_location_pilot_id', 'coupon_id')->withPivot('status', 'created_at');
     }
 
     public function isChecked($coupon_id): bool

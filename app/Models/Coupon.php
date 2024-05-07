@@ -94,18 +94,6 @@ class Coupon extends Model
         );
     }
 
-    protected function isUsed(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                if (count($this->aircraftLocationPilots->where('pivot.status', 1))) {
-                    return true;
-                }
-                return false;
-            },
-        );
-    }    
-
     protected function membersCount(): Attribute
     {
         return Attribute::make(
