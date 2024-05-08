@@ -4,9 +4,9 @@
     </h3>
     <div class="content">
         <p>Azért kapja ezt az üzenetet, mert a fiókjára jelszó helyreállítási kérés érkezett.</p>
-        <div style="display: flex; align-items: center; justify-content: center; text-align: center;">
-            <a href="{{ $url }}" class="btn accent hover:bg-custom-secondary transition duration-300 absolute left-1/2 top-1/2 translate-y-[-50%] translate-x-[-50%]">
-                <span style="font-size: 1.125rem; line-height: 1.75rem;" class="text-shadow">Jelszó helyreállítás</span>
+        <div align="center" style="text-align: center;">
+            <a href="{{ $url }}" class="btn accent">
+                <span style="font-size: 18px; line-height: 28px;" class="text-shadow">JELSZÓ&nbsp;HELYREÁLLÍTÁS</span>
             </a>
         </div>
         <p>Ez a jelszó helyreállító hivatkozás 60 perc múlva le fog járni.</p>
