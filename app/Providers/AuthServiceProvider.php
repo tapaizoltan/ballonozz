@@ -4,6 +4,8 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -30,9 +32,10 @@ class AuthServiceProvider extends ServiceProvider
                 ->view('mail.verify-email', ['user' => $notifiable, 'url' => $url]);
         });
 
-        ResetPassword::toMailUsing(function (object $notifiable, string $url) {
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
             return (new MailMessage())
-                ->view('mail.reset-password', ['user' => $notifiable, 'url' => $url]);
+                ->subject(Lang::get('Reset Password Notification'))
+                ->view('mail.reset-password', ['user' => $notifiable, 'url' => Filament::getResetPasswordUrl($token, $notifiable)]);
         });
     }
 }
