@@ -448,7 +448,12 @@ class CouponResource extends Resource
                                             ->native(false)
                                             ->format('Y-m-d')
                                             ->displayFormat('Y-m-d')
-                                            ->default(now())
+                                            ->default(function (){
+                                                return Carbon::today()->addDay();
+                                            })
+                                            ->minDate(function (){
+                                                return Carbon::today()->addDay();
+                                            })
                                             ->disabledOn('edit'),
                                     ])->columns([
                                         'sm' => 1,
