@@ -176,7 +176,7 @@ class CouponResource extends Resource
                                 ->label('Válasszon kuponjai közül')
                                 ->multiple()
                                 ->options(function($record){
-                                    $coupons = Coupon::whereIn('status', [1, 2])->where('coupon_code', '!=', $record->coupon_code)->get();
+                                    $coupons = Coupon::whereIn('status', [1, 2])->where('coupon_code', '!=', $record->coupon_code)->where('source', '!=', 'Kiegészítő')->doesntHave('childrenCoupons')->get();
                                     foreach ($coupons as $coupon) {
                                             $filteredcoupons[$coupon->id] = 'Kuponkód: '.$coupon->coupon_code.' -> (felnőtt: '.$coupon->adult.' fő, gyermek: '.$coupon->children.' fő)';
                                     }
@@ -506,7 +506,7 @@ class CouponResource extends Resource
                         ->addActionLabel('Új utas felvétele')
                         ->label('Utasok')
                         ->relationship()
-                        ->maxItems(fn (Get $get) => $get('adult')+$get('children'))
+                        ->minItems(fn (Get $get) => $get('adult')+$get('children'))
                         ->schema([
                             Fieldset::make('Kötelező utasadatok')
                             ->schema([

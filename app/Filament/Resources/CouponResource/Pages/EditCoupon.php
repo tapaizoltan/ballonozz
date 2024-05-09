@@ -20,7 +20,7 @@ class EditCoupon extends EditRecord
     */
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['custom_children_ids'] = $this->record->childrenCoupons->pluck('id')->toArray();
+        $data['custom_children_ids'] = $this->record->childrenCoupons()->where('source', '!=', 'Kiegészítő')->pluck('id')->toArray();
         return $data;
     }
 }
