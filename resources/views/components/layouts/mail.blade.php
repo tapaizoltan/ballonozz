@@ -4,9 +4,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ config('app.name') }}</title>
-        
-    </head>
-    <head>
         <style>
             body{
                 background-color: #f4f4f5;
@@ -46,10 +43,10 @@
             }
         </style>
     </head>
-    <div class="container">
+    <body class="container">
         <div class="card">
             {{ $slot }}
             <x-farewells.mail/>
         </div>
-    </div>
+    </body>
 </html>
