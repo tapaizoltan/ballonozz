@@ -440,7 +440,8 @@ class AircraftLocationPilotResource extends Resource
                     ->color('warning')
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            $record->update(['status' => AircraftLocationPilotStatus::Draft]);
+                            $record->status = AircraftLocationPilotStatus::Draft;
+                            $record->save();
                         }
                     })
                     ->deselectRecordsAfterCompletion(),
@@ -450,7 +451,8 @@ class AircraftLocationPilotResource extends Resource
                     ->color('success')
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            $record->update(['status' => AircraftLocationPilotStatus::Published]);
+                            $record->status = AircraftLocationPilotStatus::Published;
+                            $record->save();
                         }
                     })
                     ->deselectRecordsAfterCompletion(),
@@ -460,7 +462,8 @@ class AircraftLocationPilotResource extends Resource
                     ->color('success')
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            $record->update(['status' => AircraftLocationPilotStatus::Finalized]);
+                            $record->status = AircraftLocationPilotStatus::Finalized;
+                            $record->save();
                         }
                     })
                     ->deselectRecordsAfterCompletion(),
@@ -470,7 +473,8 @@ class AircraftLocationPilotResource extends Resource
                     ->color('info')
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            $record->update(['status' => AircraftLocationPilotStatus::Executed]);
+                            $record->status = AircraftLocationPilotStatus::Executed;
+                            $record->save();
                         }
                     })
                     ->deselectRecordsAfterCompletion(),
@@ -480,7 +484,8 @@ class AircraftLocationPilotResource extends Resource
                     ->color('danger')
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            $record->update(['status' => AircraftLocationPilotStatus::Deleted]);
+                            $record->status = AircraftLocationPilotStatus::Deleted;
+                            $record->save();
                         }
                     })
                     ->deselectRecordsAfterCompletion(),
