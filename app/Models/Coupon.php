@@ -78,7 +78,7 @@ class Coupon extends Model
                 
                 $isParent = $this->parent_id === null;
 
-                if ($this->expiration_at > now() && in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift]) && $isParent && $this->isValid) {
+                if ($this->expiration_at > now() && in_array($this->status, [CouponStatus::CanBeUsed, CouponStatus::Gift, CouponStatus::Applicant]) && $isParent && $this->isValid) {
                     return true;
                 }
 
