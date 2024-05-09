@@ -34,4 +34,14 @@ class EventExecuted extends Mailable
             subject: 'Event Executed',
         );
     }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        return new Content(
+            markdown: 'mail.event-executed',
+        );
+    }
 }

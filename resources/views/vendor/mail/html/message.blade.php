@@ -8,6 +8,7 @@
 
 {{-- Body --}}
 {{ $slot }}
+<x-farewells.mail/>
 
 {{-- Subcopy --}}
 @isset($subcopy)

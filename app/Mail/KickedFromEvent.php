@@ -41,7 +41,7 @@ class KickedFromEvent extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.kicked-from-event',
+            markdown: 'mail.kicked-from-event',
         );
     }
 }

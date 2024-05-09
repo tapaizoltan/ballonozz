@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             return (new MailMessage())
-                ->view('mail.verify-email', ['user' => $notifiable, 'url' => $url]);
+                ->markdown('mail.verify-email', ['user' => $notifiable, 'url' => $url]);
         });
 
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {

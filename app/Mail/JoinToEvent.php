@@ -41,7 +41,7 @@ class JoinToEvent extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.join-to-event',
+            markdown: 'mail.join-to-event',
         );
     }
 }

@@ -41,7 +41,7 @@ class EventFinalized extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.event-finalized',
+            markdown: 'mail.event-finalized',
         );
     }
 }

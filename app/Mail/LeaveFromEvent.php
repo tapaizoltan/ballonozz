@@ -41,7 +41,7 @@ class LeaveFromEvent extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.leave-from-event',
+            markdown: 'mail.leave-from-event',
         );
     }
 }

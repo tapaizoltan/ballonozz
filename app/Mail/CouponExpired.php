@@ -39,7 +39,7 @@ class CouponExpired extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.coupon-expired',
+            markdown: 'mail.coupon-expired',
         );
     }
 }

@@ -41,7 +41,7 @@ class EventDeleted extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.event-deleted',
+            markdown: 'mail.event-deleted',
         );
     }
 }
