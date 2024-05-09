@@ -507,6 +507,7 @@ class CouponResource extends Resource
                         ->label('Utasok')
                         ->relationship()
                         ->minItems(fn (Get $get) => $get('adult')+$get('children'))
+                        ->maxItems(fn ($record) => $record->membersCount)
                         ->schema([
                             Fieldset::make('Kötelező utasadatok')
                             ->schema([
