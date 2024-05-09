@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components\farewells;
+namespace App\View\Components\layouts;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class mail extends Component
+class mail2 extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class mail extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.farewells.mail');
+        return view('components.layouts.mail');
     }
 }

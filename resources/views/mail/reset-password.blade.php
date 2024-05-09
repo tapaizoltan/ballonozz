@@ -1,4 +1,4 @@
-<x-layouts.mail>
+<x-mail::message>
     <h3 class="greeting">
         Kedves {{ $user->name }}!
     </h3>
@@ -29,4 +29,4 @@
             <span style="overflow-wrap: break-word;"><a class="link" href="{{ $url }}">{{ $url }}</a></span>
         </p>
     </div>
-</x-layouts.mail>
+</x-mail::message>

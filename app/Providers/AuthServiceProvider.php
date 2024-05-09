@@ -35,7 +35,7 @@ class AuthServiceProvider extends ServiceProvider
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
             return (new MailMessage())
                 ->subject(Lang::get('Reset Password Notification'))
-                ->view('mail.reset-password', ['user' => $notifiable, 'url' => Filament::getResetPasswordUrl($token, $notifiable)]);
+                ->markdown('mail.reset-password', ['user' => $notifiable, 'url' => Filament::getResetPasswordUrl($token, $notifiable)]);
         });
     }
 }
