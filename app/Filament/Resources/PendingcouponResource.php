@@ -219,7 +219,7 @@ class PendingcouponResource extends Resource
             $diff_day_nums = Carbon::parse($record->expiration_at)->diffInDays('now', false);
             if($diff_day_nums > 0 && $diff_day_nums < 31)
             {
-                return 'bg-yellow-300 dark:bg-amber-600/30';
+                return '!bg-yellow-300 !dark:bg-amber-600/30 !hover:bg-yellow-300 !dark:hover:bg-amber-600/30';
             }
             return;
         })
