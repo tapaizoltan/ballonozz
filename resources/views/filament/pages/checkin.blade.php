@@ -83,18 +83,24 @@
                     </div>
 
                     <div class="flex justify-between gap-2">
-                        <div class="flex text-zinc-400 justify-self-center">
+                        <div class="flex text-zinc-400 justify-self-center items-center">
                             <x-heroicon-m-users class="w-5"/>
                             <span class="ps-1 py-2 text-sm font-semibold">{{ $event->coupons->map(fn ($coupon) => $coupon->membersCount)->sum() }}</span>
                         </div>
                         <div>
                             @if($selected && $finalized && $checked) 
                                 <div class="text-green-600 dark:text-green-400/80 font-semibold p-1.5">Résztveszek</div>
-                            @elseif($finalized) 
+                            @elseif($finalized)
                                 <div class="text-zinc-400 font-semibold p-1.5">Lezárva</div>
-                            @elseif(!$selected && !$this->coupon->is_used)
+                            @endif
+                            
+                            @if(!$selected && !$this->coupon->is_used)
                                 <x-filament::button wire:click="checkIn({{ $event->id }})">Jelentkezem</x-filament::button>
-                            @elseif($selected && !$this->coupon->is_used)
+                            @elseif(now() < Carbon\Carbon::parse($event->date)->subWeek() && $checked)
+                                <x-filament::button class="!bg-red-600 hover:!bg-red-700" wire:click="checkOut({{ $event->id }})">Lejelentkezem</x-filament::button>
+                            @elseif($checked)
+                                <x-filament::button class="!bg-red-600 hover:!bg-red-700" wire:click="checkOut({{ $event->id }})" disabled>Lejelentkezem</x-filament::button>
+                            @else
                                 <x-filament::button class="!bg-red-600 hover:!bg-red-700" wire:click="checkOut({{ $event->id }})">Lejelentkezem</x-filament::button>
                             @endif
                         </div>
