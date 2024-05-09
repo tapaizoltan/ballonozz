@@ -67,7 +67,15 @@ class PendingcouponResource extends Resource
                                     ->minLength(3)
                                     ->maxLength(255)
                                     ->disabledOn('edit'),
+                                    TextInput::make('source')
+                                    ->label('Forrás')
+                                    ->required()
+                                    ->minLength(3)
+                                    ->maxLength(255)
+                                    ->disabledOn('edit'),
+
                                 ])
+                                
                                 //->columnSpan(2),
                                 ->columnSpan([
                                     'sm' => 12,
