@@ -38,6 +38,7 @@ use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
+use Illuminate\Foundation\Bus\PendingChain;
 
 class PendingcouponResource extends Resource
 {
@@ -417,6 +418,7 @@ class PendingcouponResource extends Resource
                                 
                     ])
                     ->action(function (array $data, Pendingcoupon $record): void {
+                        /*
                         DB::table('coupons')->insert([
                             'parent_id' => $record->id,
                             'user_id' => $record->user_id,
@@ -429,6 +431,19 @@ class PendingcouponResource extends Resource
                             'expiration_at' => $data['expiration_at'],
                             'created_at' => Carbon::now()->toDateTimeString(),
                         ]);
+                        */
+                        $virtual_coupon = new Pendingcoupon();
+                        $virtual_coupon->parent_id = $record->id;
+                        $virtual_coupon->user_id = $record->user_id;
+                        $virtual_coupon->coupon_code = 'virtual'.random_int(10000, 99999);
+                        $virtual_coupon->source = 'Kiegészítő';
+                        $virtual_coupon->adult = $data['adult'];
+                        $virtual_coupon->children = $data['children'];
+                        $virtual_coupon->tickettype_id = $record->tickettype_id;
+                        $virtual_coupon->status = CouponStatus::CanBeUsed;
+                        $virtual_coupon->expiration_at = $data['expiration_at'];
+                        $virtual_coupon->created_at = Carbon::now()->toDateTimeString();
+                        $virtual_coupon->save();
                     }),
 
                     TableAction::make('Ajándék jegy')
@@ -485,6 +500,7 @@ class PendingcouponResource extends Resource
                                 
                     ])
                     ->action(function (array $data, Pendingcoupon $record): void {
+                        /*
                         DB::table('coupons')->insert([
                             'user_id' => $record->user_id,
                             'coupon_code' => 'gift'.random_int(10000, 99999),
@@ -496,6 +512,18 @@ class PendingcouponResource extends Resource
                             'expiration_at' => $data['expiration_at'],
                             'created_at' => Carbon::now()->toDateTimeString(),
                         ]);
+                        */
+                        $virtual_coupon = new Pendingcoupon();
+                        $virtual_coupon->user_id = $record->user_id;
+                        $virtual_coupon->coupon_code = 'gift'.random_int(10000, 99999);
+                        $virtual_coupon->source = 'Ajándék';
+                        $virtual_coupon->adult = $data['adult'];
+                        $virtual_coupon->children = $data['children'];
+                        $virtual_coupon->tickettype_id = $data['tickettype_id'];
+                        $virtual_coupon->status = CouponStatus::CanBeUsed;
+                        $virtual_coupon->expiration_at = $data['expiration_at'];
+                        $virtual_coupon->created_at = Carbon::now()->toDateTimeString();
+                        $virtual_coupon->save();
                     })
                 ]),
                 //->hidden(fn ($record) => ($record->status==CouponStatus::Used)),
