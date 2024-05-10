@@ -7,6 +7,7 @@ use App\Models\Coupon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use App\Models\AircraftLocationPilot;
+use App\Models\Passenger;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
@@ -20,7 +21,7 @@ class EventExecuted extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public User $user,
+        public Passenger $passenger,
         public Coupon $coupon,
         public AircraftLocationPilot $event,
     ) {}

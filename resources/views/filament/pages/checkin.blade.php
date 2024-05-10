@@ -42,6 +42,22 @@
             <h1 class="text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">teszt {{ $this->coupon->coupon_code }}</h1>
             <span class="pl-2 pt-1.5 sm:pt-2.5">{{ $this->coupon->source }} kupon</span>
         </div>
+        @if ($this->events->count() && $this->regions->count())
+            <x-filament::tabs label="Content tabs">
+                <x-filament::tabs.item 
+                    :active="$activeTab === 'all'"
+                    wire:click="$set('activeTab', 'all')">
+                    Mind
+                </x-filament::tabs.item>
+                @foreach ($this->regions as $id => $region)
+                    <x-filament::tabs.item 
+                        :active="$activeTab === $id"
+                        wire:click="$set('activeTab', {{ $id }})">
+                        {{ $region }}
+                    </x-filament::tabs.item>
+                @endforeach
+            </x-filament::tabs>
+        @endif
         <div class="flex flex-wrap gap-x-5 gap-y-8 w-full p-2 overflow-x-auto">
             @foreach ($this->events as $event)
                 @php

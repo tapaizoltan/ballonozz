@@ -44,17 +44,24 @@ class AircraftLocationPilot extends Model
 
                     # case AircraftLocationPilotStatus::Finalized: --> mail: App\Filament\Resources\AircraftLocationPilotResource\Pages\ListCheckins.php
 
+                    case AircraftLocationPilotStatus::Feedback:
+
+                        foreach ($event->coupons as $coupon) {
+                            
+                            foreach ($coupon->passengers as $passenger){
+                                Mail::to($passenger->email)->queue(new EventExecuted(
+                                    passenger:   $passenger,
+                                    coupon: $coupon,
+                                    event:  $event
+                                ));
+                            }
+                        }
+                        break;
+
                     case AircraftLocationPilotStatus::Executed:
 
                         Coupon::whereIn('id', $checkedCoupons)->whereNot('status', CouponStatus::Expired)->update(['status' => CouponStatus::Used]);
                         
-                        foreach ($event->coupons as $coupon) {
-                            Mail::to($coupon->user)->queue(new EventExecuted(
-                                user:   $coupon->user,
-                                coupon: $coupon,
-                                event:  $event
-                            ));
-                        }
                         break;
 
                     case AircraftLocationPilotStatus::Deleted:

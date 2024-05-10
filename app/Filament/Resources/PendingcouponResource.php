@@ -21,6 +21,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
@@ -30,6 +31,7 @@ use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Bus\PendingChain;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Tables\Actions\Action as TableAction;
@@ -38,7 +40,6 @@ use Laravel\SerializableClosure\Serializers\Native;
 use App\Filament\Resources\PendingcouponResource\Pages;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use App\Filament\Resources\PendingcouponResource\RelationManagers;
-use Illuminate\Foundation\Bus\PendingChain;
 
 class PendingcouponResource extends Resource
 {
@@ -250,19 +251,42 @@ class PendingcouponResource extends Resource
                     /*
                     return'<p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->adult.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> felnőtt</span></p><p><span class="text-custom-600 dark:text-custom-400" style="font-size:11pt;">'.$payload->children.'</span><span class="text-gray-500 dark:text-gray-400" style="font-size:9pt;"> gyerek</span></p>';
                     */
-                    if (!empty($payload?->adult) && !empty($payload?->childre))
+                    if (!empty($payload?->adult) && !empty($payload?->children))
                     {
-                        $passenger_nums = $payload?->adult.'+'.$payload?->childre;
+                        $passenger_nums = '<p>'.$payload?->adult.'+'.$payload?->children.'</p>';
                     }
-                    if (empty($payload?->adult) && !empty($payload?->childre))
+                    if (empty($payload?->adult) && !empty($payload?->children))
                     {
-                        $passenger_nums = '0+'.$payload?->childre;
+                        $passenger_nums = '<p>0+'.$payload?->children.'</p>';
                     }
-                    if (!empty($payload?->adult) && empty($payload?->childre))
+                    if (!empty($payload?->adult) && empty($payload?->children))
                     {
-                        $passenger_nums = $payload?->adult.'+0';
+                        $passenger_nums = '<p>'.$payload?->adult.'+0</p>';
                     }
-                    return $passenger_nums;
+                    if (empty($payload?->adult) && empty($payload?->children))
+                    {
+                        $passenger_nums = '<p>0+0</p>';
+                    }
+
+                    if (!empty($payload->total_price))
+                    {
+                        $price =  '<p style="font-size:9pt; color:gray; line-height:10px;"><b>Ára: </b>'.number_format($payload->total_price, 0, ',', ' ').' Ft.</p>';
+                    }
+                    if (empty($payload->total_price))
+                    {
+                        $price = '';
+                    }
+
+                    if (!empty($payload->description))
+                    {
+                        $description = '<p style="font-size:9pt; color:gray;"><b>Megjegyzés: </b>'.$payload->description.'</p>';
+                    }
+                    if (empty($payload->description))
+                    {
+                        $description =  '';
+                    }
+                    $totalpassengermessage = $passenger_nums.$price.$description;
+                    return $totalpassengermessage;
                 })->html()
                 ->searchable()
                 ->visibleFrom('md'),
@@ -398,7 +422,6 @@ class PendingcouponResource extends Resource
                             //->disabledOn('edit')
                             ->numeric()
                             ->default(0)
-                            ->minValue(1)
                             ->minLength(1)
                             ->maxLength(10)
                             ->suffix(' fő'),  
@@ -413,15 +436,22 @@ class PendingcouponResource extends Resource
                             ->minLength(1)
                             ->maxLength(10)
                             ->suffix(' fő'),
-                            DatePicker::make('expiration_at')
-                            ->label('Felhasználható')
-                            ->helperText('Itt módosíthatja az adott kupon érvényességi idejét.')
-                            ->prefixIcon('tabler-calendar')
-                            ->weekStartsOnMonday()
-                            ->native(false)
-                            ->format('Y-m-d')
-                            ->displayFormat('Y-m-d')
-                            ->default(now()),
+                            TextInput::make('total_price')
+                            ->helperText('Adja meg a kiegészítő jegy árát.')
+                            ->label('Helyszínen fizetendő')
+                            ->prefixIcon('iconoir-hand-cash')
+                            ->required()
+                            //->disabledOn('edit')
+                            ->numeric()
+                            ->default(0)
+                            ->minLength(1)
+                            ->maxLength(10)
+                            ->suffix(' Ft.'),
+                            Textarea::make('description')
+                            ->label('Megjegyzés')
+                            ->rows(3)
+                            ->cols(20)
+                            ->columnSpanFull(),
                         ])->columns(3),
                                 
                     ])
@@ -449,7 +479,9 @@ class PendingcouponResource extends Resource
                         $virtual_coupon->children = $data['children'];
                         $virtual_coupon->tickettype_id = $record->tickettype_id;
                         $virtual_coupon->status = CouponStatus::CanBeUsed;
-                        $virtual_coupon->expiration_at = $data['expiration_at'];
+                        $virtual_coupon->expiration_at = $record->expiration_at;
+                        $virtual_coupon->total_price =  $data['total_price'];
+                        $virtual_coupon->description =  $data['description'];
                         $virtual_coupon->created_at = Carbon::now()->toDateTimeString();
                         $virtual_coupon->save();
                     }),
