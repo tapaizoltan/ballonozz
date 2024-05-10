@@ -176,19 +176,32 @@ class AircraftLocationPilotResource extends Resource
                                     ->inline()
                                     /*->grouped()*/
                                     ->required()
-                                    ->options([
-                                        '0' => 'Tervezett',
-                                        '1' => 'Publikált',
-                                        '2' => 'Véglegesített',
-                                        '3' => 'Végrehajtott',
-                                        '4' => 'Törölt',
-                                    ])
+                                    ->options(function($state){
+                                        if ($state == 3)
+                                        {
+                                            return [
+                                                '3' => 'Végrehajtott',
+                                                '5' => 'Visszajelzés',
+                                            ];
+                                        }
+                                        if ($state != 3)
+                                        {
+                                            return [
+                                                '0' => 'Tervezett',
+                                                '1' => 'Publikált',
+                                                '2' => 'Véglegesített',
+                                                '3' => 'Végrehajtott',
+                                                '4' => 'Törölt',
+                                            ];
+                                        }
+                                    })
                                     ->colors([
                                         '0' => 'warning',
                                         '1' => 'success',
                                         '2' => 'success',
                                         '3' => 'info',
                                         '4' => 'danger',
+                                        '5' => 'info',
                                     ])
                                     ->icons([
                                         '0' => 'tabler-player-pause',
@@ -196,8 +209,10 @@ class AircraftLocationPilotResource extends Resource
                                         '2' => 'tabler-flag-check',
                                         '3' => 'tabler-player-stop',
                                         '4' => 'tabler-playstation-x',
+                                        '5' => 'tabler-mail-heart',
                                     ])
-                                    ->disabled(fn ($record) => $record && in_array($record->status, [AircraftLocationPilotStatus::Executed, AircraftLocationPilotStatus::Deleted]))
+                                    //->disabled(fn ($record) => $record && in_array($record->status, [AircraftLocationPilotStatus::Executed, AircraftLocationPilotStatus::Deleted]))
+                                    ->disabled(fn ($record) => $record && in_array($record->status, [AircraftLocationPilotStatus::Deleted]))
                                     ->default(0),
                                 ])->columns(1),
                             ])->columnSpan([
