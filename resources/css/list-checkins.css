@@ -19,10 +19,14 @@
 .thead{
     @apply bg-zinc-50 dark:bg-white/5 !px-3 !py-4 sm:first-of-type:!ps-6 sm:last-of-type:!pe-6 font-semibold text-zinc-950 dark:text-white
 }
+.tbody,.description{
+    @apply pb-4 px-3 sm:first-of-type:!ps-6 sm:last-of-type:!pe-6
+}
 .tbody{
-    @apply 
-    border-t border-zinc-200 dark:border-white/5 
-    py-4 px-3 sm:first-of-type:!ps-6 sm:last-of-type:!pe-6
+    @apply pt-4 border-t border-zinc-200 dark:border-white/5 
+}
+.description{
+    @apply flex flex-col
 }
 
 .checkbox{
