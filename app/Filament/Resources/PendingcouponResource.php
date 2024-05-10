@@ -270,7 +270,7 @@ class PendingcouponResource extends Resource
 
                     if (!empty($payload->total_price))
                     {
-                        $price =  '<p style="font-size:9pt; color:gray; line-height:10px;"><b>Fizetendő: </b>'.number_format($payload->total_price, 0, ',', ' ').' Ft.</p>';
+                        $price =  '<p style="font-size:9pt; color:gray; line-height:10px;"><b>Ára: </b>'.number_format($payload->total_price, 0, ',', ' ').' Ft.</p>';
                     }
                     if (empty($payload->total_price))
                     {
