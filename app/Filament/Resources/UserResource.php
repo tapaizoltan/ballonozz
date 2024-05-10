@@ -92,6 +92,7 @@ class UserResource extends Resource
         return $table
             ->headerActions([
                 ExportAction::make()
+                    ->label('Felhasználók exportálása')
                     ->exporter(UserExporter::class)
                     ->formats([
                         ExportFormat::Xlsx,
