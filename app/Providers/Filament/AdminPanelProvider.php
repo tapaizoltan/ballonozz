@@ -70,6 +70,8 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification()
             ->profile()
-            ->sidebarCollapsibleOnDesktop();
+            ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications();
+            //->databaseNotificationsPolling('30s');
     }
 }

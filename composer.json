@@ -17,6 +17,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "psr/simple-cache": "^3.0",
         "ryangjchandler/blade-tabler-icons": "^2.2",
         "stechstudio/filament-impersonate": "^3.7"
     },
