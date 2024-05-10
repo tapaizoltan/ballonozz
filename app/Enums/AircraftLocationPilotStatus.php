@@ -13,6 +13,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
     Case Finalized ="2"; //véglegesített
     case Executed = "3"; //végrehajtott
     case Deleted = "4"; //törölt
+    case Feedback = "5"; //visszajelzés
 
     public function getLabel(): string
     {
@@ -22,6 +23,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
             self::Finalized => 'Véglegesített',
             self::Executed => 'Végrehajtott',
             self::Deleted => 'Törölt',
+            self::Feedback => 'Visszajelzés',
         };
     }
 
@@ -33,6 +35,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
             self::Finalized => 'success',
             self::Executed => 'info',
             self::Deleted => 'danger',
+            self::Feedback => 'info',
         };
     }
 
@@ -44,6 +47,7 @@ enum AircraftLocationPilotStatus: string implements HasColor, HasIcon, HasLabel
             self::Finalized => 'tabler-flag-check',
             self::Executed => 'tabler-player-stop',
             self::Deleted => 'tabler-playstation-x',
+            self::Feedback => 'tabler-mail-heart',
         };
     }
 }

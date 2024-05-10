@@ -11,7 +11,16 @@
                     @endphp
                     <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">{{ Carbon\Carbon::parse($record->date . ' ' . $record->time)->translatedFormat('Y F d. H:i') }}</h1>
                     <h2 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-2xl">{{ implode(', ', $subHeading) }}</h2>
-                    <h3 class="fi-header-heading text-sm tracking-tight text-gray-600 dark:text-white sm:text-sm">{{ $record->aircraft->description }}</h3>
+                    <h3 class="fi-header-heading text-sm tracking-tight text-gray-600 dark:text-white sm:text-sm mt-4"><b>Légijármű leírása:</b><br>{{ $record->aircraft->description }}</h3>
+                    <div class="grid grid-cols-2 my-4 ">
+                        <div>
+                            <h3 class="fi-header-heading text-sm tracking-tight text-gray-600 dark:text-white sm:text-sm"><b>Publikus megjegyzés:</b><br>{{ $record->aircraftlocationpilot?->public_description }}</h3>
+                        </div>
+                        <div>
+                            <h3 class="fi-header-heading text-sm tracking-tight text-gray-600 dark:text-white sm:text-sm"><b>NEM publikus megjegyzés:</b><br>{{ $record->aircraftlocationpilot?->non_public_description }}</h3>
+                        </div>
+                    </div>
+                    
                 </div>
                 @php
                     $bodiesWeight = 0;
