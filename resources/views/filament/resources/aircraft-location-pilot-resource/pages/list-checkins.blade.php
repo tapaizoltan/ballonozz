@@ -29,13 +29,14 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+        <div class="grid grid-cols-[3.5rem_auto_auto_auto_auto_auto_auto_auto] overflow-auto custom-table rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
 
             <div class="thead"></div>
             <div class="thead">Kupon kód</div>
             <div class="thead">Kapcsolattartó</div>
             <div class="thead">Jelentkezett ekkor</div>
             <div class="thead">Jegytípus</div>
+            <div class="thead">Jelentkezések/Beválogatások</div>
             <div class="thead">Fő</div>
             <div class="thead">Súly</div>
 
@@ -43,6 +44,7 @@
                 @php
                     $isCheckedAlready = in_array($coupon->id, $alreadyCheckedCoupons);
 
+                    // Sötét háttérszín esetén fehér lesz a szöveg színe, világos háttérnél pedig fekete.
                     $rgb = list($red, $green, $blue) = sscanf($coupon->tickettype->color, "#%02x%02x%02x");
                     $backgroundColor = 'rgb(' . implode(', ', $rgb) . ')';
                     if (($red * 0.299 + $green * 0.587 + $blue * 0.114) > 186) {
@@ -58,6 +60,7 @@
                 <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->user->name }}</span></label>
                 <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ Carbon\Carbon::parse($coupon->pivot->created_at)->translatedFormat('Y F d. H:i') }}</span></label>
                 <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->tickettype->name }}</span></label>
+                <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->aircraftLocationPilots->count() }}/{{ $coupon->aircraftLocationPilots->where('pivot.status', 1)->count() }}</span></label>
                 <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersCount }}</span></label>
                 <label for="coupon-{{ $coupon->id }}" class="tbody min-w-1 @if($isCheckedAlready || $coupon->missingData) bg-zinc-100 text-zinc-400 dark:bg-white/10" @else " style="background: {{ $backgroundColor }}; color: {{ $textColor }}" @endif><span style="opacity: 1">{{ $coupon->membersBodyWeight }} kg</span></label>
             @endforeach
