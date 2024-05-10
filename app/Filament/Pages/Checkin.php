@@ -3,9 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Models\Coupon;
-use App\Models\Aircraft;
 use Filament\Pages\Page;
 use App\Mail\JoinToEvent;
+use App\Mail\LeaveFromEvent;
 use Filament\Actions\Action;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
@@ -14,15 +14,16 @@ use App\Models\AircraftLocationPilot;
 use App\Models\Checkin as CheckinModel;
 use App\Enums\AircraftLocationPilotStatus;
 use App\Filament\Resources\CouponResource;
-use App\Mail\LeaveFromEvent;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Checkin extends Page
 {
     use HasPageShield;
     
+    public $activeTab = 'all';
     public $coupons;
     public $coupon_id;
+    public $regions;
     protected static ?string $title = 'Repüléseim';
     protected ?string $heading = 'Repüléseid';
     protected static ?string $navigationLabel = 'Repüléseim';
@@ -77,7 +78,7 @@ class Checkin extends Page
             return false;
         }
 
-        return AircraftLocationPilot::query()
+        $events = AircraftLocationPilot::query()
 
             // TODO Jelenleg csak a mainapra szűrünk,
             // azaz tudunk jelentkezni olyan eseményre ami ma van, de már pl. 1 órája végét ért.
@@ -93,6 +94,14 @@ class Checkin extends Page
             ->orderBy('date')
             ->orderBy('time')
             ->get();
+
+        $this->regions = $events->pluck('region.name', 'region.id')->unique();
+
+        if ($this->activeTab === 'all') {
+            return $events;
+        }
+
+        return $events->where('region_id', $this->activeTab);
     }
 
     public function checkIn($aircraftLocationPilotId)
