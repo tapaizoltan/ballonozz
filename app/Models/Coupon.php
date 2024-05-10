@@ -76,9 +76,12 @@ class Coupon extends Model
     private function validatePassengersData(self $coupon): void
     {
         foreach ($coupon->passengers as $p) {
-            if ($p->firstname && $p->lastname && $p->date_of_birth && $p->id_card_number && $p->body_weight) {
+            if ($p->firstname && $p->lastname && $p->date_of_birth && $p->id_card_number && $p->body_weight)
+            {
                 $this->checkList[] = true;
-            } else {
+            } 
+            else 
+            {
                 $this->checkList[] = false;
             }
         }
@@ -95,7 +98,7 @@ class Coupon extends Model
                     $this->childrenCoupons->map(fn ($coupon) => $this->validatePassengersData($coupon));
                 }
 
-                return count(array_unique($this->checkList)) === 1 && $noOneMissing;
+                return count(array_unique($this->checkList)) === 1 && array_unique($this->checkList)[0] === true && $noOneMissing;
             },
         );
     }
